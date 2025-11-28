@@ -1,0 +1,6 @@
+{
+    "schema_version": "1.0",
+    "name": "sinch-conversation-api",
+    "version": "0.1.0",
+    "description": "Claude Code plugin for Sinch Conversation API (SMS, WhatsApp, RCS, etc.)"
+}
