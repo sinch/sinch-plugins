@@ -48,20 +48,8 @@ $ARGUMENTS
 
 ## Examples
 
-Send a text message:
+Send a text SMS message:
 
 ```
-/sinch-conversation-api-assistant:api:messages:send --to=+14155551234 --message="Hello"
-```
-
-Send via WhatsApp:
-
-```
-/sinch-conversation-api-assistant:api:messages:send --to=+14155551234 --message="Hello" --channel=whatsapp
-```
-
-Send media message:
-
-```
-/sinch-conversation-api-assistant:api:messages:send --to=+14155551234 --message="Check this out" --media=https://example.com/image.jpg --channel=whatsapp
+/sinch-conversation-api:api:messages:send --to=+14155551234 --message="Hello"
 ```

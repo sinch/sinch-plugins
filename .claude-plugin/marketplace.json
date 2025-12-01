@@ -10,8 +10,8 @@
     },
     "plugins": [
         {
-            "name": "sinch-conversation-api-assistant",
-            "source": "./plugins/sinch-conversation-api-assistant",
+            "name": "sinch-conversation-api",
+            "source": "./plugins/sinch-conversation-api",
             "description": "Claude Code plugin for Sinch Conversation API (SMS, WhatsApp, RCS, etc.)",
             "version": "0.0.1",
             "author": {

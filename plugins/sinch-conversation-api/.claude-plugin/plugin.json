@@ -1,5 +1,5 @@
 {
-    "name": "sinch-conversation-api-assistant",
+    "name": "sinch-conversation-api",
     "version": "0.0.1",
     "description": "Claude Code plugin for Sinch Conversation API (SMS, WhatsApp, RCS, etc.)",
     "homepage": "https://developers.sinch.com/docs/conversation/",
