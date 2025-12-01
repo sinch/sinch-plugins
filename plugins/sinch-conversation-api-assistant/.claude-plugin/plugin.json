@@ -3,20 +3,21 @@
     "name": "sinch-conversation-api-assistant",
     "version": "0.0.1",
     "description": "Claude Code plugin for Sinch Conversation API (SMS, WhatsApp, RCS, etc.)",
-    "mcp_servers": {
-        "sinch": {
-            "command": "npx",
-            "args": [
-                "-y",
-                "@sinch/mcp"
-            ],
-            "env": {
-                "CONVERSATION_PROJECT_ID": "",
-                "CONVERSATION_KEY_ID": "",
-                "CONVERSATION_KEY_SECRET": "",
-                "CONVERSATION_REGION": "",
-                "CONVERSATION_APP_ID": ""
-            }
-        }
-    }
+    "homepage": "https://developers.sinch.com/docs/conversation/",
+    "repository": "https://gitlab.com/sinch/sinch-projects/applications/smb/teams/partnership_devex/sinch-conversation-claude-plugin",
+    "license": "Apache-2.0",
+    "keywords": [
+        "Sinch",
+        "messaging",
+        "webhooks",
+        "api",
+        "sms",
+        "mcp",
+        "ai"
+    ],
+    "commands": [
+        "./commands/api/messages/send.md",
+        "./commands/api/messages/status.md"
+    ],
+    "mcpServers": "./mcp.json"
 }
