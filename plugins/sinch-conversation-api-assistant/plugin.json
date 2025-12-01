@@ -1,12 +1,15 @@
 {
     "schema_version": "1.0",
-    "name": "sinch-conversation-api",
-    "version": "0.1.0",
+    "name": "sinch-conversation-api-assistant",
+    "version": "0.0.1",
     "description": "Claude Code plugin for Sinch Conversation API (SMS, WhatsApp, RCS, etc.)",
     "mcp_servers": {
         "sinch": {
             "command": "npx",
-            "args": ["-y", "@sinch/mcp"],
+            "args": [
+                "-y",
+                "@sinch/mcp"
+            ],
             "env": {
                 "CONVERSATION_PROJECT_ID": "",
                 "CONVERSATION_KEY_ID": "",

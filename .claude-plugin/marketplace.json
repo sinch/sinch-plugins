@@ -1,0 +1,34 @@
+{
+    "name": "sinch-conversation-api-dev",
+    "owner": {
+        "name": "Sinch",
+        "email": "support@sinch.com"
+    },
+    "metadata": {
+        "description": "Development marketplace for Sinch Conversation API Claude Code plugin",
+        "version": "0.0.1"
+    },
+    "plugins": [
+        {
+            "name": "sinch-conversation-api-assistant",
+            "source": ".",
+            "description": "Claude Code plugin for Sinch Conversation API (SMS, WhatsApp, RCS, etc.)",
+            "version": "0.0.1",
+            "author": {
+                "name": "Sinch"
+            },
+            "homepage": "https://developers.sinch.com/docs/conversation/",
+            "license": "Apache-2.0",
+            "keywords": [
+                "sinch",
+                "conversation-api",
+                "sms",
+                "whatsapp",
+                "rcs",
+                "messaging"
+            ],
+            "category": "communication",
+            "strict": true
+        }
+    ]
+}
