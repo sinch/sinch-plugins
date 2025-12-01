@@ -11,7 +11,7 @@
     "plugins": [
         {
             "name": "sinch-conversation-api-assistant",
-            "source": ".",
+            "source": "./plugins/sinch-conversation-api-assistant",
             "description": "Claude Code plugin for Sinch Conversation API (SMS, WhatsApp, RCS, etc.)",
             "version": "0.0.1",
             "author": {
@@ -20,12 +20,13 @@
             "homepage": "https://developers.sinch.com/docs/conversation/",
             "license": "Apache-2.0",
             "keywords": [
-                "sinch",
-                "conversation-api",
+                "Sinch",
+                "messaging",
+                "webhooks",
+                "api",
                 "sms",
-                "whatsapp",
-                "rcs",
-                "messaging"
+                "mcp",
+                "ai"
             ],
             "category": "communication",
             "strict": true
