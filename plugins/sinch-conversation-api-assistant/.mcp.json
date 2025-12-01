@@ -7,11 +7,11 @@
                 "@sinch/mcp"
             ],
             "env": {
-                "CONVERSATION_PROJECT_ID": "",
-                "CONVERSATION_KEY_ID": "",
-                "CONVERSATION_KEY_SECRET": "",
-                "CONVERSATION_REGION": "",
-                "CONVERSATION_APP_ID": ""
+                "CONVERSATION_PROJECT_ID": "{$CONVERSATION_PROJECT_ID}",
+                "CONVERSATION_KEY_ID": "{$CONVERSATION_KEY_ID}",
+                "CONVERSATION_KEY_SECRET": "{$CONVERSATION_KEY_SECRET}",
+                "CONVERSATION_REGION": "{$CONVERSATION_REGION:-us}",
+                "CONVERSATION_APP_ID": "{$CONVERSATION_APP_ID}"
             }
         }
     }
