@@ -7,11 +7,11 @@
                 "@sinch/mcp"
             ],
             "env": {
-                "CONVERSATION_PROJECT_ID": "f72c669e-3182-43f5-860f-6f00c873c20e",
-                "CONVERSATION_KEY_ID": "0c3237dc-5ad2-478d-961b-14ef964925d9",
-                "CONVERSATION_KEY_SECRET": "moTcPAztKNM5nwXLbW3oJq08Tq",
-                "CONVERSATION_REGION": "us",
-                "CONVERSATION_APP_ID": "01FS96PTJ37ZT3J27TRAZ9C3RN"
+                "CONVERSATION_PROJECT_ID": "${CONVERSATION_PROJECT_ID}",
+                "CONVERSATION_KEY_ID": "${CONVERSATION_KEY_ID}",
+                "CONVERSATION_KEY_SECRET": "${CONVERSATION_KEY_SECRET}",
+                "CONVERSATION_REGION": "${CONVERSATION_REGION}",
+                "CONVERSATION_APP_ID": "${CONVERSATION_APP_ID}"
             }
         }
     }
