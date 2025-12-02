@@ -1,28 +1,20 @@
 ---
-description: Send a message via Sinch Conversation API
+description: Send a text message via Sinch Conversation API (SMS/RCS only)
 allowed-tools:
   - mcp__sinch__send-text-message
-  - mcp__sinch__send-media-message
-  - mcp__sinch__send-template-message
-  - mcp__sinch__send-choice-message
-  - mcp__sinch__send-location-message
   - mcp__sinch__sinch-mcp-configuration
-argument-hint: --to=<phone> --message=<text> [--channel=<channel>] [--media=<url>] [--template=<id>] [--choices=<option1,option2>] [--location=<address>]
+argument-hint: --to=<phone> --message=<text> [--channel=SMS|RCS]
 ---
 
 # Send Message
 
-Send a message to a recipient using the Sinch Conversation API. Supports text, media, template, choice, and location messages.
+Send a text message to a recipient using the Sinch Conversation API. Currently supports SMS channels only.
 
 ## Input
 
 - `--to` / `-t`: Recipient phone number (E.164 format, e.g., +14155551234) - required
-- `--message` / `-m`: Text content - required for text and choice messages
-- `--channel` / `-c`: Channel (sms, whatsapp, rcs) - optional, defaults to SMS
-- `--media`: Media URL for images, videos, or documents - optional
-- `--template`: Template ID for predefined templates - optional
-- `--choices`: Comma-separated interactive choices/buttons - optional
-- `--location`: Address or coordinates to send as location pin - optional
+- `--message` / `-m`: Text content - required
+- `--channel` / `-c`: Channel (SMS or RCS) - optional, defaults to SMS
 
 $ARGUMENTS
 
@@ -31,30 +23,30 @@ $ARGUMENTS
 1. Parse and validate arguments from $ARGUMENTS:
 
    - Validate that `--to` is provided and in E.164 format (e.g., +14155551234)
+   - Validate that `--message` is provided and non-empty
    - If `--channel` is not provided, default to "SMS"
-   - Normalize channel to uppercase (sms → SMS, whatsapp → WHATSAPP, rcs → RCS)
+   - Normalize channel to uppercase (sms → SMS, rcs → RCS)
+   - Validate that channel is either "SMS" or "RCS" (reject other channels)
 
-2. Determine message type and select the appropriate MCP tool:
+2. Call `mcp__sinch__send-text-message` with the recipient, message, and channel.
 
-   - If `--media` is provided: use `mcp__sinch__send-media-message`
-   - If `--template` is provided: use `mcp__sinch__send-template-message`
-   - If `--choices` is provided: use `mcp__sinch__send-choice-message`
-   - If `--location` is provided: use `mcp__sinch__send-location-message`
-   - Otherwise: use `mcp__sinch__send-text-message`
+3. Report the result or handle any errors returned by the tool.
 
-3. Call the selected MCP tool with the appropriate payload constructed from the arguments.
-
-4. Report the result or handle any errors returned by the tool.
-
-5. If the tool call fails with an error, call `mcp__sinch__sinch-mcp-configuration` to verify MCP server availability:
-   - Check if the required tool (from step 2) is in the list of available/enabled tools
-   - If missing, report: "MCP tool `<tool-name>` is not available. Please check your MCP server configuration and ensure the Sinch Conversation API MCP server is properly configured with required environment variables."
+4. If the tool call fails with an error, call `mcp__sinch__sinch-mcp-configuration` to verify MCP server availability:
+   - Check if `mcp__sinch__send-text-message` is in the list of available/enabled tools
+   - If missing, report: "MCP tool `mcp__sinch__send-text-message` is not available. Please check your MCP server configuration and ensure the Sinch Conversation API MCP server is properly configured with required environment variables."
    - If available but still failed, report the original error
 
 ## Examples
 
-Send a text SMS message:
+Send an SMS message:
 
 ```
 /sinch-conversation-api:api:messages:send --to=+14155551234 --message="Hello"
+```
+
+Send an RCS message:
+
+```
+/sinch-conversation-api:api:messages:send --to=+14155551234 --message="Hello" --channel=RCS
 ```
