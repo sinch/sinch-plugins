@@ -32,8 +32,13 @@ $ARGUMENTS
 
 4. Report any errors returned by the tool.
 
+5. If the tool call fails with an error, call `mcp__sinch__sinch-mcp-configuration` to verify MCP server availability:
+   - Check if `mcp__sinch__get-message-events` is in the list of available/enabled tools
+   - If missing, report: "MCP tool `mcp__sinch__get-message-events` is not available. Please check your MCP server configuration and ensure the Sinch Conversation API MCP server is properly configured with required environment variables."
+   - If available but still failed, report the original error
+
 ## Example
 
 ```
-/sinch-conversation-api-assistant:api:messages:status --message_id=01HXXX123456
+/sinch-conversation-api:api:messages:status --message_id=01HXXX123456
 ```

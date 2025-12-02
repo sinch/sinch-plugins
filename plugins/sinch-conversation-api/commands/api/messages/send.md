@@ -46,6 +46,11 @@ $ARGUMENTS
 
 4. Report the result or handle any errors returned by the tool.
 
+5. If the tool call fails with an error, call `mcp__sinch__sinch-mcp-configuration` to verify MCP server availability:
+   - Check if the required tool (from step 2) is in the list of available/enabled tools
+   - If missing, report: "MCP tool `<tool-name>` is not available. Please check your MCP server configuration and ensure the Sinch Conversation API MCP server is properly configured with required environment variables."
+   - If available but still failed, report the original error
+
 ## Examples
 
 Send a text SMS message:
