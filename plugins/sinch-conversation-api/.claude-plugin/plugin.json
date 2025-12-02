@@ -16,7 +16,8 @@
     ],
     "commands": [
         "./commands/api/messages/send.md",
-        "./commands/api/messages/status.md"
+        "./commands/api/messages/status.md",
+        "./commands/api/senders/list.md"
     ],
     "mcpServers": "./mcp.json"
 }
