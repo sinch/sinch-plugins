@@ -15,6 +15,7 @@
         "ai"
     ],
     "commands": [
+        "./commands/setup.md",
         "./commands/api/messages/send.md",
         "./commands/api/messages/status.md",
         "./commands/api/senders/list.md"
