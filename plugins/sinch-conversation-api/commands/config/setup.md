@@ -21,7 +21,7 @@ You need to obtain and configure the following 5 variables:
 
 ## How to Get Credentials
 
-Visit the [Sinch Conversation API documentation](https://developers.sinch.com/docs/conversation) to:
+Visit the [Sinch Conversation API documentation](https://developers.sinch.com/docs/conversation) for instructions to:
 
 - Create a Sinch account
 - Set up a Conversation API project
@@ -39,8 +39,10 @@ Offer these options:
 
 ## If Option A (Setup script):
 
-Generate this bash script from the template `init_mcp_cred.sh` that bundled with this command.
+Generate this bash script from the template @./init_mcp_cred.sh that bundled with this command. Save the generated script to the current terminal location. If not possible, save it to user home directory. Don't need to display the whole script content unless user requests it so it don't clutter the output.
 
+If saving is not possible, ask the user to choose A: "Display the script for manual copy-paste" or B: "Switch to manual instructions".
+If they choose A, display the script content in a code block.
 Then tell the user:
 
 1. Save the script to a file:
@@ -66,6 +68,8 @@ Paste the script, then save (Ctrl+O, Enter, Ctrl+X)
 4. Restart Claude Code to load the new environment variables
 
 5. Run `/sinch:status` to verify the connection
+
+If they choose B, proceed to manual instructions below.
 
 ## If Option B (Manual):
 
@@ -99,7 +103,7 @@ Tell the user:
 
 5. Restart Claude Code.
 
-6. Run `/sinch:status` to verify the connection.
+6. Run `/sinch-conversation-api:api:messages:send` to verify the connection.
 
 ## Important Notes
 
