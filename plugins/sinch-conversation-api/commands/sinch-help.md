@@ -1,6 +1,6 @@
 ---
+name: sinch-help
 description: Get instructions for configuring Sinch Conversation API environment variables
-argument-hint:
 ---
 
 # Sinch Conversation API Setup
