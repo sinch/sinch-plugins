@@ -15,11 +15,11 @@
         "ai"
     ],
     "commands": [
-        "./commands/config/setup.md",
+        "./commands/config/sinch-mcp-setup.md",
         "./commands/api/messages/send.md",
         "./commands/api/messages/status.md",
         "./commands/api/senders/list.md",
-        "./commands/help.md"
+        "./commands/sinch-help.md"
     ],
     "mcpServers": "./mcp.json"
 }

@@ -1,5 +1,5 @@
 ---
-name: setup
+name: sinch-mcp-setup
 description: Configure Sinch Conversation API credentials
 ---
 
