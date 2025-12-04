@@ -21,5 +21,6 @@
         "./commands/api/senders/list.md",
         "./commands/sinch-help.md"
     ],
+    "skills": "./skills",
     "mcpServers": "./mcp.json"
 }
