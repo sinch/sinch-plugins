@@ -39,7 +39,7 @@ Ask: "How would you like to configure your Sinch credentials?"
 
 Offer these options:
 
-- **Option A: Run setup script** — interactive bash script that collects credentials and updates ~/.claude/settings.json automatically
+- **Option A: Generate setup script** — interactive bash script that collects credentials and updates ~/.claude/settings.json automatically
 - **Option B: Manual** — shows instructions to edit ~/.claude/settings.json yourself
 
 ## If Option A (Setup script):
