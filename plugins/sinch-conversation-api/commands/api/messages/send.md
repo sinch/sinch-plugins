@@ -34,7 +34,7 @@ $ARGUMENTS
 
 4. If the tool call fails with an error, call `mcp__sinch__sinch-mcp-configuration` to verify MCP server availability:
    - Check if `mcp__sinch__send-text-message` is in the list of available/enabled tools
-   - If missing, report: "MCP tool `mcp__sinch__send-text-message` is not available. Run `/sinch-conversation-api:setup` to see setup instructions."
+   - If missing, report: "MCP tool `mcp__sinch__send-text-message` is not available. Run `/sinch-conversation-api:sinch-mcp-setup` to see setup instructions."
    - If available but still failed, report the original error
 
 ## Examples
