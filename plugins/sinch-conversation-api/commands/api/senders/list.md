@@ -1,177 +1,124 @@
 ---
 description: Generate code to fetch Sinch active numbers/senders and handle sender operations
-argument-hint: [task description]
+argument-hint: [generate | debug | explain | pagination | freestyle]
 ---
 
 # Sinch Conversation API - List Active Senders
 
-You are helping users work with the Sinch Conversation API to retrieve active senders/numbers.
+This command helps you work with the Sinch Numbers API to retrieve your active phone numbers/senders.
 
 **User Request**: $ARGUMENTS
 
-## Your Capabilities
-- Generate code to fetch all active Sinch numbers/senders
-- Create service implementations with error handling
-- Explain the Sinch Numbers API structure
-- Debug sender retrieval issues
-- Implement pagination and caching strategies
+## Instructions
 
-## Command Name
-`/sinch-conversation-api-assistant:api:senders:list`
+1. Parse user request from $ARGUMENTS.
 
-## Usage Examples
+2. If no arguments or generic request (e.g., "list active senders", "help"):
+   Display the quick reference with numbered options:
+   ```
+   Sinch Numbers API - Active Senders
 
-### Basic Usage
-```
-/sinch-conversation-api-assistant:api:senders:list help me get all active numbers
-```
+   API Endpoint: GET https://numbers.api.sinch.com/v1/projects/{projectId}/activeNumbers
 
-### Code Generation
-```
-/sinch-conversation-api-assistant:api:senders:list generate a function to load all senders with error handling
-```
+   What would you like to do?
+   1. Generate code - Create a function to fetch active senders
+   2. Debug issues - Troubleshoot sender retrieval problems
+   3. Explain the API - Learn about the endpoint and response structure
+   4. Add pagination - Handle large datasets
+   5. Freestyle - Describe your own request or question
+   ```
 
-### Troubleshooting
-```
-/sinch-conversation-api-assistant:api:senders:list why might my sender loading fail?
-```
+3. If user selects option 1 or requests code generation (e.g., "generate", "create function", "implement", "1"):
+   Provide the implementation:
+   ```typescript
+   interface Numbers {
+     phoneNumber: string;
+     projectId: string;
+     displayName: string;
+     regionCode: string;
+     type: string;
+     capability: string[];
+   }
 
-## Reference Implementation
+   async function loadSenders(projectId: string, authToken: string): Promise<Numbers[]> {
+     const response = await fetch(
+       `https://numbers.api.sinch.com/v1/projects/${projectId}/activeNumbers?page_size=100`,
+       {
+         method: 'GET',
+         headers: {
+           'Authorization': `Bearer ${authToken}`,
+           'Content-Type': 'application/json',
+         },
+       }
+     );
 
-The command is based on this core function structure:
+     if (!response.ok) {
+       throw new Error(`Failed to load senders: ${response.status}`);
+     }
 
-```typescript
-async function loadSenders(projectId: string, authToken: string): Promise<Numbers[]> {
-  try {
-    const queryParams = new URLSearchParams({
-      page_size: '100',
-    });
+     const data = await response.json();
+     return data.activeNumbers;
+   }
+   ```
 
-    const response = await fetch(
-      `https://numbers.api.sinch.com/v1/projects/${projectId}/activeNumbers?${queryParams.toString()}`,
-      {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${authToken}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+   Usage:
+   ```typescript
+   const senders = await loadSenders(process.env.CONVERSATION_PROJECT_ID, authToken);
+   console.log(`Found ${senders.length} active numbers`);
+   ```
 
-    if (!response.ok) {
-      throw new Error(`Failed to load senders: ${response.status} ${response.statusText}`);
-    }
+4. If user selects option 2 or asks about debugging/troubleshooting (e.g., "debug", "error", "2"):
+   List common error scenarios:
+   - 401 Unauthorized: Invalid or expired auth token
+   - 404 Not Found: Invalid project ID
+   - 429 Too Many Requests: Rate limiting
+   - Network errors: Connectivity issues
+   - Missing configuration: Environment variables not set
 
-    const data = await response.json() as { activeNumbers: Numbers[] };
-    return data.activeNumbers;
-  } catch (error) {
-    console.error('Failed to load senders:', error);
-    throw error;
-  }
-}
-```
+5. If user selects option 3 or asks about API structure (e.g., "explain", "api", "3"):
+   Explain endpoint details:
+   - **Base URL**: `https://numbers.api.sinch.com/v1`
+   - **Path**: `/projects/{projectId}/activeNumbers`
+   - **Method**: GET
+   - **Query Parameters**: `page_size` (default: 100)
+   - **Auth**: Bearer token
 
-## Key Components
+6. If user selects option 4 or asks about pagination (e.g., "pagination", "4"):
+   Provide pagination implementation with `page_token` handling.
 
-### API Endpoint
-- **Base URL**: `https://numbers.api.sinch.com/v1`
-- **Path**: `/projects/{projectId}/activeNumbers`
-- **Method**: GET
-- **Query Parameters**:
-  - `page_size`: Number of results per page (default: 100)
+7. If user selects option 5 or provides freestyle input (e.g., "freestyle", "5", or any custom question/request):
+   Ask the user to describe what they need help with regarding the Sinch Numbers API or active senders.
+   Then provide a tailored response based on their specific request, using the API information and code patterns from this command as reference.
 
-### Response Structure
-```typescript
-interface SenderResponse {
-  activeNumbers: Numbers[];
-}
+8. If user asks for full type definitions or detailed response structure:
+   ```typescript
+   interface Numbers {
+     phoneNumber: string;
+     projectId: string;
+     displayName: string;
+     regionCode: string;
+     type: string;
+     callbackUrl: string;
+     capability: string[];
+     expireAt: string;
+     money: { currencyCode: string; amount: string };
+     nextChargeDate: string;
+     paymentIntervalMonths: number;
+     smsConfiguration: {
+       servicePlanId: string;
+       scheduleProvisioning: string | null;
+       campaignId: string;
+     };
+     voiceConfiguration: {
+       appId: string;
+       scheduleVoiceProvisioning: string | null;
+       lastUpdatedTime: string | null;
+       type: string;
+       trunkId: string;
+       serviceId: string;
+     };
+   }
+   ```
 
-interface Numbers {
-  phoneNumber: string;
-  projectId: string;
-  displayName: string;
-  regionCode: string;
-  type: string;
-  callbackUrl: string;
-  capability: string[];
-  expireAt: string;
-  money: {
-    currencyCode: string;
-    amount: string;
-  };
-  nextChargeDate: string;
-  paymentIntervalMonths: number;
-  smsConfiguration: {
-    servicePlanId: string;
-    scheduleProvisioning: string | null;
-    campaignId: string;
-  };
-  voiceConfiguration: {
-    appId: string;
-    scheduleVoiceProvisioning: string | null;
-    lastUpdatedTime: string | null;
-    type: string;
-    trunkId: string;
-    serviceId: string;
-  };
-}
-```
-
-### Dependencies
-- **Native Fetch API**: Uses standard `fetch()` for HTTP requests
-- **URLSearchParams**: For query parameter construction
-- **TypeScript Types**: Strong typing with `Numbers[]` interface
-- **No External Libraries**: Self-contained function with minimal dependencies
-
-## Common Use Cases
-
-1. **List All Active Numbers**: Retrieve all active phone numbers/senders for the project
-2. **Pagination**: Handle large datasets with page_size parameter
-3. **Error Handling**: HTTP status validation and proper error logging
-4. **Direct Authentication**: Pass project ID and auth token as parameters
-5. **Standalone Usage**: Function can be used in any TypeScript/JavaScript environment
-
-## Error Scenarios
-- Invalid or missing Sinch configuration
-- Network connectivity issues
-- API authentication failures
-- Rate limiting
-- Invalid project ID
-
-## Function Usage Example
-
-```typescript
-// Basic usage
-const projectId = 'your-sinch-project-id';
-const authToken = 'your-auth-token';
-
-try {
-  const senders = await loadSenders(projectId, authToken);
-  console.log(`Found ${senders.length} active numbers:`, senders);
-} catch (error) {
-  console.error('Error loading senders:', error);
-}
-
-// With custom page size
-async function loadAllSenders(projectId: string, authToken: string, pageSize = 50) {
-  const queryParams = new URLSearchParams({ page_size: pageSize.toString() });
-  // ... rest of implementation
-}
-```
-
-## Best Practices
-- Always handle errors gracefully
-- Validate HTTP responses before parsing JSON
-- Use appropriate page sizes for performance
-- Cache results when appropriate
-- Implement retry logic for transient failures
-- Store auth tokens securely (environment variables, secure storage)
-
-## Instructions for Claude
-When the user requests help with this command:
-1. Analyze their specific need (code generation, explanation, debugging)
-2. Use the reference implementation as a foundation
-3. Adapt the code to their framework (NestJS, Express, standalone, etc.)
-4. Include proper TypeScript types and error handling
-5. Provide usage examples tailored to their context
-6. Suggest best practices relevant to their use case
+## Key Principle
+Keep responses concise. Only show code when user explicitly requests it or selects option 1.
