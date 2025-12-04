@@ -8,7 +8,7 @@ argument-hint: --message_id=<id>
 
 # Get Message Status
 
-Retrieve delivery status and events for a specific message sent via Sinch Conversation API.
+Retrieve delivery status and events for a specific message sent via Sinch Conversation API. Notes: require to set the optional {NGROK_AUTH_TOKEN} environment variable in addition to standard Sinch credentials in order to use this command and underlying MCP tool.
 
 ## Input
 

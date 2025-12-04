@@ -10,6 +10,7 @@ Configure the required environment variables to enable the Sinch Conversation AP
 ## Overview
 
 This plugin uses the Sinch Conversation API MCP server (defined in `.mcp.json`) to send messages via SMS, WhatsApp, RCS, and other channels. To use these commands, you need to add your Sinch credentials as environment variables in Claude Code's settings.
+For more details about the underlying MCP server and tools, see [Sinch MCP Server](https://github.com/sinch/sinch-mcp-server)
 
 ## Required Environment Variables
 
@@ -20,6 +21,10 @@ You need to obtain and configure the following 5 variables:
 - `CONVERSATION_KEY_SECRET` - Your API key secret
 - `CONVERSATION_REGION` - Your Sinch region (e.g., `us`, `eu`, `br`)
 - `CONVERSATION_APP_ID` - Your Conversation app ID
+
+Optionally, you can also set:
+
+- `NGROK_AUTH_TOKEN` - Your Ngrok authentication token if you want to use the tool get-message-events, you have to be able to receive events related to a message.
 
 ## How to Get Credentials
 
