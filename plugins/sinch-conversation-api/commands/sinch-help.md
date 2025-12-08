@@ -99,5 +99,19 @@ If the MCP server is configured correctly, the message will be sent. If you enco
 
 Once configured, you can use these commands:
 
+**Messages:**
+
 - `/sinch-conversation-api:api:messages:send` - Send text messages
 - `/sinch-conversation-api:api:messages:status` - Check message delivery status
+
+**Senders:**
+
+- `/sinch-conversation-api:api:senders:list` - List active phone numbers/senders
+
+**Webhooks:**
+
+- `/sinch-conversation-api:api:webhooks:list` - List all webhooks
+- `/sinch-conversation-api:api:webhooks:create` - Create a new webhook
+- `/sinch-conversation-api:api:webhooks:update` - Update an existing webhook
+- `/sinch-conversation-api:api:webhooks:delete` - Delete a webhook
+- `/sinch-conversation-api:api:webhooks:triggers` - List message-related webhook triggers
