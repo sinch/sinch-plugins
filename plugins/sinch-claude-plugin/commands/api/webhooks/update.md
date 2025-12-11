@@ -58,7 +58,7 @@ $ARGUMENTS
    - Display the updated webhook details showing what changed
 
 6. Handle errors gracefully:
-   - If MCP configuration is incomplete, report: "Sinch API is not configured. Run `/sinch-conversation-api:sinch-mcp-setup` to see setup instructions."
+   - If MCP configuration is incomplete, report: "Sinch API is not configured. Run `/sinch-claude-plugin:sinch-mcp-setup` to see setup instructions."
    - If no update parameters are provided, report: "Please provide at least one field to update (--target, --triggers, or --secret)"
    - If validation fails, provide clear error messages
    - If the API call fails, display the error message with status code and error description
@@ -68,25 +68,25 @@ $ARGUMENTS
 Update webhook target URL:
 
 ```
-/sinch-conversation-api:api:webhooks:update --id=01E9DQJFPWGZ4N9XQ3FZ8Z8Z8Z --target=https://new-endpoint.com/webhook
+/sinch-claude-plugin:api:webhooks:update --id=01E9DQJFPWGZ4N9XQ3FZ8Z8Z8Z --target=https://new-endpoint.com/webhook
 ```
 
 Update webhook triggers:
 
 ```
-/sinch-conversation-api:api:webhooks:update --id=01E9DQJFPWGZ4N9XQ3FZ8Z8Z8Z --triggers=MESSAGE_INBOUND,MESSAGE_DELIVERY,MESSAGE_SUBMIT
+/sinch-claude-plugin:api:webhooks:update --id=01E9DQJFPWGZ4N9XQ3FZ8Z8Z8Z --triggers=MESSAGE_INBOUND,MESSAGE_DELIVERY,MESSAGE_SUBMIT
 ```
 
 Update webhook secret:
 
 ```
-/sinch-conversation-api:api:webhooks:update --id=01E9DQJFPWGZ4N9XQ3FZ8Z8Z8Z --secret=new-secret-key-123456
+/sinch-claude-plugin:api:webhooks:update --id=01E9DQJFPWGZ4N9XQ3FZ8Z8Z8Z --secret=new-secret-key-123456
 ```
 
 Update multiple fields at once:
 
 ```
-/sinch-conversation-api:api:webhooks:update --id=01E9DQJFPWGZ4N9XQ3FZ8Z8Z8Z --target=https://new-endpoint.com/webhook --triggers=MESSAGE_INBOUND
+/sinch-claude-plugin:api:webhooks:update --id=01E9DQJFPWGZ4N9XQ3FZ8Z8Z8Z --target=https://new-endpoint.com/webhook --triggers=MESSAGE_INBOUND
 ```
 
 ## Available Triggers

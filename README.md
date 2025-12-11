@@ -1,10 +1,10 @@
 # Sinch Conversation API Plugin for Claude Code
 
-A Claude Code plugin that integrates the Sinch Conversation API, allowing you to send messages (SMS, WhatsApp, RCS, etc.), manage webhooks, and inspect your Sinch configuration directly from your terminal.
+A Claude Code plugin that integrates the Sinch Conversation API, allowing you to send messages (SMS, RCS, etc.), manage webhooks, and inspect your Sinch configuration directly from your terminal.
 
 ## Features
 
-- **Send Messages**: Send text messages via SMS, RCS, and WhatsApp.
+- **Send Messages**: Send text messages via SMS, RCS.
 - **Check Status**: Retrieve delivery events for sent messages.
 - **Manage Webhooks**: Create, list, update, and delete webhooks for your Conversation API app.
 - **List Senders**: View active phone numbers and senders.
@@ -21,7 +21,8 @@ A Claude Code plugin that integrates the Sinch Conversation API, allowing you to
 To install this plugin in Claude Code, you typically install it from a marketplace or a local source.
 
 ```bash
-/plugin install sinch-conversation-api
+/plugin marketplace add https://github.com/sinch/sinch-plugins.git
+/plugin install sinch-claude-plugin
 ```
 
 ## Configuration
@@ -49,7 +50,7 @@ We provide setup scripts to help you configure these variables interactively.
 Run the shell script located in the plugin configuration folder:
 
 ```bash
-./plugins/sinch-conversation-api/commands/config/init_mcp_cred.sh
+./plugins/sinch-claude-plugin/commands/config/init_mcp_cred.sh
 ```
 
 #### Option 2: Manual Configuration
@@ -63,7 +64,7 @@ Run the shell script located in the plugin configuration folder:
     "CONVERSATION_PROJECT_ID": "your-project-id",
     "CONVERSATION_KEY_ID": "your-key-id",
     "CONVERSATION_KEY_SECRET": "your-key-secret",
-    "CONVERSATION_REGION": "us",
+    "CONVERSATION_REGION": "your-app-region (e.g., us, eu, br)",
     "CONVERSATION_APP_ID": "your-app-id"
   }
 }
@@ -80,30 +81,30 @@ Once installed and configured, you can use natural language or specific slash co
 - **Setup Help**:
 
   ```
-  /sinch-conversation-api:sinch-help
+  /sinch-claude-plugin:sinch-help
   ```
 
 - **Send a Message**:
 
   ```
-  /sinch-conversation-api:api:messages:send --to=+15551234567 --message="Hello from Claude!"
+  /sinch-claude-plugin:api:messages:send --to=+15551234567 --message="Hello from Claude!"
   ```
 
 - **List Webhooks**:
 
   ```
-  /sinch-conversation-api:api:webhooks:list
+  /sinch-claude-plugin:api:webhooks:list
   ```
 
 - **Check Message Status**:
 
   ```
-  /sinch-conversation-api:api:messages:status --message_id=MESSAGE_ID
+  /sinch-claude-plugin:api:messages:status --message_id=MESSAGE_ID
   ```
 
 - **List Active Senders**:
   ```
-  /sinch-conversation-api:api:senders:list
+  /sinch-claude-plugin:api:senders:list
   ```
 
 ## Architecture

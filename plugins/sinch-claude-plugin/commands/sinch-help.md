@@ -60,7 +60,7 @@ Add or update the `env` section in your `settings.json`:
     "CONVERSATION_PROJECT_ID": "your-project-id-here",
     "CONVERSATION_KEY_ID": "your-key-id-here",
     "CONVERSATION_KEY_SECRET": "your-key-secret-here",
-    "CONVERSATION_REGION": "us",
+    "CONVERSATION_REGION": "your-app-region (e.g., us, eu, br)",
     "CONVERSATION_APP_ID": "your-app-id-here"
   }
 }
@@ -77,7 +77,7 @@ After saving the settings file, restart Claude Code for the changes to take effe
 Test your configuration by sending a message:
 
 ```
-/sinch-conversation-api:api:messages:send --to=+14155551234 --message="Test message"
+/sinch-claude-plugin:api:messages:send --to=+14155551234 --message="Test message"
 ```
 
 If the MCP server is configured correctly, the message will be sent. If you encounter errors, double-check:
@@ -101,17 +101,17 @@ Once configured, you can use these commands:
 
 **Messages:**
 
-- `/sinch-conversation-api:api:messages:send` - Send text messages
-- `/sinch-conversation-api:api:messages:status` - Check message delivery status
+- `/sinch-claude-plugin:api:messages:send` - Send text messages
+- `/sinch-claude-plugin:api:messages:status` - Check message delivery status
 
 **Senders:**
 
-- `/sinch-conversation-api:api:senders:list` - List active phone numbers/senders
+- `/sinch-claude-plugin:api:senders:list` - List active phone numbers/senders
 
 **Webhooks:**
 
-- `/sinch-conversation-api:api:webhooks:list` - List all webhooks
-- `/sinch-conversation-api:api:webhooks:create` - Create a new webhook
-- `/sinch-conversation-api:api:webhooks:update` - Update an existing webhook
-- `/sinch-conversation-api:api:webhooks:delete` - Delete a webhook
-- `/sinch-conversation-api:api:webhooks:triggers` - List message-related webhook triggers
+- `/sinch-claude-plugin:api:webhooks:list` - List all webhooks
+- `/sinch-claude-plugin:api:webhooks:create` - Create a new webhook
+- `/sinch-claude-plugin:api:webhooks:update` - Update an existing webhook
+- `/sinch-claude-plugin:api:webhooks:delete` - Delete a webhook
+- `/sinch-claude-plugin:api:webhooks:triggers` - List message-related webhook triggers

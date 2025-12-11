@@ -50,7 +50,7 @@ $ARGUMENTS
    - Display a summary of the deleted webhook (target URL, triggers it was subscribed to)
 
 7. Handle errors gracefully:
-   - If MCP configuration is incomplete, report: "Sinch API is not configured. Run `/sinch-conversation-api:sinch-mcp-setup` to see setup instructions."
+   - If MCP configuration is incomplete, report: "Sinch API is not configured. Run `/sinch-claude-plugin:sinch-mcp-setup` to see setup instructions."
    - If the webhook doesn't exist, report: "Webhook with ID '{webhook_id}' not found"
    - If the API call fails, display the error message with status code and error description
 
@@ -59,19 +59,19 @@ $ARGUMENTS
 Delete a webhook with confirmation:
 
 ```
-/sinch-conversation-api:api:webhooks:delete --id=01E9DQJFPWGZ4N9XQ3FZ8Z8Z8Z
+/sinch-claude-plugin:api:webhooks:delete --id=01E9DQJFPWGZ4N9XQ3FZ8Z8Z8Z
 ```
 
 Delete a webhook without confirmation:
 
 ```
-/sinch-conversation-api:api:webhooks:delete --id=01E9DQJFPWGZ4N9XQ3FZ8Z8Z8Z --confirm
+/sinch-claude-plugin:api:webhooks:delete --id=01E9DQJFPWGZ4N9XQ3FZ8Z8Z8Z --confirm
 ```
 
 Delete a webhook (short form):
 
 ```
-/sinch-conversation-api:api:webhooks:delete --id=01E9DQJFPWGZ4N9XQ3FZ8Z8Z8Z -y
+/sinch-claude-plugin:api:webhooks:delete --id=01E9DQJFPWGZ4N9XQ3FZ8Z8Z8Z -y
 ```
 
 ## API Reference

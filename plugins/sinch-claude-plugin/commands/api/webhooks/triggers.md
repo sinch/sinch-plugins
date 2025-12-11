@@ -70,13 +70,13 @@ The following triggers are related to message operations:
 List message triggers in table format:
 
 ```
-/sinch-conversation-api:api:webhooks:triggers
+/sinch-claude-plugin:api:webhooks:triggers
 ```
 
 List message triggers in JSON format:
 
 ```
-/sinch-conversation-api:api:webhooks:triggers --format=json
+/sinch-claude-plugin:api:webhooks:triggers --format=json
 ```
 
 ## Table Format Output Example
@@ -166,10 +166,10 @@ These triggers can be used with the webhook create and update commands:
 
 ```
 # Create webhook with message triggers
-/sinch-conversation-api:api:webhooks:create --target=https://example.com/webhook --triggers=MESSAGE_INBOUND,MESSAGE_DELIVERY
+/sinch-claude-plugin:api:webhooks:create --target=https://example.com/webhook --triggers=MESSAGE_INBOUND,MESSAGE_DELIVERY
 
 # Update webhook to include message submit trigger
-/sinch-conversation-api:api:webhooks:update --id=01E9... --triggers=MESSAGE_INBOUND,MESSAGE_DELIVERY,MESSAGE_SUBMIT
+/sinch-claude-plugin:api:webhooks:update --id=01E9... --triggers=MESSAGE_INBOUND,MESSAGE_DELIVERY,MESSAGE_SUBMIT
 ```
 
 ## API Reference
