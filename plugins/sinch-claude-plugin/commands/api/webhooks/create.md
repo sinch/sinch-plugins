@@ -57,7 +57,7 @@ $ARGUMENTS
    - Display the created webhook details (ID, target, triggers)
 
 6. Handle errors gracefully:
-   - If MCP configuration is incomplete, report: "Sinch API is not configured. Run `/sinch-conversation-api:sinch-mcp-setup` to see setup instructions."
+   - If MCP configuration is incomplete, report: "Sinch API is not configured. Run `/sinch-claude-plugin:sinch-mcp-setup` to see setup instructions."
    - If validation fails, provide clear error messages about what needs to be fixed
    - If the API call fails, display the error message with status code and error description
 
@@ -66,19 +66,19 @@ $ARGUMENTS
 Create a webhook for inbound messages:
 
 ```
-/sinch-conversation-api:api:webhooks:create --target=https://example.com/webhook --triggers=MESSAGE_INBOUND
+/sinch-claude-plugin:api:webhooks:create --target=https://example.com/webhook --triggers=MESSAGE_INBOUND
 ```
 
 Create a webhook with multiple triggers:
 
 ```
-/sinch-conversation-api:api:webhooks:create --target=https://example.com/webhook --triggers=MESSAGE_INBOUND,MESSAGE_DELIVERY --secret=my-secret-key-12345
+/sinch-claude-plugin:api:webhooks:create --target=https://example.com/webhook --triggers=MESSAGE_INBOUND,MESSAGE_DELIVERY --secret=my-secret-key-12345
 ```
 
 Create a webhook with message-related triggers:
 
 ```
-/sinch-conversation-api:api:webhooks:create -t https://example.com/webhook -tr MESSAGE_INBOUND,MESSAGE_DELIVERY,MESSAGE_SUBMIT
+/sinch-claude-plugin:api:webhooks:create -t https://example.com/webhook -tr MESSAGE_INBOUND,MESSAGE_DELIVERY,MESSAGE_SUBMIT
 ```
 
 ## Available Triggers

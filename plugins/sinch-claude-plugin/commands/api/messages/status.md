@@ -8,7 +8,9 @@ argument-hint: --message_id=<id>
 
 # Get Message Status
 
-Retrieve delivery status and events for a specific message sent via Sinch Conversation API. Notes: require to set the optional {NGROK_AUTH_TOKEN} environment variable in addition to standard Sinch credentials in order to use this command and underlying MCP tool.
+Retrieve delivery status and events for a specific message sent via Sinch Conversation API.
+
+Important: require to set the optional {NGROK_AUTH_TOKEN} environment variable in addition to standard Sinch credentials in order to use this command and underlying MCP tool.
 
 ## Input
 
@@ -34,11 +36,11 @@ $ARGUMENTS
 
 5. If the tool call fails with an error, call `mcp__sinch__sinch-mcp-configuration` to verify MCP server availability:
    - Check if `mcp__sinch__get-message-events` is in the list of available/enabled tools
-   - If missing, report: "MCP tool `mcp__sinch__get-message-events` is not available. Run `/sinch-conversation-api:sinch-mcp-setup` to see setup instructions."
+   - If missing, report: "MCP tool `mcp__sinch__get-message-events` is not available. Run `/sinch-claude-plugin:sinch-mcp-setup` to see setup instructions."
    - If available but still failed, report the original error
 
 ## Example
 
 ```
-/sinch-conversation-api:api:messages:status --message_id=01HXXX123456
+/sinch-claude-plugin:api:messages:status --message_id=01HXXX123456
 ```

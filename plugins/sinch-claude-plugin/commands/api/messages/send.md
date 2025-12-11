@@ -34,7 +34,7 @@ $ARGUMENTS
 
 4. If the tool call fails with an error, call `mcp__sinch__sinch-mcp-configuration` to verify MCP server availability:
    - Check if `mcp__sinch__send-text-message` is in the list of available/enabled tools
-   - If missing, report: "MCP tool `mcp__sinch__send-text-message` is not available. Run `/sinch-conversation-api:sinch-mcp-setup` to see setup instructions."
+   - If missing, report: "MCP tool `mcp__sinch__send-text-message` is not available. Run `/sinch-claude-plugin:sinch-mcp-setup` to see setup instructions."
    - If available but still failed, report the original error
 
 ## Examples
@@ -42,11 +42,11 @@ $ARGUMENTS
 Send an SMS message:
 
 ```
-/sinch-conversation-api:api:messages:send --to=+14155551234 --message="Hello"
+/sinch-claude-plugin:api:messages:send --to=+14155551234 --message="Hello"
 ```
 
 Send an RCS message:
 
 ```
-/sinch-conversation-api:api:messages:send --to=+14155551234 --message="Hello" --channel=RCS
+/sinch-claude-plugin:api:messages:send --to=+14155551234 --message="Hello" --channel=RCS
 ```

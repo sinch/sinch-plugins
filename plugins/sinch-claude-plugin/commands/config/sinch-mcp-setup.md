@@ -96,7 +96,7 @@ Tell the user:
     "CONVERSATION_PROJECT_ID": "your-project-id",
     "CONVERSATION_KEY_ID": "your-api-key",
     "CONVERSATION_KEY_SECRET": "your-api-secret",
-    "CONVERSATION_REGION": "us",
+    "CONVERSATION_REGION": "your-app-region (e.g., us, eu, br)",
     "CONVERSATION_APP_ID": "your-app-id"
   }
 }
@@ -108,7 +108,7 @@ Tell the user:
 
 5. Restart Claude Code.
 
-6. Run `/sinch-conversation-api:api:messages:send` to verify the connection.
+6. Run `/sinch-claude-plugin:api:messages:send` to verify the connection.
 
 ## Important Notes
 

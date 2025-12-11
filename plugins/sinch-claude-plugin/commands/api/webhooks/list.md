@@ -37,7 +37,7 @@ $ARGUMENTS
    - **JSON format**: Display the raw JSON response
 
 5. Handle errors gracefully:
-   - If MCP configuration is incomplete, report: "Sinch API is not configured. Run `/sinch-conversation-api:sinch-mcp-setup` to see setup instructions."
+   - If MCP configuration is incomplete, report: "Sinch API is not configured. Run `/sinch-claude-plugin:sinch-mcp-setup` to see setup instructions."
    - If the API call fails, display the error message with relevant details (status code, error description)
    - If no webhooks are found, display: "No webhooks found for this app."
 
@@ -46,13 +46,13 @@ $ARGUMENTS
 List webhooks in table format:
 
 ```
-/sinch-conversation-api:api:webhooks:list
+/sinch-claude-plugin:api:webhooks:list
 ```
 
 List webhooks in JSON format:
 
 ```
-/sinch-conversation-api:api:webhooks:list --format=json
+/sinch-claude-plugin:api:webhooks:list --format=json
 ```
 
 ## API Reference
