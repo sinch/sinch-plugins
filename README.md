@@ -114,3 +114,35 @@ This plugin leverages the [Sinch MCP Server](https://github.com/sinch/sinch-mcp-
 ## License
 
 Apache-2.0
+
+## Legal Notice
+
+Copyright Sinch AB, https://sinch.com
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+## Further Reading
+
+Developer Documentation: [https://developers.sinch.com/docs/conversation/](https://developers.sinch.com/docs/conversation/)
+
+---
+
+## Feedback, Issues and Support
+
+We love hearing feedback, and we are here to help if you run into any issues.
+
+- For any Sinch Conversation API related issues, or support you require, head over to the [Sinch Help Centre](https://sinch.com/help-center/)
+
+We will continue to enhance this product, so keep a look out for additional channel support (RCS, MMS, WhatsApp etc) in addition to new features in future.
+
+From all of us at Sinch, happy coding!
