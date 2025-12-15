@@ -25,7 +25,7 @@ spec:
     version_bump_type:
       description: "Select which version bump to apply. Version bump type: patch (0.0.X), minor (0.X.0), major (X.0.0), or none (skip bump)"
       type: string
-      default: "none"
+      default: "patch"
       options:
         - patch
         - minor
