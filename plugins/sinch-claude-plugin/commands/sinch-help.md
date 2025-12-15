@@ -99,6 +99,26 @@ If the MCP server is configured correctly, the message will be sent. If you enco
 
 Once configured, you can use these commands:
 
+### Skills (Natural Language Workflows)
+
+Skills let you describe what you want in plain English, and the plugin will run the right actions.
+
+Important: Skills will only call MCP tools if your `CONVERSATION_*` environment variables are configured in Claude Code and the Sinch MCP server is up and running.
+
+Available skills:
+
+- [Send Message](../skills/send-message/SKILL.md)
+- [Channel Info](../skills/channel-info/SKILL.md)
+- [List Messages](../skills/list-messages/SKILL.md)
+- [Manage Contact](../skills/manage-contact/SKILL.md)
+- [Manage Webhook](../skills/manage-webhook/SKILL.md)
+
+Example prompts:
+
+- "Send a SMS message to +14155551234 saying 'Hello'"
+- "List my last 10 messages"
+- "Create a webhook for MESSAGE_DELIVERY to https://example.com/webhook"
+
 **Messages:**
 
 - `/sinch-claude-plugin:api:messages:send` - Send text messages
