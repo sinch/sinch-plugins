@@ -1,8 +1,12 @@
-# Sinch Conversation API Plugin for Claude Code
+# Sinch Plugins
+
+This repository contains Sinch plugins and related artifacts for AI developer tools.
+
+## Claude Code
 
 A Claude Code plugin that integrates the Sinch Conversation API, allowing you to send messages (SMS, RCS, etc.), manage webhooks, and inspect your Sinch configuration directly from your terminal.
 
-## Features
+### Features
 
 - **Send Messages**: Send text messages via SMS, RCS.
 - **Check Status**: Retrieve delivery events for sent messages.
@@ -10,13 +14,13 @@ A Claude Code plugin that integrates the Sinch Conversation API, allowing you to
 - **List Senders**: View active phone numbers and senders.
 - **MCP Integration**: Built on top of the Model Context Protocol (MCP).
 
-## Prerequisites
+### Prerequisites
 
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview) installed.
 - A [Sinch Customer Dashboard](https://dashboard.sinch.com/) account.
 - A Conversation API app with credentials (Project ID, Key ID, Key Secret, App ID).
 
-## Installation
+### Installation
 
 To install this plugin in Claude Code, you typically install it from a marketplace or a local source.
 
@@ -25,7 +29,7 @@ To install this plugin in Claude Code, you typically install it from a marketpla
 /plugin install sinch-claude-plugin
 ```
 
-## Configuration
+### Configuration
 
 This plugin relies on the Sinch MCP server, which requires specific environment variables to authenticate with the Sinch API. These variables must be set in your Claude Code settings.
 
@@ -72,7 +76,7 @@ Run the shell script located in the plugin configuration folder:
 
 3. **Restart Claude Code** for the changes to take effect.
 
-## Usage
+### Usage
 
 Once installed and configured, you can use natural language or specific slash commands to interact with the API.
 
@@ -107,15 +111,32 @@ Once installed and configured, you can use natural language or specific slash co
   /sinch-claude-plugin:api:senders:list
   ```
 
-## Architecture
+### Architecture
 
 This plugin leverages the [Sinch MCP Server](https://github.com/sinch/sinch-mcp-server) to communicate with the Sinch Conversation API. It defines a set of tools and prompts that Claude Code uses to perform actions on your behalf.
+
+## Skills
+
+Skills are natural-language workflows that guide Claude through common tasks.
+
+- Skills live under [plugins/sinch-claude-plugin/skills](plugins/sinch-claude-plugin/skills/).
+- Skills are also published as a standalone artifact in this repository's Releases.
+
+Available skills:
+
+- [Send Message](plugins/sinch-claude-plugin/skills/send-message/SKILL.md)
+- [Channel Info](plugins/sinch-claude-plugin/skills/channel-info/SKILL.md)
+- [List Messages](plugins/sinch-claude-plugin/skills/list-messages/SKILL.md)
+- [Manage Contact](plugins/sinch-claude-plugin/skills/manage-contact/SKILL.md)
+- [Manage Webhook](plugins/sinch-claude-plugin/skills/manage-webhook/SKILL.md)
+
+## Gemini CLI
+
+Gemini CLI support will be added to this repository in a future update.
 
 ## License
 
 Apache-2.0
-
-## Legal Notice
 
 Copyright Sinch AB, https://sinch.com
 
