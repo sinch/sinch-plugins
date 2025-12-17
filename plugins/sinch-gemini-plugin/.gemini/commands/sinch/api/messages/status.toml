@@ -1,76 +1,97 @@
-description = "Get delivery status and events for a message"
+description = "Get message status and delivery events via Sinch Conversation API"
 
 prompt = """
-Retrieve delivery status and events for a specific message sent via Sinch Conversation API.
+# Get Message Status
 
-Important: This command requires the NGROK_AUTH_TOKEN environment variable in addition to standard Sinch credentials to receive webhook events.
+Retrieve message status and delivery events for a sent message. This shows you the delivery lifecycle including events like SENT, DELIVERED, READ, or FAILED.
+
+**IMPORTANT: Execute this command directly. Do NOT generate script files. Do NOT create Python/JavaScript files. Perform the API call immediately using the instructions below.**
+
+## Input
+
+- `--message_id` / `-m`: Message ID to retrieve events for (required)
 
 Arguments: {{args}}
 
-Instructions:
-1. Parse and validate arguments:
-   - --message_id or -m: Message ID to retrieve events for - REQUIRED
-   
-   Example: --message_id=01HXXX123456
+## Instructions
 
-2. Validate input:
-   - Ensure --message_id is provided and non-empty
+**Execute these steps directly - do not write code or scripts:**
 
-3. Check environment variables:
-   - CONVERSATION_PROJECT_ID
-   - CONVERSATION_REGION
-   - CONVERSATION_APP_ID
-   - CONVERSATION_KEY_ID
-   - CONVERSATION_KEY_SECRET
-   - NGROK_AUTH_TOKEN (required for this command)
-   
-   If NGROK_AUTH_TOKEN is missing, display:
-   "⚠️  NGROK_AUTH_TOKEN is required for this command to receive message events.
-   Please set the NGROK_AUTH_TOKEN environment variable to use message status tracking."
+0. Check if {{args}} is empty or only contains the command name:
+   - If empty or no meaningful arguments provided, enter interactive mode:
+     * Ask: "🔍 What is the message ID you want to check?"
+     * Use the provided answer as the message_id for the following steps
+   - If arguments are provided, proceed directly to step 1
 
-4. Retrieve message events:
-   - This typically requires a webhook endpoint to receive delivery events
-   - Use ngrok to create a temporary public webhook endpoint
-   - Set up a local webhook listener
-   - Query for message events from the Sinch API or local webhook cache
-   
-   Alternative approach:
-   - Endpoint: GET https://{region}.conversation.api.sinch.com/v1/projects/{projectId}/messages/{messageId}
-   - Use OAuth2 authentication
-   - Retrieve message details and status
+1. Parse and validate arguments from {{args}} or interactive input:
+   - Validate that `--message_id` is provided and non-empty
 
-5. Display events in a formatted table:
-   - Event Type (e.g., DELIVERED, READ, FAILED, SENT)
+2. Try to call the MCP tool `mcp__sinch__get-message-events` with the message ID.
+
+3. If MCP tool is available:
+   - Display the events in a table format if possible
+   - Skip to step 6
+
+4. If MCP tool is NOT available, fallback to direct API implementation:
+   - Check required environment variables:
+     * CONVERSATION_PROJECT_ID
+     * CONVERSATION_REGION
+     * CONVERSATION_KEY_ID
+     * CONVERSATION_KEY_SECRET
+   - If any are missing, report: "Sinch API is not configured. Please set the required environment variables."
+
+5. Retrieve message events using the Sinch Conversation API:
+   - Note: This requires webhooks to be configured to receive delivery events
+   - Alternative approach: Query message details
+   - Endpoint: `GET https://{region}.conversation.api.sinch.com/v1/projects/{projectId}/messages/{messageId}`
+   - Use OAuth2 authentication with key ID and secret
+   - Include authorization header with the access token
+   - Display available message information (status, timestamps, etc.)
+   - Note to user: "For full event history, ensure webhooks are configured. Events shown are from webhook cache."
+
+6. Display the events in a table format if possible, showing:
+   - Event Type (e.g., DELIVERED, READ, FAILED, SENT, QUEUED, DISPATCHED)
    - Timestamp
    - Status Details
    - Channel
    
-   If table format is not suitable, use a list format with clear labels.
+   If table format is not suitable, fallback to a list format with clear labels for each event.
 
-6. Report results:
-   - Show message ID and current status
-   - Display all available events in chronological order
-   - Show delivery timeline
-
-7. Handle errors:
-   - If environment variables missing, provide clear setup instructions
+7. Handle errors gracefully:
    - If message ID not found: "Message with ID '{message_id}' not found"
-   - If API call fails, display error with details
+   - If API call fails, display error with status code and description
    - If no events available: "No events found for this message yet. Events may take a few moments to appear."
 
-Message Statuses:
-- QUEUED: Message queued for delivery
-- DISPATCHED: Message dispatched to channel
-- SENT: Message sent to recipient
-- DELIVERED: Message delivered to recipient
-- READ: Message read by recipient
-- FAILED: Message delivery failed
+## Examples
 
-Example usage:
-/sinch:messages:status --message_id=01HXXX123456
-/sinch:messages:status -m 01HXXX123456
+Get status for a message:
+```
+/sinch:api:messages:status --message_id=01E9DQJFPWGZ4N9XQ3FZ8Z8Z8Z
+```
 
-API Reference:
-https://developers.sinch.com/docs/conversation/api-reference/conversation/tag/Messages/#tag/Messages/operation/Messages_GetMessage
-https://developers.sinch.com/docs/conversation/webhooks/
+Using short flag:
+```
+/sinch:api:messages:status -m 01E9DQJFPWGZ4N9XQ3FZ8Z8Z8Z
+```
+
+## API Reference
+
+- **MCP Tool**: `mcp__sinch__get-message-events`
+- **Documentation**: https://developers.sinch.com/docs/conversation/api-reference/conversation/tag/Events/
+
+## Message Statuses
+
+Common message event types you may see:
+- **QUEUED**: Message is queued for sending
+- **DISPATCHED**: Message has been sent to the carrier
+- **DELIVERED**: Message was successfully delivered to the recipient
+- **READ**: Recipient has read the message (RCS only)
+- **FAILED**: Message delivery failed
+
+## Notes
+
+- Message events are collected via webhooks configured in your Sinch app
+- Not all channels support all event types (e.g., READ receipts are RCS-only)
+- Events may take a few moments to appear after sending
+- This command uses the MCP tool `mcp__sinch__get-message-events` which retrieves events from the webhook cache
 """

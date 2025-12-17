@@ -1,186 +1,95 @@
-description = "Generate code to fetch Sinch active numbers/senders and handle sender operations"
+description = "Interactive code generator for Sinch Numbers API"
 
 prompt = """
-Work with the Sinch Numbers API to retrieve your active phone numbers/senders.
+# List Senders (Numbers API)
 
-User Request: {{args}}
+Interactive code generator for the Sinch Numbers API. This command helps you generate code snippets for listing virtual phone numbers.
 
-Instructions:
-1. Parse the user request from arguments.
+**IMPORTANT: Execute this command directly. Do NOT create script files. Either show an interactive menu or directly query the Numbers API based on user needs.**
 
-2. If no arguments or generic request (e.g., "list", "help"):
-   Display the quick reference menu:
-   ```
-   Sinch Numbers API - Active Senders
-   
-   API Endpoint: GET https://numbers.api.sinch.com/v1/projects/{projectId}/activeNumbers
-   
-   What would you like to do?
-   1. Generate code - Create a function to fetch active senders
-   2. Debug issues - Troubleshoot sender retrieval problems
-   3. Explain the API - Learn about the endpoint and response structure
-   4. Add pagination - Handle large datasets
-   5. Freestyle - Describe your own request or question
-   ```
+## Input
 
-3. If user selects option 1 or requests code generation (e.g., "generate", "code", "implement", "1"):
-   Provide a complete implementation:
-   ```typescript
-   interface Numbers {
-     phoneNumber: string;
-     projectId: string;
-     displayName: string;
-     regionCode: string;
-     type: string;
-     capability: string[];
-   }
-   
-   async function loadSenders(projectId: string, authToken: string): Promise<Numbers[]> {
-     const response = await fetch(
-       `https://numbers.api.sinch.com/v1/projects/$${projectId}/activeNumbers?page_size=100`,
-       {
-         method: 'GET',
-         headers: {
-           'Authorization': `Bearer $${authToken}`,
-           'Content-Type': 'application/json',
-         },
-       }
-     );
-     
-     if (!response.ok) {
-       throw new Error(`Failed to load senders: $${response.status}`);
-     }
-     
-     const data = await response.json();
-     return data.activeNumbers;
-   }
-   ```
-   
-   Usage example:
-   ```typescript
-   const senders = await loadSenders(
-     process.env.CONVERSATION_PROJECT_ID,
-     authToken
-   );
-   console.log(`Found $${senders.length} active numbers`);
-   senders.forEach(sender => {
-     console.log(`$${sender.phoneNumber} ($${sender.regionCode}) - $${sender.capability.join(', ')}`);
-   });
-   ```
+No arguments required - this is an interactive command
 
-4. If user selects option 2 or asks about debugging (e.g., "debug", "error", "troubleshoot", "2"):
-   List common error scenarios and solutions:
-   
-   **401 Unauthorized**
-   - Cause: Invalid or expired auth token
-   - Solution: Regenerate your OAuth2 token using valid credentials
-   
-   **404 Not Found**
-   - Cause: Invalid project ID
-   - Solution: Verify CONVERSATION_PROJECT_ID in your environment variables
-   
-   **429 Too Many Requests**
-   - Cause: Rate limiting exceeded
-   - Solution: Implement exponential backoff and reduce request frequency
-   
-   **Network Errors**
-   - Cause: Connectivity issues
-   - Solution: Check network connection and firewall settings
-   
-   **Missing Configuration**
-   - Cause: Environment variables not set
-   - Solution: Set CONVERSATION_PROJECT_ID, CONVERSATION_KEY_ID, CONVERSATION_KEY_SECRET
+Arguments: {{args}}
 
-5. If user selects option 3 or asks about API structure (e.g., "explain", "api", "documentation", "3"):
-   Explain endpoint details:
-   
-   **Base URL**: https://numbers.api.sinch.com/v1
-   **Endpoint**: /projects/{projectId}/activeNumbers
-   **Method**: GET
-   **Authentication**: Bearer token (OAuth 2.0)
-   
-   **Query Parameters**:
-   - `page_size` (optional): Number of results per page (default: 20, max: 100)
-   - `page_token` (optional): Token for pagination (from nextPageToken in response)
-   - `regionCode` (optional): Filter by region code (e.g., "US", "GB")
-   - `type` (optional): Filter by number type (e.g., "MOBILE", "LOCAL", "TOLL_FREE")
-   
-   **Response Structure**:
-   ```json
-   {
-     "activeNumbers": [
-       {
-         "phoneNumber": "+14155551234",
-         "projectId": "project-123",
-         "displayName": "My Number",
-         "regionCode": "US",
-         "type": "MOBILE",
-         "capability": ["SMS", "VOICE"],
-         "money": {
-           "currencyCode": "USD",
-           "amount": "1.00"
-         }
-       }
-     ],
-     "nextPageToken": "abc123..."
-   }
-   ```
+## Instructions
 
-6. If user selects option 4 or asks about pagination (e.g., "pagination", "all numbers", "4"):
-   Provide pagination implementation:
-   ```typescript
-   async function loadAllSenders(
-     projectId: string,
-     authToken: string
-   ): Promise<Numbers[]> {
-     let allNumbers: Numbers[] = [];
-     let pageToken: string | undefined;
-     
-     do {
-       const url = new URL(
-         `https://numbers.api.sinch.com/v1/projects/$${projectId}/activeNumbers`
-       );
-       url.searchParams.set('page_size', '100');
-       if (pageToken) {
-         url.searchParams.set('page_token', pageToken);
-       }
-       
-       const response = await fetch(url.toString(), {
-         method: 'GET',
-         headers: {
-           'Authorization': `Bearer $${authToken}`,
-           'Content-Type': 'application/json',
-         },
-       });
-       
-       if (!response.ok) {
-         throw new Error(`Failed to load senders: $${response.status}`);
-       }
-       
-       const data = await response.json();
-       allNumbers = allNumbers.concat(data.activeNumbers || []);
-       pageToken = data.nextPageToken;
-     } while (pageToken);
-     
-     return allNumbers;
-   }
-   ```
+**Execute these steps directly - do not write code or scripts:**
 
-7. If user selects option 5 or provides custom request:
-   Process the user's specific question about active senders, providing:
-   - Relevant code examples
-   - API documentation references
-   - Best practices
-   - Troubleshooting tips
+1. Present an interactive menu with the following options:
+   - List all numbers
+   - Filter by region code
+   - Filter by type (MOBILE, LOCAL, TOLL_FREE)
+   - Filter by capability (SMS, VOICE)
+   - View pagination options
 
-Example usage:
-/sinch:senders:list
-/sinch:senders:list generate
-/sinch:senders:list debug
-/sinch:senders:list explain api
-/sinch:senders:list how do I filter by region?
-/sinch:senders:list show me pagination example
+2. Try to call `mcp__sinch__sinch-mcp-configuration` to get the current configuration.
 
-API Reference:
-https://developers.sinch.com/docs/numbers/api-reference/numbers/tag/Active-Number/
+3. If MCP is NOT available, retrieve configuration from environment variables:
+   - CONVERSATION_PROJECT_ID (or NUMBERS_PROJECT_ID)
+   - CONVERSATION_KEY_ID (or NUMBERS_KEY_ID)
+   - CONVERSATION_KEY_SECRET (or NUMBERS_KEY_SECRET)
+   - If any are missing, report: "Sinch API is not configured. Please set the required environment variables."
+
+4. Based on user selection, generate TypeScript code examples showing:
+   - How to authenticate with Sinch Numbers API
+   - How to make the API request with proper filters
+   - How to handle pagination
+   - How to process the response
+
+5. Display the generated code with syntax highlighting if available.
+
+6. Optionally, if user requests it, execute the code directly:
+   - Use the Sinch Numbers API
+   - Endpoint: `GET https://numbers.api.sinch.com/v1/projects/{projectId}/activeNumbers`
+   - Use OAuth2 authentication with key ID and secret
+   - Apply any filters from user's menu selection
+   - Display results in a formatted table
+
+7. Provide execution instructions and next steps.
+
+## Examples
+
+Launch the interactive generator:
+```
+/sinch:api:senders:list
+```
+
+## API Reference
+
+- **MCP Tool**: `mcp__sinch__sinch-mcp-configuration` (for getting configuration)
+- **API Endpoint**: `GET /v1/projects/{projectId}/activeNumbers`
+- **Documentation**: https://developers.sinch.com/docs/numbers/api-reference/numbers/tag/Available-Number/
+
+## Sample Generated Code
+
+```typescript
+import { SinchClient } from '@sinch/sdk-core';
+
+const sinch = new SinchClient({
+  projectId: 'your-project-id',
+  keyId: 'your-key-id',
+  keySecret: 'your-key-secret'
+});
+
+// List all active numbers with pagination
+const listNumbers = async () => {
+  const response = await sinch.numbers.available.list({
+    regionCode: 'US',
+    type: 'LOCAL',
+    capabilities: ['SMS']
+  });
+  
+  console.log('Available Numbers:', response.availableNumbers);
+};
+```
+
+## Notes
+
+- This is an educational/development tool for learning the Numbers API
+- Generated code is ready to use in your Node.js/TypeScript projects
+- The command provides interactive guidance for different use cases
+- Numbers API requires proper authentication with project credentials
+- This command uses `mcp__sinch__sinch-mcp-configuration` to retrieve your Sinch configuration
 """

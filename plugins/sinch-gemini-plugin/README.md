@@ -17,22 +17,40 @@ Custom slash commands for [Gemini CLI](https://github.com/google-gemini/gemini-c
 
 ## Installation
 
-### Option 1: Project-Scoped Installation
+### Option 1: Install via npm (Recommended)
 
-Copy the `.gemini` directory to your project root:
+Once published to npm, install with:
+
+```bash
+npm install -g @sinch/gemini-plugin
+```
+
+The plugin will automatically install commands to `~/.gemini/commands/sinch/`.
+
+Or use the installation script:
+
+```bash
+./install.sh
+```
+
+### Option 2: Project-Scoped Installation
+
+Copy the `.gemini` and `scripts` directories to your project root:
 
 ```bash
 cp -r sinch-gemini-plugin/.gemini /path/to/your/project/
+cp -r sinch-gemini-plugin/scripts /path/to/your/project/
 ```
 
 This makes the commands available only within that specific project.
 
-### Option 2: User-Scoped Installation
+### Option 3: Manual User-Scoped Installation
 
-Copy the commands to your home directory to make them available across all projects:
+Copy the commands and scripts to your home directory to make them available across all projects:
 
 ```bash
 cp -r sinch-gemini-plugin/.gemini/commands/sinch ~/.gemini/commands/
+cp -r sinch-gemini-plugin/scripts/sinch ~/.gemini/scripts/
 ```
 
 ## Configuration

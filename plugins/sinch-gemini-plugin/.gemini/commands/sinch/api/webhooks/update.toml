@@ -1,70 +1,108 @@
 description = "Update an existing webhook configuration"
 
 prompt = """
+# Update Webhook
+
 Update an existing webhook's configuration including target URL, triggers, or secret.
+
+**IMPORTANT: Execute this command directly. Do NOT generate script files. Do NOT create Python/JavaScript files. Perform the API call immediately using the instructions below.**
+
+## Input
+
+- `--id` / `-i`: Webhook ID to update (required)
+- `--target` / `-t`: New target URL (optional)
+- `--triggers` / `-T`: New comma-separated list of triggers (optional)
+- `--secret` / `-s`: New secret token (optional)
 
 Arguments: {{args}}
 
-Instructions:
-1. Parse and validate arguments:
-   - --id: Webhook ID to update - REQUIRED
-   - --target or -t: New webhook target URL (HTTPS) - optional
-   - --triggers or -tr: New comma-separated triggers - optional
-   - --secret or -s: New secret (min 16 chars) - optional
-   
-   At least one of --target, --triggers, or --secret must be provided.
-   
-   Example: --id=01E9DQJFPWGZ4N9XQ3FZ8Z8Z8Z --target=https://new-endpoint.com/webhook --triggers=MESSAGE_INBOUND
+## Instructions
 
-2. Validate inputs:
-   - Webhook ID is required
-   - If target provided, validate it's HTTPS
-   - If triggers provided, parse, normalize to uppercase, and validate
-   - If secret provided, ensure minimum 16 characters
-   - Ensure at least one field is being updated
+**Execute these steps directly - do not write code or scripts:**
 
-3. Retrieve Sinch configuration from environment variables:
+0. Check if {{args}} is empty or only contains the command name:
+   - If empty or no meaningful arguments provided, enter interactive mode:
+     * Ask: "🆔 What is the webhook ID you want to update?"
+     * Ask: "What would you like to update? (target/triggers/secret/multiple)"
+     * Based on response, ask for the specific new values
+     * Use the provided answers as the arguments for the following steps
+   - If arguments are provided, proceed directly to step 1
+
+1. Parse and validate arguments from {{args}} or interactive input:
+   - Validate that `--id` is provided and non-empty
+   - At least one of `--target`, `--triggers`, or `--secret` must be provided
+   - If `--target` is provided, validate it's a valid HTTPS URL
+   - If `--triggers` is provided, parse and validate each trigger
+
+2. Try to call `mcp__sinch__sinch-mcp-configuration` to get the current configuration.
+
+3. If MCP is NOT available, retrieve configuration from environment variables:
    - CONVERSATION_PROJECT_ID
    - CONVERSATION_REGION
    - CONVERSATION_KEY_ID
    - CONVERSATION_KEY_SECRET
+   - If any are missing, report: "Sinch API is not configured. Please set the required environment variables."
 
-4. Verify webhook exists:
-   - List existing webhooks to check if the webhook ID exists
-   - If not found, report error
+4. Verify the webhook exists:
+   - Retrieve the existing webhook configuration
+   - If not found, report: \"Webhook with ID '{webhook_id}' not found\"
 
-5. Update the webhook:
-   - Endpoint: PATCH https://{region}.conversation.api.sinch.com/v1/projects/{projectId}/webhooks/{webhookId}
-   - Use OAuth2 authentication
-   - Request body (only include fields being updated):
-     {
-       "target": "<new_target_url>",
-       "triggers": ["<TRIGGER1>", "<TRIGGER2>"],
-       "secret": "<new_secret>"
-     }
+5. Prepare the update payload:
+   - Start with the existing webhook configuration
+   - Apply only the fields that were provided in arguments
+   - Keep existing values for fields not specified
 
-6. Report results:
-   - Success: "✅ Webhook updated successfully! ID: {webhook_id}"
-   - Display updated webhook details showing what changed
+6. Update the webhook using the Sinch Conversation API:
+   - Endpoint: `PATCH https://{region}.conversation.api.sinch.com/v1/projects/{projectId}/webhooks/{webhookId}`
+   - Use OAuth2 authentication with key ID and secret to generate access token
+   - Include request body with updated fields
 
-Error handling:
-- If no update parameters provided: "Please provide at least one field to update (--target, --triggers, or --secret)"
-- If webhook not found: "Webhook with ID '{webhook_id}' not found"
-- If validation fails, provide clear error messages
+7. Handle errors gracefully:
+   - If configuration is incomplete, report: "Sinch API is not configured. Please set the required environment variables."
+   - If no update parameters are provided, report: \"Please provide at least one field to update (--target, --triggers, or --secret)\"
+   - If validation fails, provide clear error messages
+   - If the API call fails, display the error message with status code and error description
 
-Available Triggers:
-- MESSAGE_DELIVERY, MESSAGE_INBOUND, MESSAGE_SUBMIT
-- MESSAGE_INBOUND_SMART_CONVERSATION_REDACTION
-- EVENT_DELIVERY, EVENT_INBOUND
-- CONVERSATION_START, CONVERSATION_STOP, CONVERSATION_DELETE
-- CONTACT_CREATE, CONTACT_DELETE, CONTACT_MERGE, CONTACT_UPDATE
-- OPT_IN, OPT_OUT, CAPABILITY, CHANNEL_EVENT
+## Examples
 
-Example usage:
-/sinch:webhooks:update --id=01E9DQJFPWGZ4N9XQ3FZ8Z8Z8Z --target=https://new-endpoint.com/webhook
-/sinch:webhooks:update --id=01E9DQJFPWGZ4N9XQ3FZ8Z8Z8Z --triggers=MESSAGE_INBOUND,MESSAGE_DELIVERY
-/sinch:webhooks:update --id=01E9DQJFPWGZ4N9XQ3FZ8Z8Z8Z --secret=new-secret-key-123456
+Update webhook target URL:
+```
+/sinch:api:webhooks:update --id=01E9WEBHOOK123 --target=https://newurl.com/webhook
+```
 
-API Reference:
-https://developers.sinch.com/docs/conversation/api-reference/conversation/tag/Webhooks/#tag/Webhooks/operation/Webhooks_UpdateWebhook
+Update webhook triggers:
+```
+/sinch:api:webhooks:update -i 01E9WEBHOOK123 -T MESSAGE_DELIVERY,MESSAGE_INBOUND,CONVERSATION_START
+```
+
+Update multiple fields:
+```
+/sinch:api:webhooks:update --id=01E9WEBHOOK123 --target=https://newurl.com/webhook --secret=new-secret
+```
+
+## API Reference
+
+- **MCP Tool**: `mcp__sinch__sinch-mcp-configuration` (for getting configuration)
+- **API Endpoint**: `PATCH /v1/projects/{projectId}/webhooks/{webhookId}`
+- **Documentation**: https://developers.sinch.com/docs/conversation/api-reference/conversation/tag/Webhooks/#tag/Webhooks/operation/Webhooks_UpdateWebhook
+
+## Request Body Example
+
+```json
+{
+  \"target\": \"https://newurl.com/webhook\",
+  \"triggers\": [
+    \"MESSAGE_DELIVERY\",
+    \"MESSAGE_INBOUND\"
+  ]
+}
+```
+
+## Notes
+
+- Only the fields you specify will be updated
+- Unspecified fields retain their current values
+- When updating triggers, you must provide the complete list (not incremental)
+- Changing the secret will invalidate the old one immediately
+- Target URL must be publicly accessible and use HTTPS
 """

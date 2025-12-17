@@ -1,122 +1,102 @@
-description = "List available webhook triggers with descriptions"
+description = "Show available webhook trigger types for Sinch Conversation API"
 
 prompt = """
-List all available webhook triggers for the Sinch Conversation API.
+# Webhook Triggers Reference
 
-Format: {{args}}
+Display all available webhook trigger types for the Sinch Conversation API. Use this as a reference when creating or updating webhooks.
 
-Instructions:
-1. Parse format argument (default to "table" if not provided):
-   - If args contains "--format=json" or "-f json", use JSON format
-   - Otherwise, use table format
+**IMPORTANT: Execute this command directly. Do NOT generate script files. Simply display the trigger list below.**
 
-2. Display webhook triggers based on format.
+## Input
 
-3. For **table format**, show a formatted table with columns:
-   - Trigger: The trigger name (uppercase)
-   - Label: Human-readable name
-   - Description: Brief description
+No arguments required
 
-4. For **json format**, display as JSON array with objects containing:
-   - trigger: Trigger name
-   - label: Human-readable name
-   - description: Detailed description
-   - category: Event category
+Arguments: {{args}}
 
-Message-Related Triggers:
-- MESSAGE_INBOUND
-  Label: Message Inbound
-  Description: Subscribe to inbound messages from end users. Fires when a contact sends a message to your app.
-  
-- MESSAGE_DELIVERY
-  Label: Message Delivery
-  Description: Subscribe to delivery receipts for messages sent. Fires when message delivery status changes (sent, delivered, failed).
-  
-- MESSAGE_SUBMIT
-  Label: Message Submit
-  Description: Subscribe to message submission events. Fires when a message is submitted for delivery to the channel.
-  
-- MESSAGE_INBOUND_SMART_CONVERSATION_REDACTION
-  Label: Smart Conversation Redaction
-  Description: Subscribe to smart conversation redaction events. Fires when sensitive data is detected and redacted.
+## Instructions
 
-Event Triggers:
-- EVENT_DELIVERY
-  Label: Event Delivery
-  Description: Event delivery receipts
-  
-- EVENT_INBOUND
-  Label: Event Inbound
-  Description: Inbound events from end users
+**Display the information directly - do not write code or scripts:**
 
-Conversation Triggers:
-- CONVERSATION_START
-  Label: Conversation Start
-  Description: New conversation started
-  
-- CONVERSATION_STOP
-  Label: Conversation Stop
-  Description: Conversation stopped
-  
-- CONVERSATION_DELETE
-  Label: Conversation Delete
-  Description: Conversation deleted
+1. Display the complete list of available webhook triggers with descriptions:
 
-Contact Triggers:
-- CONTACT_CREATE
-  Label: Contact Create
-  Description: Contact created
-  
-- CONTACT_DELETE
-  Label: Contact Delete
-  Description: Contact deleted
-  
-- CONTACT_MERGE
-  Label: Contact Merge
-  Description: Contacts merged
-  
-- CONTACT_UPDATE
-  Label: Contact Update
-  Description: Contact updated
-  
-- CONTACT_IDENTITIES_DUPLICATION
-  Label: Contact Identities Duplication
-  Description: Duplicate contact identities detected
+### Message Events
+- `MESSAGE_DELIVERY` - Fired when a message is delivered to the recipient
+- `MESSAGE_INBOUND` - Fired when an inbound message is received from a contact
+- `MESSAGE_SUBMIT` - Fired when a message is submitted for sending
+- `MESSAGE_INBOUND_SMART_CONVERSATION_REDACTION` - Fired for smart conversation redaction events
 
-Other Triggers:
-- OPT_IN
-  Label: Opt In
-  Description: User opted in
-  
-- OPT_OUT
-  Label: Opt Out
-  Description: User opted out
-  
-- CAPABILITY
-  Label: Capability
-  Description: Channel capability changes
-  
-- CHANNEL_EVENT
-  Label: Channel Event
-  Description: Channel-specific events
-  
-- SMART_CONVERSATION
-  Label: Smart Conversation
-  Description: Smart conversation events
-  
-- RECORD_NOTIFICATION
-  Label: Record Notification
-  Description: Record notification events
-  
-- UNSUPPORTED
-  Label: Unsupported
-  Description: Unsupported events
+### Conversation Events  
+- `CONVERSATION_START` - Fired when a new conversation is started
+- `CONVERSATION_STOP` - Fired when a conversation is stopped
+- `CONVERSATION_DELETE` - Fired when a conversation is deleted
 
-Example usage:
-/sinch:webhooks:triggers
-/sinch:webhooks:triggers --format=json
-/sinch:webhooks:triggers -f table
+### Contact Events
+- `CONTACT_CREATE` - Fired when a new contact is created
+- `CONTACT_DELETE` - Fired when a contact is deleted
+- `CONTACT_MERGE` - Fired when contacts are merged
+- `CONTACT_UPDATE` - Fired when a contact is updated
 
-API Reference:
-https://developers.sinch.com/docs/conversation/api-reference/conversation/tag/Webhooks/
+### Opt-In/Opt-Out Events
+- `OPT_IN` - Fired when a contact opts in for messages
+- `OPT_OUT` - Fired when a contact opts out from messages
+
+### Capability Events
+- `CAPABILITY` - Fired when channel capability information is updated
+
+### Channel Events
+- `CHANNEL_EVENT` - Fired for various channel-specific events
+
+### Unsupported Events
+- `UNSUPPORTED` - Fired for unsupported or unknown event types
+
+2. Provide usage examples for common trigger combinations
+
+3. Link to official documentation for more details
+
+## Examples
+
+View all available triggers:
+```
+/sinch:api:webhooks:triggers
+```
+
+## Common Trigger Combinations
+
+**Basic messaging webhook** (most common):
+```
+MESSAGE_DELIVERY,MESSAGE_INBOUND
+```
+
+**Full message lifecycle tracking**:
+```
+MESSAGE_SUBMIT,MESSAGE_DELIVERY,MESSAGE_INBOUND
+```
+
+**Conversation management**:
+```
+CONVERSATION_START,CONVERSATION_STOP,MESSAGE_INBOUND,MESSAGE_DELIVERY
+```
+
+**Opt-in/Opt-out management**:
+```
+OPT_IN,OPT_OUT,MESSAGE_INBOUND
+```
+
+**Comprehensive monitoring**:
+```
+MESSAGE_DELIVERY,MESSAGE_INBOUND,MESSAGE_SUBMIT,CONVERSATION_START,CONVERSATION_STOP,OPT_IN,OPT_OUT
+```
+
+## API Reference
+
+- **Documentation**: https://developers.sinch.com/docs/conversation/api-reference/conversation/tag/Webhooks/
+- **Webhook Events**: https://developers.sinch.com/docs/conversation/webhooks/
+
+## Notes
+
+- You can configure multiple triggers for a single webhook
+- Not all channels support all event types
+- Choose only the triggers you need to reduce unnecessary webhook traffic
+- `MESSAGE_DELIVERY` and `MESSAGE_INBOUND` are the most commonly used triggers
+- Use `CONVERSATION_START` and `CONVERSATION_STOP` for conversation lifecycle tracking
 """

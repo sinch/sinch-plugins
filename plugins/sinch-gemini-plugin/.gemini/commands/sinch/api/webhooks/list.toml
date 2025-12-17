@@ -1,41 +1,94 @@
-description = "List all webhooks for the configured Sinch Conversation API app"
+description = "List all webhooks configured for your Sinch Conversation app"
 
 prompt = """
-List all webhooks configured for your Sinch Conversation API app.
+# List Webhooks
 
-Format: {{args}}
+List all webhooks configured for your Sinch Conversation app. Webhooks allow you to receive real-time notifications about message events and other activities.
 
-Instructions:
-1. Parse the format argument (default to "table" if not provided):
-   - Valid formats: "json" or "table"
-   - If args contains "--format=json" or "-f json", use JSON format
-   - Otherwise, use table format
+**IMPORTANT: Execute this command directly. Do NOT generate script files. Do NOT create Python/JavaScript files. Perform the API call immediately using the instructions below.**
 
-2. Retrieve Sinch configuration from environment variables:
+## Input
+
+- `--format` / `-f`: Output format (json or table) - optional, defaults to table
+
+Arguments: {{args}}
+
+## Instructions
+
+**Execute these steps directly - do not write code or scripts:**
+
+0. Check if {{args}} is empty or only contains the command name:
+   - If empty or no meaningful arguments provided, use default format (table)
+   - If user specifies a format preference, use that
+   - Proceed to step 1
+
+1. Parse and validate arguments from {{args}} or use defaults:
+   - If `--format` is not provided, default to "table"
+   - Validate that format is either \"json\" or \"table\"
+   - Normalize format to lowercase
+
+2. Try to call `mcp__sinch__sinch-mcp-configuration` to get the current configuration.
+
+3. If MCP is NOT available, retrieve configuration from environment variables:
    - CONVERSATION_PROJECT_ID
    - CONVERSATION_REGION
    - CONVERSATION_APP_ID
    - CONVERSATION_KEY_ID
    - CONVERSATION_KEY_SECRET
+   - If any are missing, report: "Sinch API is not configured. Please set the required environment variables."
 
-3. Make an API request to list webhooks:
-   - Endpoint: GET https://{region}.conversation.api.sinch.com/v1/projects/{projectId}/apps/{appId}/webhooks
-   - Use OAuth2 authentication with the key ID and secret
+4. Use the Sinch Conversation API to list webhooks:
+   - Endpoint: `GET https://{region}.conversation.api.sinch.com/v1/projects/{projectId}/apps/{appId}/webhooks`
+   - Extract region, projectId, and appId from the configuration
+   - Include authorization header with the access token
 
-4. Display results based on format:
-   - **Table format**: Show a formatted table with columns: ID, Target URL, Triggers, Target Type
+5. Use OAuth2 authentication to generate access token from key ID and secret.
+
+6. Display the results based on the requested format:
+   - **Table format**: Display a formatted table with columns: ID, Target URL, Triggers (comma-separated), Target Type
    - **JSON format**: Display the raw JSON response
 
-5. Handle errors:
-   - If environment variables are missing, report: "Sinch API is not configured. Please set the required environment variables: CONVERSATION_PROJECT_ID, CONVERSATION_KEY_ID, CONVERSATION_KEY_SECRET, CONVERSATION_REGION, CONVERSATION_APP_ID"
-   - If API call fails, display the error with status code
-   - If no webhooks found, display: "No webhooks found for this app."
+7. Handle errors gracefully:
+   - If configuration is incomplete, report: "Sinch API is not configured. Please set the required environment variables."
+   - If the API call fails, display the error message with relevant details (status code, error description)
+   - If no webhooks are found, display: \"No webhooks found for this app.\"
 
-Example usage:
-/sinch:webhooks:list
-/sinch:webhooks:list --format=json
-/sinch:webhooks:list -f table
+## Examples
 
-API Reference:
-https://developers.sinch.com/docs/conversation/api-reference/conversation/tag/Webhooks/#tag/Webhooks/operation/Webhooks_ListWebhooks
+List webhooks in table format:
+```
+/sinch:api:webhooks:list
+```
+
+List webhooks in JSON format:
+```
+/sinch:api:webhooks:list --format=json
+```
+
+Using short flag:
+```
+/sinch:api:webhooks:list -f json
+```
+
+## API Reference
+
+- **MCP Tool**: `mcp__sinch__sinch-mcp-configuration` (for getting configuration)
+- **API Endpoint**: `GET /v1/projects/{projectId}/apps/{appId}/webhooks`
+- **Documentation**: https://developers.sinch.com/docs/conversation/api-reference/conversation/tag/Webhooks/#tag/Webhooks/operation/Webhooks_ListWebhooks
+
+## Response Structure
+
+Each webhook object contains:
+- `id`: Unique webhook identifier
+- `target`: Target URL where events are sent
+- `triggers`: Array of event types that trigger the webhook
+- `target_type`: Type of target (HTTP, etc.)
+- `secret`: Secret token for validating webhook authenticity
+
+## Notes
+
+- Webhooks are scoped to the Conversation app level
+- Each webhook can have multiple triggers configured
+- Table format provides a cleaner, easier-to-read view
+- JSON format is useful for programmatic processing or detailed inspection
 """
