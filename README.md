@@ -18,7 +18,7 @@ A Claude Code plugin that integrates the Sinch Conversation API, allowing you to
 
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview) installed.
 - A [Sinch Customer Dashboard](https://dashboard.sinch.com/) account.
-- A Conversation API app with credentials (Project ID, Key ID, Key Secret, App ID).
+- A Conversation API app with credentials (Project ID, Key ID, Key Secret, App ID, App Region).
 
 ### Installation
 
@@ -43,6 +43,11 @@ You need to configure the following variables:
 - `CONVERSATION_REGION`: The region for your app (e.g., `us`, `eu`, `br`).
 - `CONVERSATION_APP_ID`: The specific Conversation App ID you want to use.
 - `NGROK_AUTH_TOKEN` (Optional): Required if you want to use features that need a public callback URL for local testing.
+
+### Get Your Sinch Credentials
+
+Get access and create your access key: You will need a Sinch Build account ([see here for instructions on setting up an account](https://community.sinch.com/t5/Build-Dashboard/How-to-sign-up-for-your-free-Sinch-account/ta-p/8058)). Once you have created an account and logged in, select [Conversation API](https://dashboard.sinch.com/convapi/overview) from the left menu. Review the terms and conditions, select the I agree to the terms and conditions check box, and click GET ACCESS to proceed.
+Then, create your access key. Access keys are used to authenticate calls when using Conversation API. Access keys are generated in the [Sinch Build Dashboard](https://dashboard.sinch.com/settings/access-keys). If you need assistance, you can [review our Community article on access key creation](https://community.sinch.com/t5/Conversation-API/How-to-get-your-access-key-for-Conversation-API/ta-p/8120).
 
 ### Setup Methods
 

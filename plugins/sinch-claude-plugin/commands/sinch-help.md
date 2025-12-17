@@ -26,14 +26,11 @@ Optionally, you can also set:
 
 - `NGROK_AUTH_TOKEN` - Your Ngrok authentication token if you want to use the tool get-message-events, you have to be able to receive events related to a message.
 
-## How to Get Credentials
+## Get Your Sinch Credentials
 
-Visit the [Sinch Conversation API documentation](https://developers.sinch.com/docs/conversation) to:
-
-- Create a Sinch account
-- Set up a Conversation API project
-- Create an app and configure channels
-- Generate API credentials (Key ID and Secret)
+- Create a Sinch Build account ([see here for instructions on setting up an account](https://community.sinch.com/t5/Build-Dashboard/How-to-sign-up-for-your-free-Sinch-account/ta-p/8058)).
+- Enable the product in the dashboard: [Conversation API](https://dashboard.sinch.com/convapi/overview).
+- Generate an access key in the [Sinch Build Dashboard](https://dashboard.sinch.com/settings/access-keys). If you need help, [review our Community article on access key creation](https://community.sinch.com/t5/Conversation-API/How-to-get-your-access-key-for-Conversation-API/ta-p/8120).
 
 ## Configuration Steps
 
