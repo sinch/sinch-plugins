@@ -1,0 +1,70 @@
+description = "Update an existing webhook configuration"
+
+prompt = """
+Update an existing webhook's configuration including target URL, triggers, or secret.
+
+Arguments: {{args}}
+
+Instructions:
+1. Parse and validate arguments:
+   - --id: Webhook ID to update - REQUIRED
+   - --target or -t: New webhook target URL (HTTPS) - optional
+   - --triggers or -tr: New comma-separated triggers - optional
+   - --secret or -s: New secret (min 16 chars) - optional
+   
+   At least one of --target, --triggers, or --secret must be provided.
+   
+   Example: --id=01E9DQJFPWGZ4N9XQ3FZ8Z8Z8Z --target=https://new-endpoint.com/webhook --triggers=MESSAGE_INBOUND
+
+2. Validate inputs:
+   - Webhook ID is required
+   - If target provided, validate it's HTTPS
+   - If triggers provided, parse, normalize to uppercase, and validate
+   - If secret provided, ensure minimum 16 characters
+   - Ensure at least one field is being updated
+
+3. Retrieve Sinch configuration from environment variables:
+   - CONVERSATION_PROJECT_ID
+   - CONVERSATION_REGION
+   - CONVERSATION_KEY_ID
+   - CONVERSATION_KEY_SECRET
+
+4. Verify webhook exists:
+   - List existing webhooks to check if the webhook ID exists
+   - If not found, report error
+
+5. Update the webhook:
+   - Endpoint: PATCH https://{region}.conversation.api.sinch.com/v1/projects/{projectId}/webhooks/{webhookId}
+   - Use OAuth2 authentication
+   - Request body (only include fields being updated):
+     {
+       "target": "<new_target_url>",
+       "triggers": ["<TRIGGER1>", "<TRIGGER2>"],
+       "secret": "<new_secret>"
+     }
+
+6. Report results:
+   - Success: "✅ Webhook updated successfully! ID: {webhook_id}"
+   - Display updated webhook details showing what changed
+
+Error handling:
+- If no update parameters provided: "Please provide at least one field to update (--target, --triggers, or --secret)"
+- If webhook not found: "Webhook with ID '{webhook_id}' not found"
+- If validation fails, provide clear error messages
+
+Available Triggers:
+- MESSAGE_DELIVERY, MESSAGE_INBOUND, MESSAGE_SUBMIT
+- MESSAGE_INBOUND_SMART_CONVERSATION_REDACTION
+- EVENT_DELIVERY, EVENT_INBOUND
+- CONVERSATION_START, CONVERSATION_STOP, CONVERSATION_DELETE
+- CONTACT_CREATE, CONTACT_DELETE, CONTACT_MERGE, CONTACT_UPDATE
+- OPT_IN, OPT_OUT, CAPABILITY, CHANNEL_EVENT
+
+Example usage:
+/sinch:webhooks:update --id=01E9DQJFPWGZ4N9XQ3FZ8Z8Z8Z --target=https://new-endpoint.com/webhook
+/sinch:webhooks:update --id=01E9DQJFPWGZ4N9XQ3FZ8Z8Z8Z --triggers=MESSAGE_INBOUND,MESSAGE_DELIVERY
+/sinch:webhooks:update --id=01E9DQJFPWGZ4N9XQ3FZ8Z8Z8Z --secret=new-secret-key-123456
+
+API Reference:
+https://developers.sinch.com/docs/conversation/api-reference/conversation/tag/Webhooks/#tag/Webhooks/operation/Webhooks_UpdateWebhook
+"""

@@ -1,0 +1,76 @@
+description = "Get delivery status and events for a message"
+
+prompt = """
+Retrieve delivery status and events for a specific message sent via Sinch Conversation API.
+
+Important: This command requires the NGROK_AUTH_TOKEN environment variable in addition to standard Sinch credentials to receive webhook events.
+
+Arguments: {{args}}
+
+Instructions:
+1. Parse and validate arguments:
+   - --message_id or -m: Message ID to retrieve events for - REQUIRED
+   
+   Example: --message_id=01HXXX123456
+
+2. Validate input:
+   - Ensure --message_id is provided and non-empty
+
+3. Check environment variables:
+   - CONVERSATION_PROJECT_ID
+   - CONVERSATION_REGION
+   - CONVERSATION_APP_ID
+   - CONVERSATION_KEY_ID
+   - CONVERSATION_KEY_SECRET
+   - NGROK_AUTH_TOKEN (required for this command)
+   
+   If NGROK_AUTH_TOKEN is missing, display:
+   "⚠️  NGROK_AUTH_TOKEN is required for this command to receive message events.
+   Please set the NGROK_AUTH_TOKEN environment variable to use message status tracking."
+
+4. Retrieve message events:
+   - This typically requires a webhook endpoint to receive delivery events
+   - Use ngrok to create a temporary public webhook endpoint
+   - Set up a local webhook listener
+   - Query for message events from the Sinch API or local webhook cache
+   
+   Alternative approach:
+   - Endpoint: GET https://{region}.conversation.api.sinch.com/v1/projects/{projectId}/messages/{messageId}
+   - Use OAuth2 authentication
+   - Retrieve message details and status
+
+5. Display events in a formatted table:
+   - Event Type (e.g., DELIVERED, READ, FAILED, SENT)
+   - Timestamp
+   - Status Details
+   - Channel
+   
+   If table format is not suitable, use a list format with clear labels.
+
+6. Report results:
+   - Show message ID and current status
+   - Display all available events in chronological order
+   - Show delivery timeline
+
+7. Handle errors:
+   - If environment variables missing, provide clear setup instructions
+   - If message ID not found: "Message with ID '{message_id}' not found"
+   - If API call fails, display error with details
+   - If no events available: "No events found for this message yet. Events may take a few moments to appear."
+
+Message Statuses:
+- QUEUED: Message queued for delivery
+- DISPATCHED: Message dispatched to channel
+- SENT: Message sent to recipient
+- DELIVERED: Message delivered to recipient
+- READ: Message read by recipient
+- FAILED: Message delivery failed
+
+Example usage:
+/sinch:messages:status --message_id=01HXXX123456
+/sinch:messages:status -m 01HXXX123456
+
+API Reference:
+https://developers.sinch.com/docs/conversation/api-reference/conversation/tag/Messages/#tag/Messages/operation/Messages_GetMessage
+https://developers.sinch.com/docs/conversation/webhooks/
+"""

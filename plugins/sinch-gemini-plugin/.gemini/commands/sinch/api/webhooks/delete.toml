@@ -1,0 +1,65 @@
+description = "Delete a webhook by ID"
+
+prompt = """
+Delete a webhook from your Sinch Conversation API app.
+
+Arguments: {{args}}
+
+Instructions:
+1. Parse and validate arguments:
+   - --id: Webhook ID to delete - REQUIRED
+   - --confirm or -y: Skip confirmation prompt - optional
+   
+   Example: --id=01E9DQJFPWGZ4N9XQ3FZ8Z8Z8Z --confirm
+
+2. Retrieve Sinch configuration from environment variables:
+   - CONVERSATION_PROJECT_ID
+   - CONVERSATION_REGION
+   - CONVERSATION_KEY_ID
+   - CONVERSATION_KEY_SECRET
+
+3. Verify the webhook exists:
+   - List existing webhooks to find the specified ID
+   - If not found, report: "Webhook with ID '{webhook_id}' not found"
+   - Display webhook details (target URL, triggers)
+
+4. Request confirmation (unless --confirm flag is provided):
+   - Display:
+     ```
+     Webhook Details:
+       ID: {webhook_id}
+       Target: {target_url}
+       Triggers: {comma_separated_triggers}
+       Target Type: HTTP
+     
+     Are you sure you want to delete this webhook? (yes/no)
+     ```
+   - Only proceed if user confirms with "yes" or "y" (case-insensitive)
+   - If declined, report: "Webhook deletion cancelled"
+
+5. Delete the webhook:
+   - Endpoint: DELETE https://{region}.conversation.api.sinch.com/v1/projects/{projectId}/webhooks/{webhookId}
+   - Use OAuth2 authentication
+
+6. Report results:
+   - Success: "✅ Webhook deleted successfully! ID: {webhook_id}"
+   - Display summary of deleted webhook
+
+Error handling:
+- If environment variables missing: "Sinch API is not configured. Please set the required environment variables."
+- If webhook doesn't exist: "Webhook with ID '{webhook_id}' not found"
+- If API call fails, display error with status code
+
+Notes:
+- Deletion is permanent and cannot be undone
+- After deletion, your endpoint will stop receiving webhook events immediately
+- Use --confirm flag for automated scripts to skip confirmation
+
+Example usage:
+/sinch:webhooks:delete --id=01E9DQJFPWGZ4N9XQ3FZ8Z8Z8Z
+/sinch:webhooks:delete --id=01E9DQJFPWGZ4N9XQ3FZ8Z8Z8Z --confirm
+/sinch:webhooks:delete --id=01E9DQJFPWGZ4N9XQ3FZ8Z8Z8Z -y
+
+API Reference:
+https://developers.sinch.com/docs/conversation/api-reference/conversation/tag/Webhooks/#tag/Webhooks/operation/Webhooks_DeleteWebhook
+"""

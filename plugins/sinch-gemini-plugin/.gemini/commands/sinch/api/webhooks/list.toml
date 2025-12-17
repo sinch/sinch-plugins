@@ -1,0 +1,41 @@
+description = "List all webhooks for the configured Sinch Conversation API app"
+
+prompt = """
+List all webhooks configured for your Sinch Conversation API app.
+
+Format: {{args}}
+
+Instructions:
+1. Parse the format argument (default to "table" if not provided):
+   - Valid formats: "json" or "table"
+   - If args contains "--format=json" or "-f json", use JSON format
+   - Otherwise, use table format
+
+2. Retrieve Sinch configuration from environment variables:
+   - CONVERSATION_PROJECT_ID
+   - CONVERSATION_REGION
+   - CONVERSATION_APP_ID
+   - CONVERSATION_KEY_ID
+   - CONVERSATION_KEY_SECRET
+
+3. Make an API request to list webhooks:
+   - Endpoint: GET https://{region}.conversation.api.sinch.com/v1/projects/{projectId}/apps/{appId}/webhooks
+   - Use OAuth2 authentication with the key ID and secret
+
+4. Display results based on format:
+   - **Table format**: Show a formatted table with columns: ID, Target URL, Triggers, Target Type
+   - **JSON format**: Display the raw JSON response
+
+5. Handle errors:
+   - If environment variables are missing, report: "Sinch API is not configured. Please set the required environment variables: CONVERSATION_PROJECT_ID, CONVERSATION_KEY_ID, CONVERSATION_KEY_SECRET, CONVERSATION_REGION, CONVERSATION_APP_ID"
+   - If API call fails, display the error with status code
+   - If no webhooks found, display: "No webhooks found for this app."
+
+Example usage:
+/sinch:webhooks:list
+/sinch:webhooks:list --format=json
+/sinch:webhooks:list -f table
+
+API Reference:
+https://developers.sinch.com/docs/conversation/api-reference/conversation/tag/Webhooks/#tag/Webhooks/operation/Webhooks_ListWebhooks
+"""

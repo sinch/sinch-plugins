@@ -1,0 +1,122 @@
+description = "List available webhook triggers with descriptions"
+
+prompt = """
+List all available webhook triggers for the Sinch Conversation API.
+
+Format: {{args}}
+
+Instructions:
+1. Parse format argument (default to "table" if not provided):
+   - If args contains "--format=json" or "-f json", use JSON format
+   - Otherwise, use table format
+
+2. Display webhook triggers based on format.
+
+3. For **table format**, show a formatted table with columns:
+   - Trigger: The trigger name (uppercase)
+   - Label: Human-readable name
+   - Description: Brief description
+
+4. For **json format**, display as JSON array with objects containing:
+   - trigger: Trigger name
+   - label: Human-readable name
+   - description: Detailed description
+   - category: Event category
+
+Message-Related Triggers:
+- MESSAGE_INBOUND
+  Label: Message Inbound
+  Description: Subscribe to inbound messages from end users. Fires when a contact sends a message to your app.
+  
+- MESSAGE_DELIVERY
+  Label: Message Delivery
+  Description: Subscribe to delivery receipts for messages sent. Fires when message delivery status changes (sent, delivered, failed).
+  
+- MESSAGE_SUBMIT
+  Label: Message Submit
+  Description: Subscribe to message submission events. Fires when a message is submitted for delivery to the channel.
+  
+- MESSAGE_INBOUND_SMART_CONVERSATION_REDACTION
+  Label: Smart Conversation Redaction
+  Description: Subscribe to smart conversation redaction events. Fires when sensitive data is detected and redacted.
+
+Event Triggers:
+- EVENT_DELIVERY
+  Label: Event Delivery
+  Description: Event delivery receipts
+  
+- EVENT_INBOUND
+  Label: Event Inbound
+  Description: Inbound events from end users
+
+Conversation Triggers:
+- CONVERSATION_START
+  Label: Conversation Start
+  Description: New conversation started
+  
+- CONVERSATION_STOP
+  Label: Conversation Stop
+  Description: Conversation stopped
+  
+- CONVERSATION_DELETE
+  Label: Conversation Delete
+  Description: Conversation deleted
+
+Contact Triggers:
+- CONTACT_CREATE
+  Label: Contact Create
+  Description: Contact created
+  
+- CONTACT_DELETE
+  Label: Contact Delete
+  Description: Contact deleted
+  
+- CONTACT_MERGE
+  Label: Contact Merge
+  Description: Contacts merged
+  
+- CONTACT_UPDATE
+  Label: Contact Update
+  Description: Contact updated
+  
+- CONTACT_IDENTITIES_DUPLICATION
+  Label: Contact Identities Duplication
+  Description: Duplicate contact identities detected
+
+Other Triggers:
+- OPT_IN
+  Label: Opt In
+  Description: User opted in
+  
+- OPT_OUT
+  Label: Opt Out
+  Description: User opted out
+  
+- CAPABILITY
+  Label: Capability
+  Description: Channel capability changes
+  
+- CHANNEL_EVENT
+  Label: Channel Event
+  Description: Channel-specific events
+  
+- SMART_CONVERSATION
+  Label: Smart Conversation
+  Description: Smart conversation events
+  
+- RECORD_NOTIFICATION
+  Label: Record Notification
+  Description: Record notification events
+  
+- UNSUPPORTED
+  Label: Unsupported
+  Description: Unsupported events
+
+Example usage:
+/sinch:webhooks:triggers
+/sinch:webhooks:triggers --format=json
+/sinch:webhooks:triggers -f table
+
+API Reference:
+https://developers.sinch.com/docs/conversation/api-reference/conversation/tag/Webhooks/
+"""
