@@ -5,7 +5,7 @@
     "email": "ecosystems@sinch.com",
     "url": "https://github.com/sinch"
   },
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Claude Code plugin for Sinch Conversation API (SMS, RCS, etc.)",
   "homepage": "https://sinch.com/",
   "repository": "https://github.com/sinch/sinch-plugins",
