@@ -1,0 +1,106 @@
+description = "Delete a webhook from your Sinch Conversation app"
+
+prompt = """
+# Delete Webhook
+
+Delete a webhook from your Sinch Conversation app. This will stop all event notifications to the webhook's target URL.
+
+**IMPORTANT: Execute this command directly. Do NOT generate script files. Do NOT create Python/JavaScript files. Perform the API call immediately using the instructions below.**
+
+## Input
+
+- `--id` / `-i`: Webhook ID to delete (required)
+- `--force` / `-f`: Skip confirmation prompt (optional)
+
+Arguments: {{args}}
+
+## Instructions
+
+**Execute these steps directly - do not write code or scripts:**
+
+0. Check if {{args}} is empty or only contains the command name:
+   - If empty or no meaningful arguments provided, enter interactive mode:
+     * First, list all webhooks to help user choose
+     * Ask: "🆔 Which webhook ID do you want to delete?"
+     * Use the provided answer as the webhook_id for the following steps
+   - If arguments are provided, proceed directly to step 1
+
+1. Parse and validate arguments from {{args}} or interactive input:
+   - Validate that `--id` is provided and non-empty
+   - Check if `--force` flag is present
+
+2. Try to call `mcp__sinch__sinch-mcp-configuration` to get the current configuration.
+
+3. If MCP is NOT available, retrieve configuration from environment variables:
+   - CONVERSATION_PROJECT_ID
+   - CONVERSATION_REGION
+   - CONVERSATION_KEY_ID
+   - CONVERSATION_KEY_SECRET
+   - If any are missing, report: "Sinch API is not configured. Please set the required environment variables."
+
+4. Verify the webhook exists:
+   - Retrieve the webhook details
+   - If not found, report: \"Webhook with ID '{webhook_id}' not found\"
+   - Display the webhook configuration to the user
+
+5. Request confirmation unless `--force` is specified:
+   - Display: "⚠️  Are you sure you want to delete this webhook?"
+   - Show webhook details: ID, Target URL, Triggers
+   - Ask: "Type 'yes' to confirm deletion:"
+   - If user doesn't confirm, abort with message: "Webhook deletion cancelled"
+
+6. Delete the webhook using the Sinch Conversation API:
+   - Endpoint: `DELETE https://{region}.conversation.api.sinch.com/v1/projects/{projectId}/webhooks/{webhookId}`
+   - Use OAuth2 authentication with key ID and secret to generate access token
+
+7. Confirm successful deletion:
+   - Display: "✅ Webhook deleted successfully"
+   - Show deleted webhook ID
+
+8. Handle errors gracefully:
+   - If configuration is incomplete, report: "Sinch API is not configured. Please set the required environment variables."
+   - If the webhook doesn't exist, report: \"Webhook with ID '{webhook_id}' not found\"
+   - If the API call fails, display the error message with status code and error description
+
+## Examples
+
+Delete a webhook with confirmation:
+```
+/sinch:api:webhooks:delete --id=01E9WEBHOOK123
+```
+
+Delete without confirmation prompt:
+```
+/sinch:api:webhooks:delete --id=01E9WEBHOOK123 --force
+```
+
+Using short flags:
+```
+/sinch:api:webhooks:delete -i 01E9WEBHOOK123 -f
+```
+
+## API Reference
+
+- **MCP Tool**: `mcp__sinch__sinch-mcp-configuration` (for getting configuration)
+- **API Endpoint**: `DELETE /v1/projects/{projectId}/webhooks/{webhookId}`
+- **Documentation**: https://developers.sinch.com/docs/conversation/api-reference/conversation/tag/Webhooks/#tag/Webhooks/operation/Webhooks_DeleteWebhook
+
+## Confirmation Display Example
+
+```
+⚠️  Are you sure you want to delete this webhook?
+
+Webhook ID: 01E9WEBHOOK123
+Target URL: https://example.com/webhook
+Triggers: MESSAGE_DELIVERY, MESSAGE_INBOUND
+
+Type 'yes' to confirm deletion:
+```
+
+## Notes
+
+- Deletion is permanent and cannot be undone
+- All event notifications to this webhook will stop immediately
+- Use `--force` flag carefully in automation scripts
+- Consider updating instead of deleting if you just need to change the configuration
+"""

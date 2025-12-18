@@ -1,0 +1,95 @@
+description = "Interactive code generator for Sinch Numbers API"
+
+prompt = """
+# List Senders (Numbers API)
+
+Interactive code generator for the Sinch Numbers API. This command helps you generate code snippets for listing virtual phone numbers.
+
+**IMPORTANT: Execute this command directly. Do NOT create script files. Either show an interactive menu or directly query the Numbers API based on user needs.**
+
+## Input
+
+No arguments required - this is an interactive command
+
+Arguments: {{args}}
+
+## Instructions
+
+**Execute these steps directly - do not write code or scripts:**
+
+1. Present an interactive menu with the following options:
+   - List all numbers
+   - Filter by region code
+   - Filter by type (MOBILE, LOCAL, TOLL_FREE)
+   - Filter by capability (SMS, VOICE)
+   - View pagination options
+
+2. Try to call `mcp__sinch__sinch-mcp-configuration` to get the current configuration.
+
+3. If MCP is NOT available, retrieve configuration from environment variables:
+   - CONVERSATION_PROJECT_ID (or NUMBERS_PROJECT_ID)
+   - CONVERSATION_KEY_ID (or NUMBERS_KEY_ID)
+   - CONVERSATION_KEY_SECRET (or NUMBERS_KEY_SECRET)
+   - If any are missing, report: "Sinch API is not configured. Please set the required environment variables."
+
+4. Based on user selection, generate TypeScript code examples showing:
+   - How to authenticate with Sinch Numbers API
+   - How to make the API request with proper filters
+   - How to handle pagination
+   - How to process the response
+
+5. Display the generated code with syntax highlighting if available.
+
+6. Optionally, if user requests it, execute the code directly:
+   - Use the Sinch Numbers API
+   - Endpoint: `GET https://numbers.api.sinch.com/v1/projects/{projectId}/activeNumbers`
+   - Use OAuth2 authentication with key ID and secret
+   - Apply any filters from user's menu selection
+   - Display results in a formatted table
+
+7. Provide execution instructions and next steps.
+
+## Examples
+
+Launch the interactive generator:
+```
+/sinch:api:senders:list
+```
+
+## API Reference
+
+- **MCP Tool**: `mcp__sinch__sinch-mcp-configuration` (for getting configuration)
+- **API Endpoint**: `GET /v1/projects/{projectId}/activeNumbers`
+- **Documentation**: https://developers.sinch.com/docs/numbers/api-reference/numbers/tag/Available-Number/
+
+## Sample Generated Code
+
+```typescript
+import { SinchClient } from '@sinch/sdk-core';
+
+const sinch = new SinchClient({
+  projectId: 'your-project-id',
+  keyId: 'your-key-id',
+  keySecret: 'your-key-secret'
+});
+
+// List all active numbers with pagination
+const listNumbers = async () => {
+  const response = await sinch.numbers.available.list({
+    regionCode: 'US',
+    type: 'LOCAL',
+    capabilities: ['SMS']
+  });
+  
+  console.log('Available Numbers:', response.availableNumbers);
+};
+```
+
+## Notes
+
+- This is an educational/development tool for learning the Numbers API
+- Generated code is ready to use in your Node.js/TypeScript projects
+- The command provides interactive guidance for different use cases
+- Numbers API requires proper authentication with project credentials
+- This command uses `mcp__sinch__sinch-mcp-configuration` to retrieve your Sinch configuration
+"""

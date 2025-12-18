@@ -137,20 +137,21 @@ Available skills:
 
 ## Gemini CLI
 
-A Gemini CLI extension that integrates the Sinch Conversation API, enabling you to send messages via SMS, WhatsApp, RCS, and other messaging channels directly from Gemini CLI using natural language.
+A Gemini CLI extension that integrates the Sinch Conversation API, allowing you to send messages (SMS, RCS), manage webhooks, and interact with your Sinch configuration directly from Gemini CLI.
 
 ### Installation
+
+#### Install from GitHub
+
+```bash
+gemini extensions install https://github.com/sinch/sinch-plugins --ref main
+```
 
 #### Install from Local Path
 
 ```bash
-gemini extensions install ./plugins/sinch-conversation-api/.gemini-extension
-```
-
-#### Install from Git Repository
-
-```bash
-gemini extensions install https://gitlab.com/sinch/sinch-projects/applications/smb/teams/partnership_devex/sinch-conversation-claude-plugin.git --ref main
+cd sinch-plugins/plugins/sinch-gemini-extension/.gemini-extension
+gemini extensions install .
 ```
 
 ### Configuration
@@ -159,12 +160,10 @@ During installation, Gemini CLI will automatically prompt you for your Sinch cre
 
 - **CONVERSATION_PROJECT_ID**: Your Sinch project ID (required)
 - **CONVERSATION_KEY_ID**: Your API key ID (required)
-- **CONVERSATION_KEY_SECRET**: Your API key secret (required)
+- **CONVERSATION_KEY_SECRET**: Your API key secret (required, stored securely)
 - **CONVERSATION_REGION**: Your region (us, eu, or br) (required)
 - **CONVERSATION_APP_ID**: Your Sinch Conversation API App ID (required)
-- **NGROK_AUTH_TOKEN**: (Optional) Ngrok token - only needed for `get-message-events` tool
-
-**Note:** You can skip `NGROK_AUTH_TOKEN` if you only need to send messages. It's only required for receiving message delivery events/webhooks.
+- **NGROK_AUTH_TOKEN**: (Optional) Ngrok token for message status tracking
 
 ### Verify Installation
 
@@ -172,70 +171,66 @@ During installation, Gemini CLI will automatically prompt you for your Sinch cre
 # List installed extensions
 gemini extensions list
 
-# Check MCP server status
-gemini mcp list
+# View extension settings
+gemini extensions settings list sinch
 ```
-
-Should show: `✓ sinch: command: npx -y @sinch/mcp (stdio) - Connected`
 
 ### Usage
 
-Once installed, you can use Sinch messaging capabilities in Gemini CLI:
+Once installed, restart Gemini CLI and use the available commands:
 
 ```bash
 # Start Gemini CLI
 gemini
 
-# Send a WhatsApp message
-"Send a WhatsApp message to +1234567890 saying 'Hello from Gemini CLI'"
+# Send a message
+/sinch:api:messages:send --to=+14155551234 --message="Hello from Sinch"
 
-# List your Sinch apps
-"List all my Sinch conversation apps"
+# List webhooks
+/sinch:api:webhooks:list
 
-# Send an SMS
-"Send an SMS to +1234567890 with message 'Your order is ready'"
+# Check message status
+/sinch:api:messages:status --message_id=01HXXX123456
 ```
 
-### Available MCP Tools
+### Available Commands
 
-The extension provides access to these Sinch MCP tools:
-
-- **send-text-message** - Send text messages via WhatsApp, SMS, RCS, etc.
-- **send-media-message** - Send media messages (images, videos)
-- **send-location-message** - Send location messages
-- **send-choice-message** - Send interactive choice messages
-- **send-template-message** - Send template messages
-- **list-conversation-apps** - List configured apps and channels
-- **list-messaging-templates** - List available message templates
-- **sinch-mcp-configuration** - Check MCP server configuration status
+- `/sinch:api:messages:send` - Send SMS/RCS messages
+- `/sinch:api:messages:status` - Get message delivery status
+- `/sinch:api:webhooks:list` - List webhooks
+- `/sinch:api:webhooks:create` - Create webhook
+- `/sinch:api:webhooks:update` - Update webhook
+- `/sinch:api:webhooks:delete` - Delete webhook
+- `/sinch:api:webhooks:triggers` - List available triggers
+- `/sinch:api:senders:list` - List active senders
 
 ### Managing Settings
 
 ```bash
 # View extension settings
-gemini extensions settings list sinch-conversation-api
+gemini extensions settings list sinch
 
 # Update a setting
-gemini extensions settings set sinch-conversation-api CONVERSATION_PROJECT_ID
+gemini extensions settings set sinch "Key Secret"
 ```
 
 ### Extension Management
 
 ```bash
 # Update extension
-gemini extensions update sinch-conversation-api
+gemini extensions update sinch
 
 # Disable extension
-gemini extensions disable sinch-conversation-api
+gemini extensions disable sinch
 
 # Enable extension
-gemini extensions enable sinch-conversation-api
+gemini extensions enable sinch
 
 # Uninstall extension
-gemini extensions uninstall sinch-conversation-api
+gemini extensions uninstall sinch
 ```
 
-For detailed documentation, see [plugins/sinch-conversation-api/.gemini-extension/README.md](plugins/sinch-conversation-api/.gemini-extension/README.md).
+For detailed documentation, see [plugins/sinch-gemini-extension/.gemini-extension/README.md](plugins/sinch-gemini-extension/.gemini-extension/README.md).
 
 ## License
 

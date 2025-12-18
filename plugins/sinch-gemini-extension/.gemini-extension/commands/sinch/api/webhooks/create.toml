@@ -1,0 +1,137 @@
+description = "Create a new webhook for your Sinch Conversation app"
+
+prompt = """
+# Create Webhook
+
+Create a new webhook to receive real-time notifications about message events and other activities from Sinch Conversation API.
+
+**IMPORTANT: Execute this command directly. Do NOT generate script files. Do NOT create Python/JavaScript files. Perform the API call immediately using the instructions below.**
+
+## Input
+
+- `--target` / `-t`: Target URL where webhook events will be sent (required)
+- `--triggers` / `-T`: Comma-separated list of event triggers (required)
+- `--secret` / `-s`: Secret token for validating webhook requests (optional)
+
+Arguments: {{args}}
+
+## Instructions
+
+**Execute these steps directly - do not write code or scripts:**
+
+0. Check if {{args}} is empty or only contains the command name:
+   - If empty or no meaningful arguments provided, enter interactive mode:
+     * Ask: "🌐 What is the target webhook URL? (must be HTTPS)"
+     * Ask: "🔔 Which triggers do you want? (comma-separated, or type 'list' to see available triggers)"
+     * If user types 'list', show the Available Triggers section, then ask again
+     * Ask: "🔐 Do you want to set a custom secret? (optional, press Enter to auto-generate)"
+     * Use the provided answers as the arguments for the following steps
+   - If arguments are provided, proceed directly to step 1
+
+1. Parse and validate arguments from {{args}} or interactive input:
+   - Validate that `--target` is provided and is a valid HTTPS URL
+   - Validate that `--triggers` is provided and non-empty
+   - Parse triggers as a comma-separated list
+   - Validate each trigger against the available trigger types
+   - If `--secret` is not provided, generate a random secret
+
+2. Try to call `mcp__sinch__sinch-mcp-configuration` to get the current configuration.
+
+3. If MCP is NOT available, retrieve configuration from environment variables:
+   - CONVERSATION_PROJECT_ID
+   - CONVERSATION_REGION
+   - CONVERSATION_APP_ID
+   - CONVERSATION_KEY_ID
+   - CONVERSATION_KEY_SECRET
+   - If any are missing, report: "Sinch API is not configured. Please set the required environment variables."
+
+4. Check for duplicate webhooks:
+   - List existing webhooks using the same API endpoint
+   - Check if a webhook with the same target URL already exists
+   - If duplicate found, ask user: \"A webhook with target '{target}' already exists. Do you want to update it instead?\"
+
+5. Create the webhook using the Sinch Conversation API:
+   - Endpoint: `POST https://{region}.conversation.api.sinch.com/v1/projects/{projectId}/webhooks`
+   - Use OAuth2 authentication with key ID and secret to generate access token
+   - Include request body with target, triggers, and secret
+
+6. Display the created webhook details:
+   - Webhook ID
+   - Target URL
+   - Configured triggers
+   - Secret (show only once for security)
+
+7. Handle errors gracefully:
+   - If configuration is incomplete, report: "Sinch API is not configured. Please set the required environment variables."
+   - If validation fails, provide clear error messages about what needs to be fixed
+   - If the API call fails, display the error message with status code and error description
+
+## Examples
+
+Create a webhook with multiple triggers:
+```
+/sinch:api:webhooks:create --target=https://example.com/webhook --triggers=MESSAGE_DELIVERY,MESSAGE_INBOUND
+```
+
+Create with a custom secret:
+```
+/sinch:api:webhooks:create -t https://example.com/webhook -T MESSAGE_DELIVERY -s my-secret-token
+```
+
+## API Reference
+
+- **MCP Tool**: `mcp__sinch__sinch-mcp-configuration` (for getting configuration)
+- **API Endpoint**: `POST /v1/projects/{projectId}/apps/{appId}/webhooks`
+- **Documentation**: https://developers.sinch.com/docs/conversation/api-reference/conversation/tag/Webhooks/#tag/Webhooks/operation/Webhooks_CreateWebhook
+
+## Request Body Example
+
+```json
+{
+  \"target\": \"https://example.com/webhook\",
+  \"target_type\": \"HTTP\",
+  \"triggers\": [
+    \"MESSAGE_DELIVERY\",
+    \"MESSAGE_INBOUND\"
+  ],
+  \"secret\": \"your-webhook-secret\"
+}
+```
+
+## Available Triggers
+
+Message-related triggers:
+
+- `MESSAGE_DELIVERY` - Delivery receipts for sent messages
+- `MESSAGE_INBOUND` - Inbound messages from end users
+- `MESSAGE_SUBMIT` - Message submission events
+- `MESSAGE_INBOUND_SMART_CONVERSATION_REDACTION` - Smart conversation redaction events
+
+Other triggers:
+
+- `EVENT_DELIVERY` - Event delivery receipts
+- `EVENT_INBOUND` - Inbound events from end users
+- `CONVERSATION_START` - New conversation started
+- `CONVERSATION_STOP` - Conversation stopped
+- `CONVERSATION_DELETE` - Conversation deleted
+- `CONTACT_CREATE` - Contact created
+- `CONTACT_DELETE` - Contact deleted
+- `CONTACT_MERGE` - Contacts merged
+- `CONTACT_UPDATE` - Contact updated
+- `CONTACT_IDENTITIES_DUPLICATION` - Duplicate contact identities
+- `OPT_IN` - User opted in
+- `OPT_OUT` - User opted out
+- `CAPABILITY` - Channel capability changes
+- `CHANNEL_EVENT` - Channel-specific events
+- `SMART_CONVERSATION` - Smart conversation events
+- `RECORD_NOTIFICATION` - Record notification events
+- `UNSUPPORTED` - Unsupported events
+
+## Notes
+
+- Target URL must be publicly accessible and use HTTPS
+- The secret is used to sign webhook requests for validation
+- Store the webhook secret securely - it's shown only once
+- You can configure multiple triggers for a single webhook
+- Webhook requests include a signature header for verification
+"""
