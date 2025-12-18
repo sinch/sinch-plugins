@@ -14,7 +14,7 @@
             "name": "sinch-claude-plugin",
             "source": "./plugins/sinch-claude-plugin",
             "description": "Claude Code plugin for Sinch Conversation API (SMS, RCS, etc.)",
-            "version": "0.0.6",
+            "version": "0.0.7",
             "author": {
                 "name": "Sinch",
                 "email": "ecosystems@sinch.com",
