@@ -154,13 +154,6 @@ cd sinch-plugins/plugins/sinch-conversation-api/.gemini-extension
 gemini extensions install .
 ```
 
-Or use the installation script:
-
-```bash
-cd plugins/sinch-conversation-api/.gemini-extension
-./install.sh
-```
-
 ### Configuration
 
 During installation, Gemini CLI will automatically prompt you for your Sinch credentials:
