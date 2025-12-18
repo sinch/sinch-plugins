@@ -150,7 +150,7 @@ gemini extensions install https://github.com/sinch/sinch-plugins --ref main
 #### Install from Local Path
 
 ```bash
-cd sinch-plugins/plugins/sinch-conversation-api/.gemini-extension
+cd sinch-plugins/plugins/sinch-gemini-extension/.gemini-extension
 gemini extensions install .
 ```
 
@@ -230,7 +230,7 @@ gemini extensions enable sinch
 gemini extensions uninstall sinch
 ```
 
-For detailed documentation, see [plugins/sinch-conversation-api/.gemini-extension/README.md](plugins/sinch-gemini-extension/README.md).
+For detailed documentation, see [plugins/sinch-gemini-extension/.gemini-extension/README.md](plugins/sinch-gemini-extension/.gemini-extension/README.md).
 
 ## License
 

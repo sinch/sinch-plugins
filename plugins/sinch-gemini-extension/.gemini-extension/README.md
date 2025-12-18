@@ -28,7 +28,7 @@ gemini extensions install https://github.com/sinch/sinch-plugins --ref main
 ### Install from Local Path
 
 ```bash
-gemini extensions install ./plugins/sinch-conversation-api/.gemini-extension
+gemini extensions install ./plugins/sinch-gemini-extension/.gemini-extension
 ```
 
 ### Install from Git Repository
@@ -116,14 +116,14 @@ The extension provides access to these Sinch MCP tools:
 ### View Extension Settings
 
 ```bash
-gemini extensions settings list sinch-conversation-api
+gemini extensions settings list sinch-gemini-extension
 ```
 
 ### Update a Setting
 
 ```bash
-gemini extensions settings set sinch-conversation-api CONVERSATION_PROJECT_ID
-gemini extensions settings set sinch-conversation-api "Key Secret"
+gemini extensions settings set sinch-gemini-extension CONVERSATION_PROJECT_ID
+gemini extensions settings set sinch-gemini-extension "Key Secret"
 ```
 
 You can update settings at any time without reinstalling the extension.
@@ -134,7 +134,7 @@ You can update settings at any time without reinstalling the extension.
 
 ```bash
 # Update this extension
-gemini extensions update sinch-conversation-api
+gemini extensions update sinch-gemini-extension
 
 # Update all extensions
 gemini extensions update --all
@@ -144,22 +144,22 @@ gemini extensions update --all
 
 ```bash
 # Disable globally
-gemini extensions disable sinch-conversation-api
+gemini extensions disable sinch-gemini-extension
 
 # Enable globally
-gemini extensions enable sinch-conversation-api
+gemini extensions enable sinch-gemini-extension
 
 # Disable for current workspace only
-gemini extensions disable sinch-conversation-api --scope workspace
+gemini extensions disable sinch-gemini-extension --scope workspace
 
 # Enable for current workspace only
-gemini extensions enable sinch-conversation-api --scope workspace
+gemini extensions enable sinch-gemini-extension --scope workspace
 ```
 
 ### Uninstall Extension
 
 ```bash
-gemini extensions uninstall sinch-conversation-api
+gemini extensions uninstall sinch-gemini-extension
 ```
 
 ## Development
@@ -171,13 +171,13 @@ gemini extensions uninstall sinch-conversation-api
 Ensure all required environment variables are set via extension settings:
 
 ```bash
-gemini extensions settings list sinch-conversation-api
+gemini extensions settings list sinch-gemini-extension
 ```
 
 If any are missing, set them:
 
 ```bash
-gemini extensions settings set sinch-conversation-api CONVERSATION_PROJECT_ID
+gemini extensions settings set sinch-gemini-extension CONVERSATION_PROJECT_ID
 ```
 
 ### MCP Server Not Connected
@@ -195,7 +195,7 @@ If the Sinch MCP server isn't showing as connected, try restarting Gemini CLI.
 - Verify your Key ID and Key Secret are correct
 - Ensure your access key has not expired
 - Check that the region matches your app's region
-- Update credentials: `gemini extensions settings set sinch-conversation-api "Key Secret"`
+- Update credentials: `gemini extensions settings set sinch-gemini-extension "Key Secret"`
 
 ### Channel Not Configured
 
@@ -214,7 +214,7 @@ Verify your Conversation app has the channel (SMS, WhatsApp, RCS) configured in 
 If you're developing the extension locally:
 
 ```bash
-gemini extensions link ./plugins/sinch-conversation-api/.gemini-extension
+gemini extensions link ./plugins/sinch-gemini-extension/.gemini-extension
 ```
 
 This creates a symlink so changes are immediately available without reinstalling.
