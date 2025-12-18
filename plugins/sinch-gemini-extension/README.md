@@ -22,13 +22,13 @@ A [Gemini CLI extension](https://github.com/google-gemini/gemini-cli) that integ
 ### Install from GitHub (Recommended)
 
 ```bash
-gemini extensions install https://github.com/sinch/sinch-plugins --ref main
+gemini extensions install https://github.com/sinch/sinch-plugins --ref=latest
 ```
 
 ### Install from Local Path
 
 ```bash
-gemini extensions install ./plugins/sinch-gemini-extension/.gemini-extension
+gemini extensions install ./plugins/sinch-gemini-extension
 ```
 
 ### Install from Git Repository

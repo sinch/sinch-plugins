@@ -144,13 +144,13 @@ A Gemini CLI extension that integrates the Sinch Conversation API, allowing you 
 #### Install from GitHub
 
 ```bash
-gemini extensions install https://github.com/sinch/sinch-plugins --ref main
+gemini extensions install https://github.com/sinch/sinch-plugins --ref=latest
 ```
 
 #### Install from Local Path
 
 ```bash
-cd sinch-plugins/plugins/sinch-gemini-extension/.gemini-extension
+cd sinch-plugins/plugins/sinch-gemini-extension
 gemini extensions install .
 ```
 
