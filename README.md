@@ -184,25 +184,25 @@ Once installed, restart Gemini CLI and use the available commands:
 gemini
 
 # Send a message
-/api:messages:send --to=+14155551234 --message="Hello from Sinch"
+/sinch:api:messages:send --to=+14155551234 --message="Hello from Sinch"
 
 # List webhooks
-/api:webhooks:list
+/sinch:api:webhooks:list
 
 # Check message status
-/api:messages:status --message_id=01HXXX123456
+/sinch:api:messages:status --message_id=01HXXX123456
 ```
 
 ### Available Commands
 
-- `/api:messages:send` - Send SMS/RCS messages
-- `/api:messages:status` - Get message delivery status
-- `/api:webhooks:list` - List webhooks
-- `/api:webhooks:create` - Create webhook
-- `/api:webhooks:update` - Update webhook
-- `/api:webhooks:delete` - Delete webhook
-- `/api:webhooks:triggers` - List available triggers
-- `/api:senders:list` - List active senders
+- `/sinch:api:messages:send` - Send SMS/RCS messages
+- `/sinch:api:messages:status` - Get message delivery status
+- `/sinch:api:webhooks:list` - List webhooks
+- `/sinch:api:webhooks:create` - Create webhook
+- `/sinch:api:webhooks:update` - Update webhook
+- `/sinch:api:webhooks:delete` - Delete webhook
+- `/sinch:api:webhooks:triggers` - List available triggers
+- `/sinch:api:senders:list` - List active senders
 
 ### Managing Settings
 
