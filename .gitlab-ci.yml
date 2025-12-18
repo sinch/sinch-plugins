@@ -124,7 +124,7 @@ version-bump:
         PLUGIN_FILE="plugins/sinch-claude-plugin/.claude-plugin/plugin.json"
         MARKETPLACE_FILE=".claude-plugin/marketplace.json"
         PLUGIN_NAME="sinch-claude-plugin"
-        GEMINI_FILE="plugins/sinch-gemini-extension/.gemini-extension/gemini-extension.json"
+        GEMINI_FILE="plugins/sinch-gemini-extension/gemini-extension.json"
         TAG_PREFIX="sinch-claude-plugin-v"
         TAG_PREFIX_GEMINI="sinch-gemini-extension-v"
 
@@ -197,7 +197,7 @@ version-bump:
     - PLUGIN_FILE="plugins/sinch-claude-plugin/.claude-plugin/plugin.json"
     - MARKETPLACE_FILE=".claude-plugin/marketplace.json"
     - PLUGIN_NAME="sinch-claude-plugin"
-    - GEMINI_FILE="plugins/sinch-gemini-extension/.gemini-extension/gemini-extension.json"
+    - GEMINI_FILE="plugins/sinch-gemini-extension/gemini-extension.json"
     - CURRENT_VERSION=$(jq -r .version $PLUGIN_FILE)
     - echo "Current version $CURRENT_VERSION"
 
@@ -328,7 +328,7 @@ sync_to_github:
 # Split into small retryable jobs.
 # ================================
 
-build_skills_artifacts:
+build_artifacts:
   stage: release
   image: alpine:latest
   timeout: 10 minutes
@@ -392,15 +392,39 @@ build_skills_artifacts:
         exit 1;
       fi
       (cd "plugins/sinch-claude-plugin" && zip -r "../../$ZIP_VERSIONED" "skills")
-    # Write skills.env in script (not after_script) so dotenv artifact is collected
+
+    # Build Gemini extension archive
+    - GEMINI_DIR="plugins/sinch-gemini-extension"
+    - GEMINI_ZIP="dist/sinch-gemini-extension-${VERSION_FOR_ZIP}.zip"
+    - |
+      echo "Zipping Gemini extension folder: $GEMINI_DIR"
+      if [ ! -d "$GEMINI_DIR" ]; then
+        echo "ERROR: Gemini extension directory not found: $GEMINI_DIR";
+        exit 1;
+      fi
+      # Ensure gemini-extension.json has correct version
+      GEMINI_FILE="$GEMINI_DIR/gemini-extension.json"
+      GEMINI_VERSION=$(jq -r .version "$GEMINI_FILE")
+      if [ -n "${NEW_VERSION:-}" ] && [ "$GEMINI_VERSION" != "$NEW_VERSION" ]; then
+        if [ "${VERSION_BUMP_TYPE:-}" != "none" ]; then
+          echo "WARNING: gemini-extension.json version ($GEMINI_VERSION) != NEW_VERSION ($NEW_VERSION); updating for packaging."
+          jq --indent 2 --arg v "$NEW_VERSION" '.version = $v' "$GEMINI_FILE" > tmp.gemini.json && mv tmp.gemini.json "$GEMINI_FILE"
+        else
+          echo "ERROR: gemini-extension.json version ($GEMINI_VERSION) != NEW_VERSION ($NEW_VERSION)."
+          exit 1
+        fi
+      fi
+      # Create zip with extension contents at root (gemini-extension.json must be at root of archive)
+      (cd "$GEMINI_DIR" && zip -r "../../$GEMINI_ZIP" .)
+    # Write artifacts.env in script (not after_script) so dotenv artifact is collected
     - |
       {
-        echo "SKILLS_ARTIFACT_JOB_ID=$CI_JOB_ID";
-      } > skills.env
+        echo "ARTIFACTS_JOB_ID=$CI_JOB_ID";
+      } > artifacts.env
   artifacts:
     expire_in: never
     reports:
-      dotenv: skills.env
+      dotenv: artifacts.env
     paths:
       - dist/*.zip
 
@@ -475,7 +499,7 @@ gitlab_release:
   needs:
     - job: version-bump
       artifacts: true
-    - job: build_skills_artifacts
+    - job: build_artifacts
       artifacts: true
     - job: gitlab_tag
       artifacts: false
@@ -492,7 +516,9 @@ gitlab_release:
     assets:
       links:
         - name: "sinch-agent-skills-${NEW_VERSION}.zip"
-          url: "$CI_PROJECT_URL/-/jobs/$SKILLS_ARTIFACT_JOB_ID/artifacts/raw/dist/sinch-agent-skills-${NEW_VERSION}.zip"
+          url: "$CI_PROJECT_URL/-/jobs/$ARTIFACTS_JOB_ID/artifacts/raw/dist/sinch-agent-skills-${NEW_VERSION}.zip"
+        - name: "sinch-gemini-extension-${NEW_VERSION}.zip"
+          url: "$CI_PROJECT_URL/-/jobs/$ARTIFACTS_JOB_ID/artifacts/raw/dist/sinch-gemini-extension-${NEW_VERSION}.zip"
   allow_failure: true
 
 github_release_prepare:
@@ -602,7 +628,7 @@ github_upload_versioned_asset:
   needs:
     - job: version-bump
       artifacts: true
-    - job: build_skills_artifacts
+    - job: build_artifacts
       artifacts: true
     - job: github_release_prepare
       artifacts: true
@@ -640,3 +666,154 @@ github_upload_versioned_asset:
         -H "Content-Type: application/zip" \
         --data-binary "@$ZIP_FILE" \
         "https://uploads.github.com/repos/${GITHUB_REPO_PATH}/releases/${GITHUB_RELEASE_ID}/assets?name=${name}" > /dev/null
+
+# ================================
+# Stage 3b - Gemini Extension GitHub Release
+# Creates a separate release for sinch-gemini-extension with "latest" tag
+# ================================
+
+github_gemini_release_prepare:
+  stage: release
+  image: alpine:latest
+  timeout: 10 minutes
+  needs:
+    - job: version-bump
+      artifacts: true
+    - job: sync_to_github
+      artifacts: false
+      optional: true
+  resource_group: release-gemini
+  extends:
+    - .git_config
+    - .retry_config
+    - .release_rules
+  before_script:
+    - apk add --no-cache git curl jq
+    - !reference [.git_config, before_script]
+  script:
+    - |
+      if [ -z "${TAG_NAME_GEMINI:-}" ] || [ -z "${NEW_VERSION:-}" ]; then
+        echo "ERROR: TAG_NAME_GEMINI/NEW_VERSION missing. Did version-bump export release.env?";
+        exit 1;
+      fi
+
+      TARGET_BRANCH="$CI_DEFAULT_BRANCH"
+    - *parse_github_url_script
+    - |
+      GITHUB_REPO_PATH="$GITHUB_REPO_URL_CLEAN"
+      GITHUB_REPO_PATH="${GITHUB_REPO_PATH#github.com/}"
+      GITHUB_REPO_PATH="${GITHUB_REPO_PATH%.git}"
+      echo "GitHub repo path: $GITHUB_REPO_PATH"
+      GITHUB_CLONE_URL="https://x-access-token:${GITHUB_PAT_2}@${GITHUB_REPO_URL_CLEAN}"
+
+      API="https://api.github.com/repos/${GITHUB_REPO_PATH}"
+      AUTH_HEADER="Authorization: Bearer ${GITHUB_PAT_2}"
+      ACCEPT_HEADER="Accept: application/vnd.github+json"
+
+      # Handle the "latest" tag - delete if exists, then recreate pointing to current commit
+      LATEST_TAG="sinch-gemini-extension-latest"
+      echo "Managing latest tag: $LATEST_TAG"
+
+      # Delete the existing latest tag on GitHub if it exists
+      if git ls-remote --exit-code --tags "$GITHUB_CLONE_URL" "refs/tags/$LATEST_TAG" > /dev/null 2>&1; then
+        echo "Deleting existing latest tag on GitHub: $LATEST_TAG"
+        if [ ! -d repo_github ]; then
+          git clone --depth 1 --branch "$TARGET_BRANCH" "$GITHUB_CLONE_URL" repo_github
+        fi
+        cd repo_github
+        git push origin --delete "$LATEST_TAG" || echo "WARNING: Failed to delete remote tag"
+        cd ..
+      fi
+
+      # Create/update latest tag pointing to the same commit as the version tag
+      if [ ! -d repo_github ]; then
+        git clone --depth 1 --branch "$TARGET_BRANCH" "$GITHUB_CLONE_URL" repo_github
+      fi
+      cd repo_github
+      git fetch --tags origin
+      # Get the commit SHA for the version tag
+      VERSION_TAG_SHA=$(git rev-list -n 1 "$TAG_NAME_GEMINI" 2>/dev/null || git rev-parse HEAD)
+      git tag -fa "$LATEST_TAG" "$VERSION_TAG_SHA" -m "Latest release: $TAG_NAME_GEMINI"
+      git push origin "$LATEST_TAG" --force
+      cd ..
+
+      # Check if Gemini release already exists for the version tag
+      existing=$(curl -sS -H "$AUTH_HEADER" -H "$ACCEPT_HEADER" "$API/releases/tags/$TAG_NAME_GEMINI" || true)
+      gemini_release_id=$(echo "$existing" | jq -r '.id // empty' 2>/dev/null || true)
+
+      if [ -z "$gemini_release_id" ] || [ "$gemini_release_id" = "null" ]; then
+        echo "Creating GitHub release for Gemini extension: $TAG_NAME_GEMINI"
+        payload=$(jq -n \
+          --arg tag "$TAG_NAME_GEMINI" \
+          --arg name "Sinch Gemini Extension v${NEW_VERSION}" \
+          --arg body "Sinch Gemini CLI Extension v${NEW_VERSION}\n\nInstall with: gemini extensions install ${GITHUB_REPO_PATH}#plugins/sinch-gemini-extension --ref=${TAG_NAME_GEMINI}" \
+          '{tag_name:$tag, name:$name, body:$body, draft:false, prerelease:false, make_latest:"true"}')
+        created=$(curl -sS -X POST -H "$AUTH_HEADER" -H "$ACCEPT_HEADER" -H "Content-Type: application/json" \
+          -d "$payload" "$API/releases")
+        gemini_release_id=$(echo "$created" | jq -r '.id')
+      else
+        echo "GitHub release already exists for $TAG_NAME_GEMINI (id=$gemini_release_id)"
+        # Update the release to mark it as latest
+        echo "Marking release as latest..."
+        curl -sS -X PATCH -H "$AUTH_HEADER" -H "$ACCEPT_HEADER" -H "Content-Type: application/json" \
+          -d '{"make_latest":"true"}' "$API/releases/$gemini_release_id" > /dev/null || true
+      fi
+
+      if [ -z "$gemini_release_id" ] || [ "$gemini_release_id" = "null" ]; then
+        echo "ERROR: Unable to determine Gemini GitHub release id";
+        exit 1;
+      fi
+
+      {
+        echo "GITHUB_REPO_PATH_GEMINI=$GITHUB_REPO_PATH";
+        echo "GITHUB_GEMINI_RELEASE_ID=$gemini_release_id";
+      } > github_gemini.env
+  artifacts:
+    reports:
+      dotenv: github_gemini.env
+
+github_gemini_upload_asset:
+  stage: release
+  image: alpine:latest
+  timeout: 10 minutes
+  needs:
+    - job: version-bump
+      artifacts: true
+    - job: build_artifacts
+      artifacts: true
+    - job: github_gemini_release_prepare
+      artifacts: true
+  extends:
+    - .retry_config
+    - .release_rules
+  before_script:
+    - apk add --no-cache curl jq
+  script:
+    - GEMINI_ZIP="dist/sinch-gemini-extension-${NEW_VERSION}.zip"
+    - |
+      if [ ! -f "$GEMINI_ZIP" ]; then
+        echo "ERROR: Expected Gemini artifact not found: $GEMINI_ZIP";
+        ls -la dist || true;
+        exit 1;
+      fi
+
+      API="https://api.github.com/repos/${GITHUB_REPO_PATH_GEMINI}"
+      AUTH_HEADER="Authorization: Bearer ${GITHUB_PAT_2}"
+      ACCEPT_HEADER="Accept: application/vnd.github+json"
+
+      assets=$(curl -sS -H "$AUTH_HEADER" -H "$ACCEPT_HEADER" "$API/releases/$GITHUB_GEMINI_RELEASE_ID/assets" || true)
+      name=$(basename "$GEMINI_ZIP")
+      existing_asset_id=$(echo "$assets" | jq -r --arg n "$name" '.[] | select(.name==$n) | .id' | head -n 1)
+
+      if [ -n "$existing_asset_id" ] && [ "$existing_asset_id" != "null" ]; then
+        echo "Asset already exists; skipping upload: $name"
+        exit 0
+      fi
+
+      echo "Uploading Gemini extension asset: $name"
+      curl -sS -X POST \
+        -H "$AUTH_HEADER" \
+        -H "$ACCEPT_HEADER" \
+        -H "Content-Type: application/zip" \
+        --data-binary "@$GEMINI_ZIP" \
+        "https://uploads.github.com/repos/${GITHUB_REPO_PATH_GEMINI}/releases/${GITHUB_GEMINI_RELEASE_ID}/assets?name=${name}" > /dev/null
