@@ -137,7 +137,105 @@ Available skills:
 
 ## Gemini CLI
 
-Gemini CLI support will be added to this repository in a future update.
+A Gemini CLI extension that integrates the Sinch Conversation API, enabling you to send messages via SMS, WhatsApp, RCS, and other messaging channels directly from Gemini CLI using natural language.
+
+### Installation
+
+#### Install from Local Path
+
+```bash
+gemini extensions install ./plugins/sinch-conversation-api/.gemini-extension
+```
+
+#### Install from Git Repository
+
+```bash
+gemini extensions install https://gitlab.com/sinch/sinch-projects/applications/smb/teams/partnership_devex/sinch-conversation-claude-plugin.git --ref main
+```
+
+### Configuration
+
+During installation, Gemini CLI will automatically prompt you for your Sinch credentials:
+
+- **CONVERSATION_PROJECT_ID**: Your Sinch project ID (required)
+- **CONVERSATION_KEY_ID**: Your API key ID (required)
+- **CONVERSATION_KEY_SECRET**: Your API key secret (required)
+- **CONVERSATION_REGION**: Your region (us, eu, or br) (required)
+- **CONVERSATION_APP_ID**: Your Sinch Conversation API App ID (required)
+- **NGROK_AUTH_TOKEN**: (Optional) Ngrok token - only needed for `get-message-events` tool
+
+**Note:** You can skip `NGROK_AUTH_TOKEN` if you only need to send messages. It's only required for receiving message delivery events/webhooks.
+
+### Verify Installation
+
+```bash
+# List installed extensions
+gemini extensions list
+
+# Check MCP server status
+gemini mcp list
+```
+
+Should show: `✓ sinch: command: npx -y @sinch/mcp (stdio) - Connected`
+
+### Usage
+
+Once installed, you can use Sinch messaging capabilities in Gemini CLI:
+
+```bash
+# Start Gemini CLI
+gemini
+
+# Send a WhatsApp message
+"Send a WhatsApp message to +1234567890 saying 'Hello from Gemini CLI'"
+
+# List your Sinch apps
+"List all my Sinch conversation apps"
+
+# Send an SMS
+"Send an SMS to +1234567890 with message 'Your order is ready'"
+```
+
+### Available MCP Tools
+
+The extension provides access to these Sinch MCP tools:
+
+- **send-text-message** - Send text messages via WhatsApp, SMS, RCS, etc.
+- **send-media-message** - Send media messages (images, videos)
+- **send-location-message** - Send location messages
+- **send-choice-message** - Send interactive choice messages
+- **send-template-message** - Send template messages
+- **list-conversation-apps** - List configured apps and channels
+- **list-messaging-templates** - List available message templates
+- **sinch-mcp-configuration** - Check MCP server configuration status
+
+### Managing Settings
+
+```bash
+# View extension settings
+gemini extensions settings list sinch-conversation-api
+
+# Update a setting
+gemini extensions settings set sinch-conversation-api CONVERSATION_PROJECT_ID
+```
+
+### Extension Management
+
+```bash
+# Update extension
+gemini extensions update sinch-conversation-api
+
+# Disable extension
+gemini extensions disable sinch-conversation-api
+
+# Enable extension
+gemini extensions enable sinch-conversation-api
+
+# Uninstall extension
+gemini extensions uninstall sinch-conversation-api
+```
+
+For detailed documentation, see [plugins/sinch-conversation-api/.gemini-extension/README.md](plugins/sinch-conversation-api/.gemini-extension/README.md).
 
 ## License
 
