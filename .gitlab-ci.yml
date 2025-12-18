@@ -383,11 +383,10 @@ build_artifacts:
       fi
       (cd "plugins/sinch-claude-plugin" && zip -r "../../$ZIP_VERSIONED" "skills")
 
-    # Build Gemini extension archive
+    # Build Gemini extension archives (platform-specific tar.gz files)
     - GEMINI_DIR="plugins/sinch-gemini-extension"
-    - GEMINI_ZIP="dist/sinch-gemini-extension-${VERSION_FOR_ZIP}.zip"
     - |
-      echo "Zipping Gemini extension folder: $GEMINI_DIR"
+      echo "Building Gemini extension archives: $GEMINI_DIR"
       if [ ! -d "$GEMINI_DIR" ]; then
         echo "ERROR: Gemini extension directory not found: $GEMINI_DIR";
         exit 1;
@@ -404,8 +403,13 @@ build_artifacts:
           exit 1
         fi
       fi
-      # Create zip with extension contents at root (gemini-extension.json must be at root of archive)
-      (cd "$GEMINI_DIR" && zip -r "../../$GEMINI_ZIP" .)
+      # Create platform-specific tar.gz archives (content is identical, names follow Gemini CLI convention)
+      # Format: {platform}.{name}.{extension}
+      for platform in darwin linux win32; do
+        ARCHIVE_NAME="dist/${platform}.sinch-gemini-extension.tar.gz"
+        echo "Creating archive: $ARCHIVE_NAME"
+        (cd "$GEMINI_DIR" && tar -czf "../../$ARCHIVE_NAME" .)
+      done
     # Write artifacts.env in script (not after_script) so dotenv artifact is collected
     - |
       {
@@ -417,6 +421,7 @@ build_artifacts:
       dotenv: artifacts.env
     paths:
       - dist/*.zip
+      - dist/*.tar.gz
 
 gitlab_tag:
   stage: release
@@ -496,8 +501,12 @@ gitlab_release:
       links:
         - name: "sinch-agent-skills-${NEW_VERSION}.zip"
           url: "$CI_PROJECT_URL/-/jobs/$ARTIFACTS_JOB_ID/artifacts/raw/dist/sinch-agent-skills-${NEW_VERSION}.zip"
-        - name: "sinch-gemini-extension-${NEW_VERSION}.zip"
-          url: "$CI_PROJECT_URL/-/jobs/$ARTIFACTS_JOB_ID/artifacts/raw/dist/sinch-gemini-extension-${NEW_VERSION}.zip"
+        - name: "darwin.sinch-gemini-extension.tar.gz"
+          url: "$CI_PROJECT_URL/-/jobs/$ARTIFACTS_JOB_ID/artifacts/raw/dist/darwin.sinch-gemini-extension.tar.gz"
+        - name: "linux.sinch-gemini-extension.tar.gz"
+          url: "$CI_PROJECT_URL/-/jobs/$ARTIFACTS_JOB_ID/artifacts/raw/dist/linux.sinch-gemini-extension.tar.gz"
+        - name: "win32.sinch-gemini-extension.tar.gz"
+          url: "$CI_PROJECT_URL/-/jobs/$ARTIFACTS_JOB_ID/artifacts/raw/dist/win32.sinch-gemini-extension.tar.gz"
   allow_failure: true
 
 github_release_prepare:
@@ -559,10 +568,11 @@ github_release_prepare:
 
       if [ -z "$release_id" ] || [ "$release_id" = "null" ]; then
         echo "Creating GitHub release for tag $TAG_NAME"
+        RELEASE_BODY=$(printf "Sinch Plugins v%s\n\nIncludes:\n- sinch-agent-skills (Claude Code plugin skills)\n- sinch-gemini-extension (Gemini CLI extension)" "$NEW_VERSION")
         payload=$(jq -n \
           --arg tag "$TAG_NAME" \
           --arg name "Sinch Plugins v${NEW_VERSION}" \
-          --arg body "Sinch Plugins v${NEW_VERSION}\n\nIncludes:\n- sinch-agent-skills (Claude Code plugin skills)\n- sinch-gemini-extension (Gemini CLI extension)" \
+          --arg body "$RELEASE_BODY" \
           '{tag_name:$tag, name:$name, body:$body, draft:false, prerelease:false, make_latest:"true"}')
         created=$(curl -sS -X POST -H "$AUTH_HEADER" -H "$ACCEPT_HEADER" -H "Content-Type: application/json" \
           -d "$payload" "$API/releases")
@@ -610,27 +620,33 @@ github_upload_versioned_asset:
       AUTH_HEADER="Authorization: Bearer ${GITHUB_PAT_2}"
       ACCEPT_HEADER="Accept: application/vnd.github+json"
 
-      # Upload both zip files
-      for ZIP_FILE in "dist/sinch-agent-skills-${NEW_VERSION}.zip" "dist/sinch-gemini-extension-${NEW_VERSION}.zip"; do
-        if [ ! -f "$ZIP_FILE" ]; then
-          echo "ERROR: Expected artifact not found: $ZIP_FILE";
+      # Upload skills zip and platform-specific Gemini extension archives
+      for ASSET_FILE in "dist/sinch-agent-skills-${NEW_VERSION}.zip" "dist/darwin.sinch-gemini-extension.tar.gz" "dist/linux.sinch-gemini-extension.tar.gz" "dist/win32.sinch-gemini-extension.tar.gz"; do
+        if [ ! -f "$ASSET_FILE" ]; then
+          echo "ERROR: Expected artifact not found: $ASSET_FILE";
           ls -la dist || true;
           exit 1;
         fi
 
         assets=$(curl -sS -H "$AUTH_HEADER" -H "$ACCEPT_HEADER" "$API/releases/$GITHUB_RELEASE_ID/assets" || true)
-        name=$(basename "$ZIP_FILE")
+        name=$(basename "$ASSET_FILE")
         existing_asset_id=$(echo "$assets" | jq -r --arg n "$name" '.[] | select(.name==$n) | .id' | head -n 1)
 
         if [ -n "$existing_asset_id" ] && [ "$existing_asset_id" != "null" ]; then
           echo "Asset already exists; skipping upload: $name"
         else
-          echo "Uploading GitHub asset: $name"
+          # Determine content type based on file extension
+          case "$ASSET_FILE" in
+            *.tar.gz) CONTENT_TYPE="application/gzip" ;;
+            *.zip) CONTENT_TYPE="application/zip" ;;
+            *) CONTENT_TYPE="application/octet-stream" ;;
+          esac
+          echo "Uploading GitHub asset: $name (content-type: $CONTENT_TYPE)"
           curl -sS -X POST \
             -H "$AUTH_HEADER" \
             -H "$ACCEPT_HEADER" \
-            -H "Content-Type: application/zip" \
-            --data-binary "@$ZIP_FILE" \
+            -H "Content-Type: $CONTENT_TYPE" \
+            --data-binary "@$ASSET_FILE" \
             "https://uploads.github.com/repos/${GITHUB_REPO_PATH}/releases/${GITHUB_RELEASE_ID}/assets?name=${name}" > /dev/null
         fi
       done

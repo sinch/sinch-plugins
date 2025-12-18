@@ -144,7 +144,7 @@ A Gemini CLI extension that integrates the Sinch Conversation API, allowing you 
 #### Install from GitHub
 
 ```bash
-gemini extensions install https://github.com/sinch/sinch-plugins --ref=latest
+gemini extensions install https://github.com/sinch/sinch-plugins
 ```
 
 #### Install from Local Path

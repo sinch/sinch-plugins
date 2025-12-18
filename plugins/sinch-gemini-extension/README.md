@@ -22,19 +22,20 @@ A [Gemini CLI extension](https://github.com/google-gemini/gemini-cli) that integ
 ### Install from GitHub (Recommended)
 
 ```bash
-gemini extensions install https://github.com/sinch/sinch-plugins --ref=latest
+gemini extensions install https://github.com/sinch/sinch-plugins
 ```
 
 ### Install from Local Path
 
 ```bash
-gemini extensions install ./plugins/sinch-gemini-extension
+cd sinch-plugins/plugins/sinch-gemini-extension
+gemini extensions install .
 ```
 
 ### Install from Git Repository
 
 ```bash
-gemini extensions install https://gitlab.com/sinch/sinch-projects/applications/smb/teams/partnership_devex/sinch-conversation-claude-plugin.git --ref main
+gemini extensions install https://github.com/sinch/sinch-plugins
 ```
 
 ## Configuration
