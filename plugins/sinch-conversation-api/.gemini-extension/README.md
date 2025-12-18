@@ -24,6 +24,7 @@ When you install the extension, Gemini CLI will automatically prompt you for you
 - **CONVERSATION_KEY_ID**: Your API key ID (required)
 - **CONVERSATION_KEY_SECRET**: Your API key secret (required, hidden input)
 - **CONVERSATION_REGION**: Your region (us, eu, or br) (required)
+- **CONVERSATION_APP_ID**: Your Sinch Conversation API App ID (required)
 - **NGROK_AUTH_TOKEN**: (Optional) Ngrok token - only needed for `get-message-events` tool
 
 **Note:** You can skip `NGROK_AUTH_TOKEN` if you only need to send messages. It's only required for receiving message delivery events/webhooks.
