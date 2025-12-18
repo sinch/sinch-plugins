@@ -31,14 +31,6 @@ spec:
         - minor
         - major
         - none
-    release_tag_override:
-      description: "Optional: explicit tag to publish/republish (e.g., sinch-claude-plugin-v0.0.2)."
-      type: string
-      default: ""
-    release_version_override:
-      description: "Optional: explicit version to publish/republish (e.g., 0.0.2). Used to compute tag if release_tag_override is empty."
-      type: string
-      default: ""
 ---
 default:
   tags:
@@ -51,8 +43,6 @@ default:
 variables:
   # Make the pipeline input available in `rules:` and `script:` blocks.
   VERSION_BUMP_TYPE: $[[ inputs.version_bump_type ]]
-  RELEASE_TAG_OVERRIDE: $[[ inputs.release_tag_override ]]
-  RELEASE_VERSION_OVERRIDE: $[[ inputs.release_version_override ]]
 
 stages:
   - pre-release
@@ -60,11 +50,64 @@ stages:
   - release
 
 # ================================
+# Reusable Templates & Anchors
+# ================================
+
+# Common rules for release jobs:
+# - push + bump: Normal release flow with version bump
+# - web (any bump_type): Support republish flow - re-syncs existing version
+.release_rules:
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $VERSION_BUMP_TYPE != "none" && $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "web"
+
+# Rules for jobs that run on all triggers (including bump_type=none on push)
+.all_triggers_rules:
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "web"
+
+# Common Git configuration
+.git_config:
+  before_script:
+    - |
+      echo "🔐 Configuring Git authentication..."
+      git config --global user.email "${GITLAB_USER_EMAIL:-ci@sinch.com}"
+      git config --global user.name "${GITLAB_USER_NAME:-CI Release Bot}"
+
+# Common retry configuration for network/API operations
+.retry_config:
+  retry:
+    max: 2
+    when:
+      - api_failure
+      - runner_system_failure
+      - unknown_failure
+
+# GitHub URL parsing script (reusable anchor)
+.parse_github_url_script: &parse_github_url_script |
+  GITHUB_REPO_URL_CLEAN="${GITHUB_REPO_URL#https://}"
+  GITHUB_REPO_URL_CLEAN="${GITHUB_REPO_URL_CLEAN#http://}"
+  GITHUB_REPO_HOST_PART="${GITHUB_REPO_URL_CLEAN%%/*}"
+  if [ "$GITHUB_REPO_HOST_PART" = "$GITHUB_REPO_URL_CLEAN" ]; then
+    echo "ERROR: GITHUB_REPO_URL must be in the form org/repo, github.com/org/repo, or https://github.com/org/repo";
+    exit 1;
+  fi
+  if [ "$GITHUB_REPO_HOST_PART" = "github.com" ]; then
+    :
+  elif echo "$GITHUB_REPO_HOST_PART" | grep -q '\.'; then
+    :
+  else
+    GITHUB_REPO_URL_CLEAN="github.com/${GITHUB_REPO_URL_CLEAN}"
+  fi
+
+# ================================
 # Stage 1 - Bump Version
 # ================================
 version-bump:
   stage: pre-release
   image: alpine:latest
+  timeout: 10 minutes
   before_script:
     - apk add --no-cache git jq
     - |
@@ -79,49 +122,32 @@ version-bump:
         echo "Skipping version bump; computing release context for republish"
 
         PLUGIN_FILE="plugins/sinch-claude-plugin/.claude-plugin/plugin.json"
+        MARKETPLACE_FILE=".claude-plugin/marketplace.json"
+        PLUGIN_NAME="sinch-claude-plugin"
         TAG_PREFIX="sinch-claude-plugin-v"
 
         # Ensure we can read from default branch even if this is a web pipeline.
         git fetch --prune --tags origin "$CI_DEFAULT_BRANCH" || true
 
-        TAG_NAME=""
-        NEW_VERSION=""
+        DEFAULT_PLUGIN_JSON="$(git show "origin/$CI_DEFAULT_BRANCH:$PLUGIN_FILE" 2>/dev/null || cat "$PLUGIN_FILE")"
+        DEFAULT_MARKETPLACE_JSON="$(git show "origin/$CI_DEFAULT_BRANCH:$MARKETPLACE_FILE" 2>/dev/null || cat "$MARKETPLACE_FILE")"
 
-        if [ -n "${RELEASE_TAG_OVERRIDE:-}" ]; then
-          TAG_NAME="$RELEASE_TAG_OVERRIDE"
+        DEFAULT_PLUGIN_VERSION="$(echo "$DEFAULT_PLUGIN_JSON" | jq -r .version)"
+
+        MATCH_COUNT="$(echo "$DEFAULT_MARKETPLACE_JSON" | jq -r --arg name "$PLUGIN_NAME" '[.plugins[] | select(.name == $name)] | length')"
+        if [ "$MATCH_COUNT" != "1" ]; then
+          echo "ERROR: marketplace.json must contain exactly one plugin named '$PLUGIN_NAME' (found $MATCH_COUNT)."
+          exit 1
         fi
 
-        if [ -n "${RELEASE_VERSION_OVERRIDE:-}" ]; then
-          NEW_VERSION="$RELEASE_VERSION_OVERRIDE"
+        DEFAULT_MARKETPLACE_PLUGIN_VERSION="$(echo "$DEFAULT_MARKETPLACE_JSON" | jq -r --arg name "$PLUGIN_NAME" '.plugins[] | select(.name == $name) | .version')"
+        if [ "$DEFAULT_PLUGIN_VERSION" != "$DEFAULT_MARKETPLACE_PLUGIN_VERSION" ]; then
+          echo "ERROR: version drift on default branch: plugin.json ($DEFAULT_PLUGIN_VERSION) != marketplace plugin entry ($DEFAULT_MARKETPLACE_PLUGIN_VERSION)."
+          exit 1
         fi
 
-        if [ -z "$TAG_NAME" ] && [ -n "${CI_COMMIT_TAG:-}" ]; then
-          TAG_NAME="$CI_COMMIT_TAG"
-        fi
-
-        # Derive NEW_VERSION from tag if possible.
-        if [ -z "$NEW_VERSION" ] && [ -n "$TAG_NAME" ]; then
-          case "$TAG_NAME" in
-            ${TAG_PREFIX}*) NEW_VERSION="${TAG_NAME#${TAG_PREFIX}}" ;;
-          esac
-        fi
-
-        # Otherwise read version from default branch plugin.json (no bump).
-        if [ -z "$NEW_VERSION" ] || [ "$NEW_VERSION" = "null" ]; then
-          DEFAULT_JSON="$(git show "origin/$CI_DEFAULT_BRANCH:$PLUGIN_FILE" 2>/dev/null || cat "$PLUGIN_FILE")"
-          NEW_VERSION="$(echo "$DEFAULT_JSON" | jq -r .version)"
-        fi
-
-        if [ -z "$TAG_NAME" ]; then
-          TAG_NAME="${TAG_PREFIX}${NEW_VERSION}"
-        fi
-
-        if [ -n "${RELEASE_TAG_OVERRIDE:-}" ] && [ -n "${RELEASE_VERSION_OVERRIDE:-}" ]; then
-          if [ "$TAG_NAME" != "${TAG_PREFIX}${NEW_VERSION}" ]; then
-            echo "ERROR: RELEASE_TAG_OVERRIDE and RELEASE_VERSION_OVERRIDE disagree."
-            exit 1
-          fi
-        fi
+        NEW_VERSION="$DEFAULT_PLUGIN_VERSION"
+        TAG_NAME="${TAG_PREFIX}${NEW_VERSION}"
 
         if [ -z "$NEW_VERSION" ] || [ "$NEW_VERSION" = "null" ] || [ -z "$TAG_NAME" ]; then
           echo "ERROR: unable to compute NEW_VERSION/TAG_NAME for republish."
@@ -150,8 +176,22 @@ version-bump:
       git pull origin $CI_COMMIT_REF_NAME
 
     - PLUGIN_FILE="plugins/sinch-claude-plugin/.claude-plugin/plugin.json"
+    - MARKETPLACE_FILE=".claude-plugin/marketplace.json"
+    - PLUGIN_NAME="sinch-claude-plugin"
     - CURRENT_VERSION=$(jq -r .version $PLUGIN_FILE)
     - echo "Current version $CURRENT_VERSION"
+
+    - |
+      MATCH_COUNT=$(jq -r --arg name "$PLUGIN_NAME" '[.plugins[] | select(.name == $name)] | length' "$MARKETPLACE_FILE")
+      if [ "$MATCH_COUNT" != "1" ]; then
+        echo "ERROR: marketplace.json must contain exactly one plugin named '$PLUGIN_NAME' (found $MATCH_COUNT)."
+        exit 1
+      fi
+      MARKETPLACE_PLUGIN_VERSION=$(jq -r --arg name "$PLUGIN_NAME" '.plugins[] | select(.name == $name) | .version' "$MARKETPLACE_FILE")
+      if [ "$MARKETPLACE_PLUGIN_VERSION" != "$CURRENT_VERSION" ]; then
+        echo "ERROR: version drift: plugin.json ($CURRENT_VERSION) != marketplace plugin entry ($MARKETPLACE_PLUGIN_VERSION)."
+        exit 1
+      fi
 
     - |
       major=$(echo "$CURRENT_VERSION" | cut -d. -f1)
@@ -169,9 +209,16 @@ version-bump:
       echo "$NEW_VERSION" > version.txt
 
     - NEW_VERSION=$(cat version.txt)
-    - jq --arg v "$NEW_VERSION" '.version = $v' $PLUGIN_FILE > tmp.json && mv tmp.json $PLUGIN_FILE
+    - jq --indent 2 --arg v "$NEW_VERSION" '.version = $v' $PLUGIN_FILE > tmp.json && mv tmp.json $PLUGIN_FILE
+    - |
+      jq --indent 4 \
+        --arg name "$PLUGIN_NAME" \
+        --arg v "$NEW_VERSION" \
+        '.plugins |= map(if .name == $name then (.version = $v) else . end)' \
+        "$MARKETPLACE_FILE" > tmp.marketplace.json
+      mv tmp.marketplace.json "$MARKETPLACE_FILE"
 
-    - git add $PLUGIN_FILE
+    - git add $PLUGIN_FILE $MARKETPLACE_FILE
     - |
       git commit -m "ci(release): ${NEW_VERSION} [skip ci]"
 
@@ -187,9 +234,8 @@ version-bump:
   artifacts:
     reports:
       dotenv: release.env
-  rules:
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "web"
+  extends:
+    - .all_triggers_rules
 
 # ================================
 # Stage 2 - Sync default branch to GitHub
@@ -201,37 +247,22 @@ sync_to_github:
   image:
     name: alpine/git:latest
     entrypoint: [""]
+  timeout: 10 minutes
   needs:
     - job: version-bump
       artifacts: true
-  before_script:
-    # Configure Git with CI_JOB_TOKEN authentication
-    - |
-      echo "🔐 Configuring Git authentication..."
-      git config --global user.email "${GITLAB_USER_EMAIL:-ci@sinch.com}"
-      git config --global user.name "${GITLAB_USER_NAME:-CI Release Bot}"
+  extends:
+    - .git_config
+    - .retry_config
+    - .release_rules
   script:
     # 1. create a fresh clone to avoid messing up the runner's cache or current workspace
     - git clone $CI_REPOSITORY_URL repo_to_sync
     - cd repo_to_sync
 
     # 2. Add the GitHub remote with the token embedded
-    - |
-      GITHUB_REPO_URL_CLEAN="${GITHUB_REPO_URL#https://}"
-      GITHUB_REPO_URL_CLEAN="${GITHUB_REPO_URL_CLEAN#http://}"
-      GITHUB_REPO_HOST_PART="${GITHUB_REPO_URL_CLEAN%%/*}"
-      if [ "$GITHUB_REPO_HOST_PART" = "$GITHUB_REPO_URL_CLEAN" ]; then
-        echo "ERROR: GITHUB_REPO_URL must be in the form org/repo, github.com/org/repo, or https://github.com/org/repo";
-        exit 1;
-      fi
-      if [ "$GITHUB_REPO_HOST_PART" = "github.com" ]; then
-        :
-      elif echo "$GITHUB_REPO_HOST_PART" | grep -q '\\.'; then
-        :
-      else
-        GITHUB_REPO_URL_CLEAN="github.com/${GITHUB_REPO_URL_CLEAN}"
-      fi
-      git remote add github "https://x-access-token:${GITHUB_PAT_2}@${GITHUB_REPO_URL_CLEAN}"
+    - *parse_github_url_script
+    - git remote add github "https://x-access-token:${GITHUB_PAT_2}@${GITHUB_REPO_URL_CLEAN}"
 
     # 3. Push default branch to GitHub
     - |
@@ -249,21 +280,29 @@ sync_to_github:
       fi
     # 4. Remove .gitlab-ci.yml from final GitHub repo
     - git rm --ignore-unmatch .gitlab-ci.yml
-    - git commit --amend --no-edit
+    # Only amend if there are staged changes (file was actually removed)
+    - |
+      if git diff --cached --quiet; then
+        echo "No changes to commit (file already removed or doesn't exist)"
+      else
+        git commit --amend --no-edit
+      fi
     - git push github "$TARGET_BRANCH" --force
-  rules:
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $VERSION_BUMP_TYPE != "none" && $CI_PIPELINE_SOURCE == "push"
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "web"
 
 # ================================
 # Stage 3 - Tag + Release (GitLab + GitHub)
+# Split into small retryable jobs.
 # ================================
+
 build_skills_artifacts:
   stage: release
   image: alpine:latest
+  timeout: 10 minutes
   needs:
     - job: version-bump
       artifacts: true
+  extends:
+    - .release_rules
   before_script:
     - apk add --no-cache git jq zip
   script:
@@ -304,7 +343,7 @@ build_skills_artifacts:
           CURRENT_VERSION="$NEW_VERSION"
         else
           echo "ERROR: plugin.json version ($CURRENT_VERSION) != NEW_VERSION ($NEW_VERSION)."
-          echo "Hint: use RELEASE_TAG_OVERRIDE / RELEASE_VERSION_OVERRIDE to republish older versions."
+          echo "Hint: republish builds from an existing tag matching NEW_VERSION; ensure the tag exists and matches plugin.json."
           exit 1
         fi
       fi
@@ -319,39 +358,33 @@ build_skills_artifacts:
         exit 1;
       fi
       (cd "plugins/sinch-claude-plugin" && zip -r "../../$ZIP_VERSIONED" "skills")
+    # Write skills.env in script (not after_script) so dotenv artifact is collected
+    - |
+      {
+        echo "SKILLS_ARTIFACT_JOB_ID=$CI_JOB_ID";
+      } > skills.env
   artifacts:
     expire_in: never
     reports:
       dotenv: skills.env
     paths:
       - dist/*.zip
-  after_script:
-    - |
-      {
-        echo "SKILLS_ARTIFACT_JOB_ID=$CI_JOB_ID";
-      } > skills.env
-  rules:
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $VERSION_BUMP_TYPE != "none" && $CI_PIPELINE_SOURCE == "push"
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "web"
-
-# ================================
-# Stage 3 - Tag + Release (GitLab + GitHub)
-# Split into small retryable jobs.
-# ================================
 
 gitlab_tag:
   stage: release
   image: alpine:latest
+  timeout: 5 minutes
   needs:
     - job: version-bump
       artifacts: true
   resource_group: release-default-branch
+  extends:
+    - .git_config
+    - .retry_config
+    - .release_rules
   before_script:
     - apk add --no-cache git
-    - |
-      echo "🔐 Configuring Git authentication..."
-      git config --global user.email "${GITLAB_USER_EMAIL:-ci@sinch.com}"
-      git config --global user.name "${GITLAB_USER_NAME:-CI Release Bot}"
+    - !reference [.git_config, before_script]
   script:
     - |
       if [ -z "${TAG_NAME:-}" ] || [ -z "${NEW_VERSION:-}" ]; then
@@ -386,13 +419,11 @@ gitlab_tag:
       echo "Creating GitLab tag: $TAG_NAME"
       git tag -a "$TAG_NAME" -m "$TAG_NAME"
       git push origin "$TAG_NAME"
-  rules:
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $VERSION_BUMP_TYPE != "none" && $CI_PIPELINE_SOURCE == "push"
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "web"
 
 gitlab_release:
   stage: release
   image: registry.gitlab.com/gitlab-org/release-cli:latest
+  timeout: 5 minutes
   needs:
     - job: version-bump
       artifacts: true
@@ -401,6 +432,8 @@ gitlab_release:
     - job: gitlab_tag
       artifacts: false
       optional: true
+  extends:
+    - .release_rules
   script:
     - echo "Creating GitLab release for $TAG_NAME"
   release:
@@ -411,13 +444,11 @@ gitlab_release:
       links:
         - name: "sinch-claude-plugin-skills-${NEW_VERSION}.zip"
           url: "$CI_PROJECT_URL/-/jobs/$SKILLS_ARTIFACT_JOB_ID/artifacts/raw/dist/sinch-claude-plugin-skills-${NEW_VERSION}.zip"
-  rules:
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $VERSION_BUMP_TYPE != "none" && $CI_PIPELINE_SOURCE == "push"
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "web"
 
 github_release_prepare:
   stage: release
   image: alpine:latest
+  timeout: 10 minutes
   needs:
     - job: version-bump
       artifacts: true
@@ -425,12 +456,13 @@ github_release_prepare:
       artifacts: false
       optional: true
   resource_group: release-default-branch
+  extends:
+    - .git_config
+    - .retry_config
+    - .release_rules
   before_script:
     - apk add --no-cache git curl jq
-    - |
-      echo "🔐 Configuring Git authentication..."
-      git config --global user.email "${GITLAB_USER_EMAIL:-ci@sinch.com}"
-      git config --global user.name "${GITLAB_USER_NAME:-CI Release Bot}"
+    - !reference [.git_config, before_script]
   script:
     - |
       if [ -z "${TAG_NAME:-}" ] || [ -z "${NEW_VERSION:-}" ]; then
@@ -439,21 +471,8 @@ github_release_prepare:
       fi
 
       TARGET_BRANCH="$CI_DEFAULT_BRANCH"
-
-      GITHUB_REPO_URL_CLEAN="${GITHUB_REPO_URL#https://}"
-      GITHUB_REPO_URL_CLEAN="${GITHUB_REPO_URL_CLEAN#http://}"
-      GITHUB_REPO_HOST_PART="${GITHUB_REPO_URL_CLEAN%%/*}"
-      if [ "$GITHUB_REPO_HOST_PART" = "$GITHUB_REPO_URL_CLEAN" ]; then
-        echo "ERROR: GITHUB_REPO_URL must be in the form org/repo, github.com/org/repo, or https://github.com/org/repo";
-        exit 1;
-      fi
-      if [ "$GITHUB_REPO_HOST_PART" = "github.com" ]; then
-        :
-      elif echo "$GITHUB_REPO_HOST_PART" | grep -q '\\.'; then
-        :
-      else
-        GITHUB_REPO_URL_CLEAN="github.com/${GITHUB_REPO_URL_CLEAN}"
-      fi
+    - *parse_github_url_script
+    - |
       GITHUB_REPO_PATH="$GITHUB_REPO_URL_CLEAN"
       GITHUB_REPO_PATH="${GITHUB_REPO_PATH#github.com/}"
       GITHUB_REPO_PATH="${GITHUB_REPO_PATH%.git}"
@@ -508,19 +527,11 @@ github_release_prepare:
   artifacts:
     reports:
       dotenv: github.env
-  retry:
-    max: 2
-    when:
-      - api_failure
-      - runner_system_failure
-      - unknown_failure
-  rules:
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $VERSION_BUMP_TYPE != "none" && $CI_PIPELINE_SOURCE == "push"
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "web"
 
 github_upload_versioned_asset:
   stage: release
   image: alpine:latest
+  timeout: 10 minutes
   needs:
     - job: version-bump
       artifacts: true
@@ -528,6 +539,9 @@ github_upload_versioned_asset:
       artifacts: true
     - job: github_release_prepare
       artifacts: true
+  extends:
+    - .retry_config
+    - .release_rules
   before_script:
     - apk add --no-cache curl jq
   script:
@@ -559,12 +573,3 @@ github_upload_versioned_asset:
         -H "Content-Type: application/zip" \
         --data-binary "@$ZIP_FILE" \
         "https://uploads.github.com/repos/${GITHUB_REPO_PATH}/releases/${GITHUB_RELEASE_ID}/assets?name=${name}" > /dev/null
-  retry:
-    max: 2
-    when:
-      - api_failure
-      - runner_system_failure
-      - unknown_failure
-  rules:
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $VERSION_BUMP_TYPE != "none" && $CI_PIPELINE_SOURCE == "push"
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "web"

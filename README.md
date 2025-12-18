@@ -18,7 +18,7 @@ A Claude Code plugin that integrates the Sinch Conversation API, allowing you to
 
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview) installed.
 - A [Sinch Customer Dashboard](https://dashboard.sinch.com/) account.
-- A Conversation API app with credentials (Project ID, Key ID, Key Secret, App ID).
+- A Conversation API app with credentials (Project ID, Key ID, Key Secret, App ID, App Region).
 
 ### Installation
 
@@ -43,6 +43,11 @@ You need to configure the following variables:
 - `CONVERSATION_REGION`: The region for your app (e.g., `us`, `eu`, `br`).
 - `CONVERSATION_APP_ID`: The specific Conversation App ID you want to use.
 - `NGROK_AUTH_TOKEN` (Optional): Required if you want to use features that need a public callback URL for local testing.
+
+### Get Your Sinch Credentials
+
+Get access and create your access key: You will need a Sinch Build account ([see here for instructions on setting up an account](https://community.sinch.com/t5/Build-Dashboard/How-to-sign-up-for-your-free-Sinch-account/ta-p/8058)). Once you have created an account and logged in, select [Conversation API](https://dashboard.sinch.com/convapi/overview) from the left menu. Review the terms and conditions, select the I agree to the terms and conditions check box, and click GET ACCESS to proceed.
+Then, create your access key. Access keys are used to authenticate calls when using Conversation API. Access keys are generated in the [Sinch Build Dashboard](https://dashboard.sinch.com/settings/access-keys). If you need assistance, you can [review our Community article on access key creation](https://community.sinch.com/t5/Conversation-API/How-to-get-your-access-key-for-Conversation-API/ta-p/8120).
 
 ### Setup Methods
 
@@ -132,184 +137,107 @@ Available skills:
 
 ## Gemini CLI
 
-A Gemini CLI plugin that integrates the Sinch Conversation API, allowing you to send messages (SMS, RCS), manage webhooks, and inspect your Sinch configuration directly from your terminal using Google's Gemini AI.
-
-### Features
-
-- **Send Messages**: Send text messages via SMS or RCS with MCP integration or direct API calls
-- **Check Status**: Retrieve delivery events for sent messages
-- **Manage Webhooks**: Create, list, update, and delete webhooks for your Conversation API app
-- **List Senders**: View active phone numbers and senders with code generation helpers
-- **Interactive Mode**: Commands work with or without arguments - prompts you when needed
-- **MCP Fallback**: Automatically uses MCP server when available, falls back to direct API calls otherwise
-
-### Prerequisites
-
-- [Gemini CLI](https://github.com/google-gemini/gemini-cli) installed
-- A [Sinch Customer Dashboard](https://dashboard.sinch.com/) account
-- A Conversation API app with credentials (Project ID, Key ID, Key Secret, App ID)
-- Optional: [Sinch MCP Server](https://github.com/sinch/sinch-mcp-server) for enhanced functionality
+A Gemini CLI extension that integrates the Sinch Conversation API, allowing you to send messages (SMS, RCS), manage webhooks, and interact with your Sinch configuration directly from Gemini CLI.
 
 ### Installation
 
-#### Option 1: Install via Script (Recommended)
+#### Install from GitHub
+
+```bash
+gemini extensions install https://github.com/sinch/sinch-plugins --ref main
+```
+
+#### Install from Local Path
+
+```bash
+cd sinch-plugins/plugins/sinch-gemini-plugin
+gemini extensions install .
+```
+
+Or use the installation script:
 
 ```bash
 cd plugins/sinch-gemini-plugin
 ./install.sh
 ```
 
-The plugin will automatically install commands to `~/.gemini/commands/sinch/`.
-
-#### Option 2: Manual User-Scoped Installation
-
-Copy the commands to your home directory to make them available across all projects:
-
-```bash
-cp -r plugins/sinch-gemini-plugin/.gemini/commands/sinch ~/.gemini/commands/
-```
-
-#### Option 3: Project-Scoped Installation
-
-Copy the `.gemini` directory to your project root:
-
-```bash
-cp -r plugins/sinch-gemini-plugin/.gemini /path/to/your/project/
-```
-
-This makes the commands available only within that specific project.
-
 ### Configuration
 
-Set the following environment variables in your shell profile (`.zshrc`, `.bashrc`, etc.):
+During installation, Gemini CLI will automatically prompt you for your Sinch credentials:
+
+- **CONVERSATION_PROJECT_ID**: Your Sinch project ID (required)
+- **CONVERSATION_KEY_ID**: Your API key ID (required)
+- **CONVERSATION_KEY_SECRET**: Your API key secret (required, stored securely)
+- **CONVERSATION_REGION**: Your region (us, eu, or br) (required)
+- **CONVERSATION_APP_ID**: Your Sinch Conversation API App ID (required)
+- **NGROK_AUTH_TOKEN**: (Optional) Ngrok token for message status tracking
+
+### Verify Installation
 
 ```bash
-export CONVERSATION_PROJECT_ID="your-project-id"
-export CONVERSATION_KEY_ID="your-key-id"
-export CONVERSATION_KEY_SECRET="your-key-secret"
-export CONVERSATION_REGION="us"  # or "eu", "br"
-export CONVERSATION_APP_ID="your-app-id"
+# List installed extensions
+gemini extensions list
+
+# View extension settings
+gemini extensions settings list sinch
 ```
-
-Optional (for message status tracking):
-
-```bash
-export NGROK_AUTH_TOKEN="your-ngrok-token"
-```
-
-#### Getting Your Credentials
-
-1. Visit the [Sinch Dashboard](https://dashboard.sinch.com/)
-2. Create or select a Conversation API project
-3. Create an app and configure channels (SMS, RCS, etc.)
-4. Generate API credentials (Access Key)
-5. Copy the Project ID, Key ID, Key Secret, Region, and App ID
 
 ### Usage
 
-Commands can be used with arguments or in interactive mode:
-
-#### With Arguments:
+Once installed, restart Gemini CLI and use the available commands:
 
 ```bash
-/sinch:api:messages:send --to=+14155551234 --message="Hello from Sinch"
-```
+# Start Gemini CLI
+gemini
 
-#### Interactive Mode (no arguments):
+# Send a message
+/api:messages:send --to=+14155551234 --message="Hello from Sinch"
 
-```bash
-/sinch:api:messages:send
-# Gemini will prompt you for:
-# 📱 What is the recipient's phone number?
-# 💬 What message do you want to send?
-# 📡 Which channel? (SMS or RCS)
-```
+# List webhooks
+/api:webhooks:list
 
-#### Natural Language:
-
-```bash
-/sinch:api:messages:send please help me send a message to +14155551234
+# Check message status
+/api:messages:status --message_id=01HXXX123456
 ```
 
 ### Available Commands
 
-#### Messages
+- `/api:messages:send` - Send SMS/RCS messages
+- `/api:messages:status` - Get message delivery status
+- `/api:webhooks:list` - List webhooks
+- `/api:webhooks:create` - Create webhook
+- `/api:webhooks:update` - Update webhook
+- `/api:webhooks:delete` - Delete webhook
+- `/api:webhooks:triggers` - List available triggers
+- `/api:senders:list` - List active senders
 
-**Send a message:**
-
-```bash
-/sinch:api:messages:send --to=+14155551234 --message="Hello"
-/sinch:api:messages:send -t +14155551234 -m "Hello" --channel=RCS
-```
-
-**Get message status:**
-
-```bash
-/sinch:api:messages:status --message_id=01HXXX123456
-/sinch:api:messages:status -m 01HXXX123456
-```
-
-#### Webhooks
-
-**List webhooks:**
+### Managing Settings
 
 ```bash
-/sinch:api:webhooks:list
-/sinch:api:webhooks:list --format=json
+# View extension settings
+gemini extensions settings list sinch
+
+# Update a setting
+gemini extensions settings set sinch "Key Secret"
 ```
 
-**Create webhook:**
+### Extension Management
 
 ```bash
-/sinch:api:webhooks:create --target=https://example.com/webhook --triggers=MESSAGE_INBOUND
-/sinch:api:webhooks:create -t https://example.com/hook -T MESSAGE_INBOUND,MESSAGE_DELIVERY -s my-secret-123456
+# Update extension
+gemini extensions update sinch
+
+# Disable extension
+gemini extensions disable sinch
+
+# Enable extension
+gemini extensions enable sinch
+
+# Uninstall extension
+gemini extensions uninstall sinch
 ```
 
-**Update webhook:**
-
-```bash
-/sinch:api:webhooks:update --id=01E9DQJF... --target=https://new-endpoint.com/webhook
-/sinch:api:webhooks:update -i 01E9DQJF... -T MESSAGE_INBOUND,MESSAGE_DELIVERY
-```
-
-**Delete webhook:**
-
-```bash
-/sinch:api:webhooks:delete --id=01E9DQJF...
-/sinch:api:webhooks:delete -i 01E9DQJF... --force
-```
-
-**List webhook triggers:**
-
-```bash
-/sinch:api:webhooks:triggers
-```
-
-#### Senders
-
-**List active senders (interactive):**
-
-```bash
-/sinch:api:senders:list
-```
-
-### Command Structure
-
-Commands follow a namespaced structure using colons (`:`) as separators:
-
-- `/sinch:api:messages:send` - Maps to `.gemini/commands/sinch/api/messages/send.toml`
-- `/sinch:api:webhooks:list` - Maps to `.gemini/commands/sinch/api/webhooks/list.toml`
-- `/sinch:api:senders:list` - Maps to `.gemini/commands/sinch/api/senders/list.toml`
-
-### Architecture
-
-This plugin provides custom slash commands for Gemini CLI that:
-
-1. **Try MCP first**: If the [Sinch MCP Server](https://github.com/sinch/sinch-mcp-server) is available, commands will use MCP tools (`mcp__sinch__send-text-message`, `mcp__sinch__get-message-events`, etc.)
-2. **Fallback to direct API**: If MCP is not available, commands automatically make direct API calls using environment variables
-3. **Interactive prompts**: All commands support interactive mode when called without arguments
-
-This dual approach ensures commands work in any environment, with or without MCP server setup.
+For detailed documentation, see [plugins/sinch-gemini-plugin/README.md](plugins/sinch-gemini-plugin/README.md).
 
 ## License
 

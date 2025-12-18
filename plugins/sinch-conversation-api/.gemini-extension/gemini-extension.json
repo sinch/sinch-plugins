@@ -1,0 +1,55 @@
+{
+  "name": "sinch-gemini-extension",
+  "version": "0.0.1",
+  "mcpServers": {
+    "sinch": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@sinch/mcp"
+      ],
+      "env": {
+        "CONVERSATION_PROJECT_ID": "${CONVERSATION_PROJECT_ID}",
+        "CONVERSATION_KEY_ID": "${CONVERSATION_KEY_ID}",
+        "CONVERSATION_KEY_SECRET": "${CONVERSATION_KEY_SECRET}",
+        "CONVERSATION_REGION": "${CONVERSATION_REGION}",
+        "CONVERSATION_APP_ID": "${CONVERSATION_APP_ID}",
+        "NGROK_AUTH_TOKEN": "${NGROK_AUTH_TOKEN}"
+      },
+      "timeout": 15000
+    }
+  },
+  "settings": [
+    {
+      "name": "CONVERSATION_PROJECT_ID",
+      "description": "Your Sinch Conversation API Project ID",
+      "envVar": "CONVERSATION_PROJECT_ID"
+    },
+    {
+      "name": "CONVERSATION_KEY_ID",
+      "description": "Your Sinch Conversation API Key ID",
+      "envVar": "CONVERSATION_KEY_ID"
+    },
+    {
+      "name": "CONVERSATION_KEY_SECRET",
+      "description": "Your Sinch Conversation API Key Secret",
+      "envVar": "CONVERSATION_KEY_SECRET"
+    },
+    {
+      "name": "CONVERSATION_REGION",
+      "description": "Your Sinch region (us, eu, or br)",
+      "envVar": "CONVERSATION_REGION"
+    },
+    {
+      "name": "CONVERSATION_APP_ID",
+      "description": "Your Sinch Conversation API App ID",
+      "envVar": "CONVERSATION_APP_ID"
+    },
+    {
+      "name": "NGROK_AUTH_TOKEN",
+      "description": "Your Ngrok authentication token (optional, for message events webhook support)",
+      "envVar": "NGROK_AUTH_TOKEN"
+    }
+  ]
+}
+

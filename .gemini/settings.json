@@ -1,0 +1,21 @@
+{
+    "mcpServers": {
+      "sinch": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@sinch/mcp"
+        ],
+        "env": {
+          "CONVERSATION_PROJECT_ID": "${CONVERSATION_PROJECT_ID}",
+          "CONVERSATION_KEY_ID": "${CONVERSATION_KEY_ID}",
+          "CONVERSATION_KEY_SECRET": "${CONVERSATION_KEY_SECRET}",
+          "CONVERSATION_REGION": "${CONVERSATION_REGION}",
+          "CONVERSATION_APP_ID": "${CONVERSATION_APP_ID}",
+          "NGROK_AUTH_TOKEN": "${NGROK_AUTH_TOKEN}"
+        },
+        "timeout": 15000,
+        "trust": true
+      }
+    }
+  }
