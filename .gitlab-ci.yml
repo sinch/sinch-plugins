@@ -125,8 +125,6 @@ version-bump:
         MARKETPLACE_FILE=".claude-plugin/marketplace.json"
         PLUGIN_NAME="sinch-claude-plugin"
         GEMINI_FILE="plugins/sinch-gemini-extension/gemini-extension.json"
-        TAG_PREFIX="sinch-claude-plugin-v"
-        TAG_PREFIX_GEMINI="sinch-gemini-extension-v"
 
         # Ensure we can read from default branch even if this is a web pipeline.
         git fetch --prune --tags origin "$CI_DEFAULT_BRANCH" || true
@@ -157,22 +155,17 @@ version-bump:
         fi
 
         NEW_VERSION="$DEFAULT_PLUGIN_VERSION"
-        TAG_NAME="${TAG_PREFIX}${NEW_VERSION}"
-        TAG_NAME_GEMINI="${TAG_PREFIX_GEMINI}${NEW_VERSION}"
+        TAG_NAME="sinch-plugins-v${NEW_VERSION}"
 
-        if [ -z "$NEW_VERSION" ] || [ "$NEW_VERSION" = "null" ] || [ -z "$TAG_NAME" ] || [ -z "$TAG_NAME_GEMINI" ]; then
-          echo "ERROR: unable to compute NEW_VERSION/TAG_NAME/TAG_NAME_GEMINI for republish."
+        if [ -z "$NEW_VERSION" ] || [ "$NEW_VERSION" = "null" ] || [ -z "$TAG_NAME" ]; then
+          echo "ERROR: unable to compute NEW_VERSION/TAG_NAME for republish."
           exit 1
         fi
 
-        # Require both tags to exist for republish
+        # Require tag to exist for republish
         RELEASE_COMMIT_SHA=""
         if ! git ls-remote --exit-code --tags origin "refs/tags/$TAG_NAME" > /dev/null 2>&1; then
           echo "ERROR: Republish mode requires existing tag. Tag not found: $TAG_NAME"
-          exit 1
-        fi
-        if ! git ls-remote --exit-code --tags origin "refs/tags/$TAG_NAME_GEMINI" > /dev/null 2>&1; then
-          echo "ERROR: Republish mode requires existing tag. Tag not found: $TAG_NAME_GEMINI"
           exit 1
         fi
         git fetch --tags origin || true
@@ -181,7 +174,6 @@ version-bump:
         {
           echo "NEW_VERSION=${NEW_VERSION}";
           echo "TAG_NAME=${TAG_NAME}";
-          echo "TAG_NAME_GEMINI=${TAG_NAME_GEMINI}";
           if [ -n "$RELEASE_COMMIT_SHA" ]; then echo "RELEASE_COMMIT_SHA=${RELEASE_COMMIT_SHA}"; fi
         } > release.env
         exit 0
@@ -255,12 +247,10 @@ version-bump:
       git commit -m "ci(release): ${NEW_VERSION} [skip ci]"
 
       RELEASE_COMMIT_SHA="$(git rev-parse HEAD)"
-      TAG_NAME="sinch-claude-plugin-v${NEW_VERSION}"
-      TAG_NAME_GEMINI="sinch-gemini-extension-v${NEW_VERSION}"
+      TAG_NAME="sinch-plugins-v${NEW_VERSION}"
       {
         echo "NEW_VERSION=${NEW_VERSION}";
         echo "TAG_NAME=${TAG_NAME}";
-        echo "TAG_NAME_GEMINI=${TAG_NAME_GEMINI}";
         echo "RELEASE_COMMIT_SHA=${RELEASE_COMMIT_SHA}";
       } > release.env
 
@@ -478,17 +468,6 @@ gitlab_tag:
       git tag -a "$TAG_NAME" -m "$TAG_NAME"
       git push origin "$TAG_NAME"
 
-      # Create Gemini extension tag if it doesn't exist
-      if [ -n "${TAG_NAME_GEMINI:-}" ]; then
-        if git ls-remote --exit-code --tags origin "refs/tags/$TAG_NAME_GEMINI" > /dev/null 2>&1; then
-          echo "GitLab tag already exists: $TAG_NAME_GEMINI (will not move it)"
-        else
-          echo "Creating GitLab tag: $TAG_NAME_GEMINI"
-          git tag -a "$TAG_NAME_GEMINI" -m "$TAG_NAME_GEMINI"
-          git push origin "$TAG_NAME_GEMINI"
-        fi
-      fi
-
 gitlab_release:
   stage: release
   image: registry.gitlab.com/gitlab-org/release-cli:latest
@@ -512,7 +491,7 @@ gitlab_release:
   release:
     tag_name: $TAG_NAME
     name: "Release v${NEW_VERSION}"
-    description: "Release v${NEW_VERSION} - includes sinch-claude-plugin and sinch-gemini-extension"
+    description: "Sinch Plugins v${NEW_VERSION} - includes sinch-claude-plugin skills and sinch-gemini-extension"
     assets:
       links:
         - name: "sinch-agent-skills-${NEW_VERSION}.zip"
@@ -571,22 +550,6 @@ github_release_prepare:
         cd ..
       fi
 
-      # Create Gemini extension tag on GitHub if it doesn't exist
-      if [ -n "${TAG_NAME_GEMINI:-}" ]; then
-        if git ls-remote --exit-code --tags "$GITHUB_CLONE_URL" "refs/tags/$TAG_NAME_GEMINI" > /dev/null 2>&1; then
-          echo "GitHub tag already exists: $TAG_NAME_GEMINI"
-        else
-          echo "Creating GitHub tag: $TAG_NAME_GEMINI on GitHub $TARGET_BRANCH HEAD"
-          if [ ! -d repo_github ]; then
-            git clone --depth 1 --branch "$TARGET_BRANCH" "$GITHUB_CLONE_URL" repo_github
-          fi
-          cd repo_github
-          git tag -a "$TAG_NAME_GEMINI" -m "$TAG_NAME_GEMINI"
-          git push origin "$TAG_NAME_GEMINI"
-          cd ..
-        fi
-      fi
-
       API="https://api.github.com/repos/${GITHUB_REPO_PATH}"
       AUTH_HEADER="Authorization: Bearer ${GITHUB_PAT_2}"
       ACCEPT_HEADER="Accept: application/vnd.github+json"
@@ -598,14 +561,18 @@ github_release_prepare:
         echo "Creating GitHub release for tag $TAG_NAME"
         payload=$(jq -n \
           --arg tag "$TAG_NAME" \
-          --arg name "Release v${NEW_VERSION}" \
-          --arg body "Release v${NEW_VERSION} - includes sinch-claude-plugin and sinch-gemini-extension" \
-          '{tag_name:$tag, name:$name, body:$body, draft:false, prerelease:false}')
+          --arg name "Sinch Plugins v${NEW_VERSION}" \
+          --arg body "Sinch Plugins v${NEW_VERSION}\n\nIncludes:\n- sinch-agent-skills (Claude Code plugin skills)\n- sinch-gemini-extension (Gemini CLI extension)" \
+          '{tag_name:$tag, name:$name, body:$body, draft:false, prerelease:false, make_latest:"true"}')
         created=$(curl -sS -X POST -H "$AUTH_HEADER" -H "$ACCEPT_HEADER" -H "Content-Type: application/json" \
           -d "$payload" "$API/releases")
         release_id=$(echo "$created" | jq -r '.id')
       else
         echo "GitHub release already exists for $TAG_NAME (id=$release_id)"
+        # Update the release to mark it as latest
+        echo "Marking release as latest..."
+        curl -sS -X PATCH -H "$AUTH_HEADER" -H "$ACCEPT_HEADER" -H "Content-Type: application/json" \
+          -d '{"make_latest":"true"}' "$API/releases/$release_id" > /dev/null || true
       fi
 
       if [ -z "$release_id" ] || [ "$release_id" = "null" ]; then
@@ -638,182 +605,32 @@ github_upload_versioned_asset:
   before_script:
     - apk add --no-cache curl jq
   script:
-    - ZIP_FILE="dist/sinch-agent-skills-${NEW_VERSION}.zip"
     - |
-      if [ ! -f "$ZIP_FILE" ]; then
-        echo "ERROR: Expected artifact not found: $ZIP_FILE";
-        ls -la dist || true;
-        exit 1;
-      fi
-
       API="https://api.github.com/repos/${GITHUB_REPO_PATH}"
       AUTH_HEADER="Authorization: Bearer ${GITHUB_PAT_2}"
       ACCEPT_HEADER="Accept: application/vnd.github+json"
 
-      assets=$(curl -sS -H "$AUTH_HEADER" -H "$ACCEPT_HEADER" "$API/releases/$GITHUB_RELEASE_ID/assets" || true)
-      name=$(basename "$ZIP_FILE")
-      existing_asset_id=$(echo "$assets" | jq -r --arg n "$name" '.[] | select(.name==$n) | .id' | head -n 1)
-
-      if [ -n "$existing_asset_id" ] && [ "$existing_asset_id" != "null" ]; then
-        echo "Asset already exists; skipping upload: $name"
-        exit 0
-      fi
-
-      echo "Uploading GitHub asset: $name"
-      curl -sS -X POST \
-        -H "$AUTH_HEADER" \
-        -H "$ACCEPT_HEADER" \
-        -H "Content-Type: application/zip" \
-        --data-binary "@$ZIP_FILE" \
-        "https://uploads.github.com/repos/${GITHUB_REPO_PATH}/releases/${GITHUB_RELEASE_ID}/assets?name=${name}" > /dev/null
-
-# ================================
-# Stage 3b - Gemini Extension GitHub Release
-# Creates a separate release for sinch-gemini-extension with "latest" tag
-# ================================
-
-github_gemini_release_prepare:
-  stage: release
-  image: alpine:latest
-  timeout: 10 minutes
-  needs:
-    - job: version-bump
-      artifacts: true
-    - job: sync_to_github
-      artifacts: false
-      optional: true
-  resource_group: release-gemini
-  extends:
-    - .git_config
-    - .retry_config
-    - .release_rules
-  before_script:
-    - apk add --no-cache git curl jq
-    - !reference [.git_config, before_script]
-  script:
-    - |
-      if [ -z "${TAG_NAME_GEMINI:-}" ] || [ -z "${NEW_VERSION:-}" ]; then
-        echo "ERROR: TAG_NAME_GEMINI/NEW_VERSION missing. Did version-bump export release.env?";
-        exit 1;
-      fi
-
-      TARGET_BRANCH="$CI_DEFAULT_BRANCH"
-    - *parse_github_url_script
-    - |
-      GITHUB_REPO_PATH="$GITHUB_REPO_URL_CLEAN"
-      GITHUB_REPO_PATH="${GITHUB_REPO_PATH#github.com/}"
-      GITHUB_REPO_PATH="${GITHUB_REPO_PATH%.git}"
-      echo "GitHub repo path: $GITHUB_REPO_PATH"
-      GITHUB_CLONE_URL="https://x-access-token:${GITHUB_PAT_2}@${GITHUB_REPO_URL_CLEAN}"
-
-      API="https://api.github.com/repos/${GITHUB_REPO_PATH}"
-      AUTH_HEADER="Authorization: Bearer ${GITHUB_PAT_2}"
-      ACCEPT_HEADER="Accept: application/vnd.github+json"
-
-      # Handle the "latest" tag - delete if exists, then recreate pointing to current commit
-      LATEST_TAG="sinch-gemini-extension-latest"
-      echo "Managing latest tag: $LATEST_TAG"
-
-      # Delete the existing latest tag on GitHub if it exists
-      if git ls-remote --exit-code --tags "$GITHUB_CLONE_URL" "refs/tags/$LATEST_TAG" > /dev/null 2>&1; then
-        echo "Deleting existing latest tag on GitHub: $LATEST_TAG"
-        if [ ! -d repo_github ]; then
-          git clone --depth 1 --branch "$TARGET_BRANCH" "$GITHUB_CLONE_URL" repo_github
+      # Upload both zip files
+      for ZIP_FILE in "dist/sinch-agent-skills-${NEW_VERSION}.zip" "dist/sinch-gemini-extension-${NEW_VERSION}.zip"; do
+        if [ ! -f "$ZIP_FILE" ]; then
+          echo "ERROR: Expected artifact not found: $ZIP_FILE";
+          ls -la dist || true;
+          exit 1;
         fi
-        cd repo_github
-        git push origin --delete "$LATEST_TAG" || echo "WARNING: Failed to delete remote tag"
-        cd ..
-      fi
 
-      # Create/update latest tag pointing to the same commit as the version tag
-      if [ ! -d repo_github ]; then
-        git clone --depth 1 --branch "$TARGET_BRANCH" "$GITHUB_CLONE_URL" repo_github
-      fi
-      cd repo_github
-      git fetch --tags origin
-      # Get the commit SHA for the version tag
-      VERSION_TAG_SHA=$(git rev-list -n 1 "$TAG_NAME_GEMINI" 2>/dev/null || git rev-parse HEAD)
-      git tag -fa "$LATEST_TAG" "$VERSION_TAG_SHA" -m "Latest release: $TAG_NAME_GEMINI"
-      git push origin "$LATEST_TAG" --force
-      cd ..
+        assets=$(curl -sS -H "$AUTH_HEADER" -H "$ACCEPT_HEADER" "$API/releases/$GITHUB_RELEASE_ID/assets" || true)
+        name=$(basename "$ZIP_FILE")
+        existing_asset_id=$(echo "$assets" | jq -r --arg n "$name" '.[] | select(.name==$n) | .id' | head -n 1)
 
-      # Check if Gemini release already exists for the version tag
-      existing=$(curl -sS -H "$AUTH_HEADER" -H "$ACCEPT_HEADER" "$API/releases/tags/$TAG_NAME_GEMINI" || true)
-      gemini_release_id=$(echo "$existing" | jq -r '.id // empty' 2>/dev/null || true)
-
-      if [ -z "$gemini_release_id" ] || [ "$gemini_release_id" = "null" ]; then
-        echo "Creating GitHub release for Gemini extension: $TAG_NAME_GEMINI"
-        payload=$(jq -n \
-          --arg tag "$TAG_NAME_GEMINI" \
-          --arg name "Sinch Gemini Extension v${NEW_VERSION}" \
-          --arg body "Sinch Gemini CLI Extension v${NEW_VERSION}\n\nInstall with: gemini extensions install ${GITHUB_REPO_PATH}#plugins/sinch-gemini-extension --ref=${TAG_NAME_GEMINI}" \
-          '{tag_name:$tag, name:$name, body:$body, draft:false, prerelease:false, make_latest:"true"}')
-        created=$(curl -sS -X POST -H "$AUTH_HEADER" -H "$ACCEPT_HEADER" -H "Content-Type: application/json" \
-          -d "$payload" "$API/releases")
-        gemini_release_id=$(echo "$created" | jq -r '.id')
-      else
-        echo "GitHub release already exists for $TAG_NAME_GEMINI (id=$gemini_release_id)"
-        # Update the release to mark it as latest
-        echo "Marking release as latest..."
-        curl -sS -X PATCH -H "$AUTH_HEADER" -H "$ACCEPT_HEADER" -H "Content-Type: application/json" \
-          -d '{"make_latest":"true"}' "$API/releases/$gemini_release_id" > /dev/null || true
-      fi
-
-      if [ -z "$gemini_release_id" ] || [ "$gemini_release_id" = "null" ]; then
-        echo "ERROR: Unable to determine Gemini GitHub release id";
-        exit 1;
-      fi
-
-      {
-        echo "GITHUB_REPO_PATH_GEMINI=$GITHUB_REPO_PATH";
-        echo "GITHUB_GEMINI_RELEASE_ID=$gemini_release_id";
-      } > github_gemini.env
-  artifacts:
-    reports:
-      dotenv: github_gemini.env
-
-github_gemini_upload_asset:
-  stage: release
-  image: alpine:latest
-  timeout: 10 minutes
-  needs:
-    - job: version-bump
-      artifacts: true
-    - job: build_artifacts
-      artifacts: true
-    - job: github_gemini_release_prepare
-      artifacts: true
-  extends:
-    - .retry_config
-    - .release_rules
-  before_script:
-    - apk add --no-cache curl jq
-  script:
-    - GEMINI_ZIP="dist/sinch-gemini-extension-${NEW_VERSION}.zip"
-    - |
-      if [ ! -f "$GEMINI_ZIP" ]; then
-        echo "ERROR: Expected Gemini artifact not found: $GEMINI_ZIP";
-        ls -la dist || true;
-        exit 1;
-      fi
-
-      API="https://api.github.com/repos/${GITHUB_REPO_PATH_GEMINI}"
-      AUTH_HEADER="Authorization: Bearer ${GITHUB_PAT_2}"
-      ACCEPT_HEADER="Accept: application/vnd.github+json"
-
-      assets=$(curl -sS -H "$AUTH_HEADER" -H "$ACCEPT_HEADER" "$API/releases/$GITHUB_GEMINI_RELEASE_ID/assets" || true)
-      name=$(basename "$GEMINI_ZIP")
-      existing_asset_id=$(echo "$assets" | jq -r --arg n "$name" '.[] | select(.name==$n) | .id' | head -n 1)
-
-      if [ -n "$existing_asset_id" ] && [ "$existing_asset_id" != "null" ]; then
-        echo "Asset already exists; skipping upload: $name"
-        exit 0
-      fi
-
-      echo "Uploading Gemini extension asset: $name"
-      curl -sS -X POST \
-        -H "$AUTH_HEADER" \
-        -H "$ACCEPT_HEADER" \
-        -H "Content-Type: application/zip" \
-        --data-binary "@$GEMINI_ZIP" \
-        "https://uploads.github.com/repos/${GITHUB_REPO_PATH_GEMINI}/releases/${GITHUB_GEMINI_RELEASE_ID}/assets?name=${name}" > /dev/null
+        if [ -n "$existing_asset_id" ] && [ "$existing_asset_id" != "null" ]; then
+          echo "Asset already exists; skipping upload: $name"
+        else
+          echo "Uploading GitHub asset: $name"
+          curl -sS -X POST \
+            -H "$AUTH_HEADER" \
+            -H "$ACCEPT_HEADER" \
+            -H "Content-Type: application/zip" \
+            --data-binary "@$ZIP_FILE" \
+            "https://uploads.github.com/repos/${GITHUB_REPO_PATH}/releases/${GITHUB_RELEASE_ID}/assets?name=${name}" > /dev/null
+        fi
+      done
