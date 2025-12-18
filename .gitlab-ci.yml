@@ -124,15 +124,19 @@ version-bump:
         PLUGIN_FILE="plugins/sinch-claude-plugin/.claude-plugin/plugin.json"
         MARKETPLACE_FILE=".claude-plugin/marketplace.json"
         PLUGIN_NAME="sinch-claude-plugin"
+        GEMINI_FILE="plugins/sinch-gemini-extension/.gemini-extension/gemini-extension.json"
         TAG_PREFIX="sinch-claude-plugin-v"
+        TAG_PREFIX_GEMINI="sinch-gemini-extension-v"
 
         # Ensure we can read from default branch even if this is a web pipeline.
         git fetch --prune --tags origin "$CI_DEFAULT_BRANCH" || true
 
         DEFAULT_PLUGIN_JSON="$(git show "origin/$CI_DEFAULT_BRANCH:$PLUGIN_FILE" 2>/dev/null || cat "$PLUGIN_FILE")"
         DEFAULT_MARKETPLACE_JSON="$(git show "origin/$CI_DEFAULT_BRANCH:$MARKETPLACE_FILE" 2>/dev/null || cat "$MARKETPLACE_FILE")"
+        DEFAULT_GEMINI_JSON="$(git show "origin/$CI_DEFAULT_BRANCH:$GEMINI_FILE" 2>/dev/null || cat "$GEMINI_FILE")"
 
         DEFAULT_PLUGIN_VERSION="$(echo "$DEFAULT_PLUGIN_JSON" | jq -r .version)"
+        DEFAULT_GEMINI_VERSION="$(echo "$DEFAULT_GEMINI_JSON" | jq -r .version)"
 
         MATCH_COUNT="$(echo "$DEFAULT_MARKETPLACE_JSON" | jq -r --arg name "$PLUGIN_NAME" '[.plugins[] | select(.name == $name)] | length')"
         if [ "$MATCH_COUNT" != "1" ]; then
@@ -146,23 +150,38 @@ version-bump:
           exit 1
         fi
 
-        NEW_VERSION="$DEFAULT_PLUGIN_VERSION"
-        TAG_NAME="${TAG_PREFIX}${NEW_VERSION}"
-
-        if [ -z "$NEW_VERSION" ] || [ "$NEW_VERSION" = "null" ] || [ -z "$TAG_NAME" ]; then
-          echo "ERROR: unable to compute NEW_VERSION/TAG_NAME for republish."
+        # Validate Gemini version matches Claude version
+        if [ "$DEFAULT_PLUGIN_VERSION" != "$DEFAULT_GEMINI_VERSION" ]; then
+          echo "ERROR: version drift on default branch: plugin.json ($DEFAULT_PLUGIN_VERSION) != gemini-extension.json ($DEFAULT_GEMINI_VERSION)."
           exit 1
         fi
 
-        RELEASE_COMMIT_SHA=""
-        if git ls-remote --exit-code --tags origin "refs/tags/$TAG_NAME" > /dev/null 2>&1; then
-          git fetch --tags origin || true
-          RELEASE_COMMIT_SHA="$(git rev-list -n 1 "$TAG_NAME" 2>/dev/null || true)"
+        NEW_VERSION="$DEFAULT_PLUGIN_VERSION"
+        TAG_NAME="${TAG_PREFIX}${NEW_VERSION}"
+        TAG_NAME_GEMINI="${TAG_PREFIX_GEMINI}${NEW_VERSION}"
+
+        if [ -z "$NEW_VERSION" ] || [ "$NEW_VERSION" = "null" ] || [ -z "$TAG_NAME" ] || [ -z "$TAG_NAME_GEMINI" ]; then
+          echo "ERROR: unable to compute NEW_VERSION/TAG_NAME/TAG_NAME_GEMINI for republish."
+          exit 1
         fi
+
+        # Require both tags to exist for republish
+        RELEASE_COMMIT_SHA=""
+        if ! git ls-remote --exit-code --tags origin "refs/tags/$TAG_NAME" > /dev/null 2>&1; then
+          echo "ERROR: Republish mode requires existing tag. Tag not found: $TAG_NAME"
+          exit 1
+        fi
+        if ! git ls-remote --exit-code --tags origin "refs/tags/$TAG_NAME_GEMINI" > /dev/null 2>&1; then
+          echo "ERROR: Republish mode requires existing tag. Tag not found: $TAG_NAME_GEMINI"
+          exit 1
+        fi
+        git fetch --tags origin || true
+        RELEASE_COMMIT_SHA="$(git rev-list -n 1 "$TAG_NAME" 2>/dev/null || true)"
 
         {
           echo "NEW_VERSION=${NEW_VERSION}";
           echo "TAG_NAME=${TAG_NAME}";
+          echo "TAG_NAME_GEMINI=${TAG_NAME_GEMINI}";
           if [ -n "$RELEASE_COMMIT_SHA" ]; then echo "RELEASE_COMMIT_SHA=${RELEASE_COMMIT_SHA}"; fi
         } > release.env
         exit 0
@@ -178,6 +197,7 @@ version-bump:
     - PLUGIN_FILE="plugins/sinch-claude-plugin/.claude-plugin/plugin.json"
     - MARKETPLACE_FILE=".claude-plugin/marketplace.json"
     - PLUGIN_NAME="sinch-claude-plugin"
+    - GEMINI_FILE="plugins/sinch-gemini-extension/.gemini-extension/gemini-extension.json"
     - CURRENT_VERSION=$(jq -r .version $PLUGIN_FILE)
     - echo "Current version $CURRENT_VERSION"
 
@@ -192,6 +212,15 @@ version-bump:
         echo "ERROR: version drift: plugin.json ($CURRENT_VERSION) != marketplace plugin entry ($MARKETPLACE_PLUGIN_VERSION)."
         exit 1
       fi
+
+    # Validate Gemini extension version matches Claude plugin version
+    - |
+      GEMINI_VERSION=$(jq -r .version "$GEMINI_FILE")
+      if [ "$GEMINI_VERSION" != "$CURRENT_VERSION" ]; then
+        echo "ERROR: version drift: plugin.json ($CURRENT_VERSION) != gemini-extension.json ($GEMINI_VERSION)."
+        exit 1
+      fi
+      echo "Gemini extension version: $GEMINI_VERSION (synchronized)"
 
     - |
       major=$(echo "$CURRENT_VERSION" | cut -d. -f1)
@@ -218,15 +247,20 @@ version-bump:
         "$MARKETPLACE_FILE" > tmp.marketplace.json
       mv tmp.marketplace.json "$MARKETPLACE_FILE"
 
-    - git add $PLUGIN_FILE $MARKETPLACE_FILE
+    # Update Gemini extension version
+    - jq --indent 2 --arg v "$NEW_VERSION" '.version = $v' $GEMINI_FILE > tmp.gemini.json && mv tmp.gemini.json $GEMINI_FILE
+
+    - git add $PLUGIN_FILE $MARKETPLACE_FILE $GEMINI_FILE
     - |
       git commit -m "ci(release): ${NEW_VERSION} [skip ci]"
 
       RELEASE_COMMIT_SHA="$(git rev-parse HEAD)"
       TAG_NAME="sinch-claude-plugin-v${NEW_VERSION}"
+      TAG_NAME_GEMINI="sinch-gemini-extension-v${NEW_VERSION}"
       {
         echo "NEW_VERSION=${NEW_VERSION}";
         echo "TAG_NAME=${TAG_NAME}";
+        echo "TAG_NAME_GEMINI=${TAG_NAME_GEMINI}";
         echo "RELEASE_COMMIT_SHA=${RELEASE_COMMIT_SHA}";
       } > release.env
 
@@ -350,7 +384,7 @@ build_skills_artifacts:
 
     - SKILLS_DIR="plugins/sinch-claude-plugin/skills"
     - VERSION_FOR_ZIP="${NEW_VERSION:-$CURRENT_VERSION}"
-    - ZIP_VERSIONED="dist/sinch-claude-plugin-skills-${VERSION_FOR_ZIP}.zip"
+    - ZIP_VERSIONED="dist/sinch-agent-skills-${VERSION_FOR_ZIP}.zip"
     - |
       echo "Zipping skills folder: $SKILLS_DIR"
       if [ ! -d "$SKILLS_DIR" ]; then
@@ -420,10 +454,24 @@ gitlab_tag:
       git tag -a "$TAG_NAME" -m "$TAG_NAME"
       git push origin "$TAG_NAME"
 
+      # Create Gemini extension tag if it doesn't exist
+      if [ -n "${TAG_NAME_GEMINI:-}" ]; then
+        if git ls-remote --exit-code --tags origin "refs/tags/$TAG_NAME_GEMINI" > /dev/null 2>&1; then
+          echo "GitLab tag already exists: $TAG_NAME_GEMINI (will not move it)"
+        else
+          echo "Creating GitLab tag: $TAG_NAME_GEMINI"
+          git tag -a "$TAG_NAME_GEMINI" -m "$TAG_NAME_GEMINI"
+          git push origin "$TAG_NAME_GEMINI"
+        fi
+      fi
+
 gitlab_release:
   stage: release
   image: registry.gitlab.com/gitlab-org/release-cli:latest
   timeout: 5 minutes
+  # Override runner tags to use default shared runners for release-cli
+  tags:
+    - default
   needs:
     - job: version-bump
       artifacts: true
@@ -433,17 +481,19 @@ gitlab_release:
       artifacts: false
       optional: true
   extends:
+    - .retry_config
     - .release_rules
   script:
     - echo "Creating GitLab release for $TAG_NAME"
   release:
     tag_name: $TAG_NAME
-    name: $TAG_NAME
-    description: "Release $TAG_NAME"
+    name: "Release v${NEW_VERSION}"
+    description: "Release v${NEW_VERSION} - includes sinch-claude-plugin and sinch-gemini-extension"
     assets:
       links:
-        - name: "sinch-claude-plugin-skills-${NEW_VERSION}.zip"
-          url: "$CI_PROJECT_URL/-/jobs/$SKILLS_ARTIFACT_JOB_ID/artifacts/raw/dist/sinch-claude-plugin-skills-${NEW_VERSION}.zip"
+        - name: "sinch-agent-skills-${NEW_VERSION}.zip"
+          url: "$CI_PROJECT_URL/-/jobs/$SKILLS_ARTIFACT_JOB_ID/artifacts/raw/dist/sinch-agent-skills-${NEW_VERSION}.zip"
+  allow_failure: true
 
 github_release_prepare:
   stage: release
@@ -495,6 +545,22 @@ github_release_prepare:
         cd ..
       fi
 
+      # Create Gemini extension tag on GitHub if it doesn't exist
+      if [ -n "${TAG_NAME_GEMINI:-}" ]; then
+        if git ls-remote --exit-code --tags "$GITHUB_CLONE_URL" "refs/tags/$TAG_NAME_GEMINI" > /dev/null 2>&1; then
+          echo "GitHub tag already exists: $TAG_NAME_GEMINI"
+        else
+          echo "Creating GitHub tag: $TAG_NAME_GEMINI on GitHub $TARGET_BRANCH HEAD"
+          if [ ! -d repo_github ]; then
+            git clone --depth 1 --branch "$TARGET_BRANCH" "$GITHUB_CLONE_URL" repo_github
+          fi
+          cd repo_github
+          git tag -a "$TAG_NAME_GEMINI" -m "$TAG_NAME_GEMINI"
+          git push origin "$TAG_NAME_GEMINI"
+          cd ..
+        fi
+      fi
+
       API="https://api.github.com/repos/${GITHUB_REPO_PATH}"
       AUTH_HEADER="Authorization: Bearer ${GITHUB_PAT_2}"
       ACCEPT_HEADER="Accept: application/vnd.github+json"
@@ -506,8 +572,9 @@ github_release_prepare:
         echo "Creating GitHub release for tag $TAG_NAME"
         payload=$(jq -n \
           --arg tag "$TAG_NAME" \
-          --arg name "$TAG_NAME" \
-          '{tag_name:$tag, name:$name, draft:false, prerelease:false}')
+          --arg name "Release v${NEW_VERSION}" \
+          --arg body "Release v${NEW_VERSION} - includes sinch-claude-plugin and sinch-gemini-extension" \
+          '{tag_name:$tag, name:$name, body:$body, draft:false, prerelease:false}')
         created=$(curl -sS -X POST -H "$AUTH_HEADER" -H "$ACCEPT_HEADER" -H "Content-Type: application/json" \
           -d "$payload" "$API/releases")
         release_id=$(echo "$created" | jq -r '.id')
@@ -545,7 +612,7 @@ github_upload_versioned_asset:
   before_script:
     - apk add --no-cache curl jq
   script:
-    - ZIP_FILE="dist/sinch-claude-plugin-skills-${NEW_VERSION}.zip"
+    - ZIP_FILE="dist/sinch-agent-skills-${NEW_VERSION}.zip"
     - |
       if [ ! -f "$ZIP_FILE" ]; then
         echo "ERROR: Expected artifact not found: $ZIP_FILE";
