@@ -1,6 +1,6 @@
 {
   "name": "sinch-gemini-extension",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Gemini CLI extension for Sinch Conversation API (SMS, RCS, etc.)",
   "author": {
     "name": "Sinch",
