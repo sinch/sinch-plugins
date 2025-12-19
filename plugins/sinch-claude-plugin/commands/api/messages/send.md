@@ -8,13 +8,13 @@ argument-hint: --to=<phone> --message=<text> [--channel=SMS|RCS]
 
 # Send Message
 
-Send a text message to a recipient using the Sinch Conversation API. Currently supports SMS and RCS channels.
+Send a text message to a recipient using the Sinch Conversation API. Currently supports SMS only (RCS comming soon).
 
 ## Input
 
 - `--to` / `-t`: Recipient phone number (E.164 format, e.g., +14155551234) - required
 - `--message` / `-m`: Text content - required
-- `--channel` / `-c`: Channel (SMS or RCS) - optional, defaults to SMS
+- `--channel` / `-c`: Channel (SMS) - optional, defaults to SMS
 
 $ARGUMENTS
 
@@ -50,7 +50,7 @@ $ARGUMENTS
    - Then output a ready-to-run command (do not write scripts/files):
 
      ```bash
-     CHANNEL="<SMS|RCS>" \
+     CHANNEL="<SMS>" \
      TO="<+14155551234>" \
      MESSAGE="<Hello>" \
      curl -sS -X POST \
@@ -91,10 +91,4 @@ Send an SMS message:
 
 ```
 /sinch-claude-plugin:api:messages:send --to=+14155551234 --message="Hello"
-```
-
-Send an RCS message:
-
-```
-/sinch-claude-plugin:api:messages:send --to=+14155551234 --message="Hello" --channel=RCS
 ```
