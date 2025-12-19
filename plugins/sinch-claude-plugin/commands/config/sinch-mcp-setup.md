@@ -20,10 +20,6 @@ You need to obtain and configure the following 5 variables:
 - `CONVERSATION_REGION` - Your Sinch region (e.g., `us`, `eu`, `br`)
 - `CONVERSATION_APP_ID` - Your Conversation app ID
 
-Optionally, you can also set:
-
-- `NGROK_AUTH_TOKEN` - Your Ngrok authentication token if you want to use the tool get-message-events, you have to be able to receive events related to a message.
-
 ## How to Get Credentials
 
 Visit the [Sinch Conversation API documentation](https://developers.sinch.com/docs/conversation) for instructions to:
@@ -72,7 +68,7 @@ Paste the script, then save (Ctrl+O, Enter, Ctrl+X)
 
 4. Restart Claude Code to load the new environment variables
 
-5. Run `/sinch:status` to verify the connection
+5. Run `/sinch-claude-plugin:api:messages:send` to verify the connection
 
 If they choose B, proceed to manual instructions below.
 

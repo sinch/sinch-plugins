@@ -9,7 +9,6 @@ A Claude Code plugin that integrates the Sinch Conversation API, allowing you to
 ### Features
 
 - **Send Messages**: Send text messages via SMS, RCS.
-- **Check Status**: Retrieve delivery events for sent messages.
 - **Manage Webhooks**: Create, list, update, and delete webhooks for your Conversation API app.
 - **List Senders**: View active phone numbers and senders.
 - **MCP Integration**: Built on top of the Model Context Protocol (MCP).
@@ -42,7 +41,6 @@ You need to configure the following variables:
 - `CONVERSATION_KEY_SECRET`: Your Access Key Secret.
 - `CONVERSATION_REGION`: The region for your app (e.g., `us`, `eu`, `br`).
 - `CONVERSATION_APP_ID`: The specific Conversation App ID you want to use.
-- `NGROK_AUTH_TOKEN` (Optional): Required if you want to use features that need a public callback URL for local testing.
 
 ### Get Your Sinch Credentials
 
@@ -105,12 +103,6 @@ Once installed and configured, you can use natural language or specific slash co
   /sinch-claude-plugin:api:webhooks:list
   ```
 
-- **Check Message Status**:
-
-  ```
-  /sinch-claude-plugin:api:messages:status --message_id=MESSAGE_ID
-  ```
-
 - **List Active Senders**:
   ```
   /sinch-claude-plugin:api:senders:list
@@ -163,7 +155,6 @@ During installation, Gemini CLI will automatically prompt you for your Sinch cre
 - **CONVERSATION_KEY_SECRET**: Your API key secret (required, stored securely)
 - **CONVERSATION_REGION**: Your region (us, eu, or br) (required)
 - **CONVERSATION_APP_ID**: Your Sinch Conversation API App ID (required)
-- **NGROK_AUTH_TOKEN**: (Optional) Ngrok token for message status tracking
 
 ### Verify Installation
 
@@ -188,15 +179,11 @@ gemini
 
 # List webhooks
 /sinch:api:webhooks:list
-
-# Check message status
-/sinch:api:messages:status --message_id=01HXXX123456
 ```
 
 ### Available Commands
 
 - `/sinch:api:messages:send` - Send SMS/RCS messages
-- `/sinch:api:messages:status` - Get message delivery status
 - `/sinch:api:webhooks:list` - List webhooks
 - `/sinch:api:webhooks:create` - Create webhook
 - `/sinch:api:webhooks:update` - Update webhook

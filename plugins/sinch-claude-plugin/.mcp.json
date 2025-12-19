@@ -11,8 +11,7 @@
                 "CONVERSATION_KEY_ID": "${CONVERSATION_KEY_ID}",
                 "CONVERSATION_KEY_SECRET": "${CONVERSATION_KEY_SECRET}",
                 "CONVERSATION_REGION": "${CONVERSATION_REGION}",
-                "CONVERSATION_APP_ID": "${CONVERSATION_APP_ID}",
-                "NGROK_AUTH_TOKEN": "${NGROK_AUTH_TOKEN}"
+                "CONVERSATION_APP_ID": "${CONVERSATION_APP_ID}"
             }
         }
     }

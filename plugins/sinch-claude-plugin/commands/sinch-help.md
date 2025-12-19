@@ -22,10 +22,6 @@ You need to obtain and configure the following 5 variables:
 - `CONVERSATION_REGION` - Your Sinch region (e.g., `us`, `eu`, `br`)
 - `CONVERSATION_APP_ID` - Your Conversation app ID
 
-Optionally, you can also set:
-
-- `NGROK_AUTH_TOKEN` - Your Ngrok authentication token if you want to use the tool get-message-events, you have to be able to receive events related to a message.
-
 ## Get Your Sinch Credentials
 
 - Create a Sinch Build account ([see here for instructions on setting up an account](https://community.sinch.com/t5/Build-Dashboard/How-to-sign-up-for-your-free-Sinch-account/ta-p/8058)).
@@ -119,7 +115,6 @@ Example prompts:
 **Messages:**
 
 - `/sinch-claude-plugin:api:messages:send` - Send text messages
-- `/sinch-claude-plugin:api:messages:status` - Check message delivery status
 
 **Senders:**
 
