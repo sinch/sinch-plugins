@@ -23,7 +23,6 @@
   "commands": [
     "./commands/config/sinch-mcp-setup.md",
     "./commands/api/messages/send.md",
-    "./commands/api/messages/status.md",
     "./commands/api/senders/list.md",
     "./commands/sinch-help.md",
     "./commands/api/webhooks/list.md",
