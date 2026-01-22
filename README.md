@@ -4,11 +4,11 @@ This repository contains Sinch plugins and related artifacts for AI developer to
 
 ## Claude Code
 
-A Claude Code plugin that integrates the Sinch Conversation API, allowing you to send messages (SMS, RCS, etc.), manage webhooks, and inspect your Sinch configuration directly from your terminal.
+A Claude Code plugin that integrates the Sinch Conversation API, allowing you to send SMS messages, manage webhooks, and inspect your Sinch configuration directly from your terminal.
 
 ### Features
 
-- **Send Messages**: Send text messages via SMS, RCS.
+- **Send Messages**: Send text messages via SMS.
 - **Manage Webhooks**: Create, list, update, and delete webhooks for your Conversation API app.
 - **List Senders**: View active phone numbers and senders.
 - **MCP Integration**: Built on top of the Model Context Protocol (MCP).
@@ -129,7 +129,7 @@ Available skills:
 
 ## Gemini CLI
 
-A Gemini CLI extension that integrates the Sinch Conversation API, allowing you to send messages (SMS, RCS), manage webhooks, and interact with your Sinch configuration directly from Gemini CLI.
+A Gemini CLI extension that integrates the Sinch Conversation API, allowing you to send SMS messages, manage webhooks, and interact with your Sinch configuration directly from Gemini CLI.
 
 ### Installation
 
@@ -183,7 +183,7 @@ gemini
 
 ### Available Commands
 
-- `/sinch:api:messages:send` - Send SMS/RCS messages
+- `/sinch:api:messages:send` - Send SMS messages
 - `/sinch:api:webhooks:list` - List webhooks
 - `/sinch:api:webhooks:create` - Create webhook
 - `/sinch:api:webhooks:update` - Update webhook
@@ -249,6 +249,6 @@ We love hearing feedback, and we are here to help if you run into any issues.
 
 - For any Sinch Conversation API related issues, or support you require, head over to the [Sinch Help Centre](https://sinch.com/help-center/)
 
-We will continue to enhance this product, so keep a look out for additional channel support (RCS, MMS, WhatsApp etc) in addition to new features in future.
+We will continue to enhance this product with new features in future.
 
 From all of us at Sinch, happy coding!

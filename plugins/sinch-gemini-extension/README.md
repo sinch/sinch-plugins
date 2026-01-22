@@ -1,14 +1,12 @@
 # Sinch Conversation API - Gemini CLI Extension
 
-A [Gemini CLI extension](https://github.com/google-gemini/gemini-cli) that integrates the Sinch Conversation API, enabling you to send messages via SMS, WhatsApp, RCS, and other messaging channels directly from Gemini CLI using natural language.
+A [Gemini CLI extension](https://github.com/google-gemini/gemini-cli) that integrates the Sinch Conversation API, enabling you to send SMS messages directly from Gemini CLI using natural language.
 
 ## Features
 
-- **Send Messages**: Send text messages via SMS, WhatsApp, RCS, and other channels
-- **Media Messages**: Send images, videos, and other media
-- **Location Messages**: Share location information
-- **Interactive Messages**: Send choice messages and templates
-- **Channel Management**: List apps and available messaging templates
+- **Send SMS Messages**: Send text messages via SMS
+- **Media Messages**: Send images, videos, and other media via SMS
+- **App Management**: List apps and available messaging templates
 - **Natural Language Interface**: Use conversational commands with Gemini AI
 
 ## Prerequisites
@@ -54,7 +52,7 @@ When you install the extension, Gemini CLI will automatically prompt you for you
 
 1. Visit the [Sinch Dashboard](https://dashboard.sinch.com/)
 2. Create or select a Conversation API project
-3. Create an app and configure channels (SMS, WhatsApp, RCS, etc.)
+3. Create an app and configure SMS channel
 4. Generate API credentials (Access Key)
 5. Copy the Project ID, Key ID, Key Secret, Region, and App ID
 
@@ -80,17 +78,14 @@ Once installed, you can use Sinch messaging capabilities in Gemini CLI with natu
 # Start Gemini CLI
 gemini
 
-# Send a WhatsApp message
-"Send a WhatsApp message to +1234567890 saying 'Hello from Gemini CLI'"
+# Send an SMS
+"Send an SMS to +1234567890 with message 'Your order is ready'"
 
 # List your Sinch apps
 "List all my Sinch conversation apps"
 
-# Send an SMS
-"Send an SMS to +1234567890 with message 'Your order is ready'"
-
-# Send a message with media
-"Send an image to +1234567890 via WhatsApp with URL https://example.com/image.jpg"
+# Send an SMS with media
+"Send an image to +1234567890 via SMS with URL https://example.com/image.jpg"
 
 # List available templates
 "Show me all my Sinch message templates"
@@ -100,11 +95,9 @@ gemini
 
 The extension provides access to these Sinch MCP tools:
 
-- **send-text-message** - Send text messages via WhatsApp, SMS, RCS, etc.
-- **send-media-message** - Send media messages (images, videos)
-- **send-location-message** - Send location messages
-- **send-choice-message** - Send interactive choice messages
-- **send-template-message** - Send template messages
+- **send-text-message** - Send text messages via SMS
+- **send-media-message** - Send media messages (images, videos) via SMS
+- **send-template-message** - Send template messages via SMS
 - **list-conversation-apps** - List configured apps and channels
 - **list-messaging-templates** - List available message templates
 - **sinch-mcp-configuration** - Check MCP server configuration status
@@ -197,13 +190,13 @@ If the Sinch MCP server isn't showing as connected, try restarting Gemini CLI.
 
 ### Channel Not Configured
 
-Verify your Conversation app has the channel (SMS, WhatsApp, RCS) configured in the Sinch Dashboard.
+Verify your Conversation app has the SMS channel configured in the Sinch Dashboard.
 
 ### Message Delivery Issues
 
 - Ensure phone numbers are in E.164 format (+country_code + number)
-- Verify the recipient's carrier supports the channel
-- Check that your app has the necessary channel permissions
+- Verify the recipient's carrier supports SMS
+- Check that your app has SMS channel configured and enabled
 
 ## Development
 
@@ -227,25 +220,22 @@ This creates a symlink so changes are immediately available without reinstalling
 
 ## Examples
 
-### Send Messages with Different Channels
+### Send SMS Messages
 
 ```bash
-# WhatsApp message
-"Send a WhatsApp message to +1234567890: Hello from Sinch!"
-
-# SMS message
+# Send a text SMS
 "Send an SMS to +1234567890 with the message: Your order #12345 is ready"
 
-# RCS message
-"Send an RCS message to +1234567890: Check out our new features!"
+# Send an SMS with more context
+"Send an SMS to +1234567890: Hello from Sinch!"
 ```
 
-### Send Media Messages
+### Send Media Messages via SMS
 
 ```bash
-"Send an image via WhatsApp to +1234567890 with this URL: https://example.com/photo.jpg"
+"Send an image via SMS to +1234567890 with this URL: https://example.com/photo.jpg"
 
-"Send a video message to +1234567890 via WhatsApp with URL https://example.com/video.mp4 and caption 'Check this out'"
+"Send a video message to +1234567890 via SMS with URL https://example.com/video.mp4 and caption 'Check this out'"
 ```
 
 ### List and Manage Apps
@@ -255,7 +245,7 @@ This creates a symlink so changes are immediately available without reinstalling
 
 "Show me available message templates"
 
-"What channels are configured in my Sinch app?"
+"Check my Sinch app SMS configuration"
 ```
 
 ## API References
