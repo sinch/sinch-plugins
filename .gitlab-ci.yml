@@ -105,7 +105,7 @@ test-submodule:
         echo "Hint: plugin.json 'skills' should be './sinch-skills/skills'"
         exit 1
       fi
-      SKILL_COUNT=$(find "$SKILLS_ABS" -maxdepth 2 -name "SKILL.md" | wc -l)
+      SKILL_COUNT=$(find -L "$SKILLS_ABS" -maxdepth 2 -name "SKILL.md" | wc -l)
       if [ "$SKILL_COUNT" -eq 0 ]; then
         echo "FAIL: No SKILL.md files found under $SKILLS_ABS"
         ls -la "$SKILLS_ABS/"
@@ -120,7 +120,7 @@ test-submodule:
       SKILLS_REL=$(jq -r '.skills' "$PLUGIN_JSON")
       SKILLS_ABS="$PLUGIN_DIR/${SKILLS_REL#./}"
       ERRORS=0
-      for skill_file in $(find "$SKILLS_ABS" -maxdepth 2 -name "SKILL.md" | sort); do
+      for skill_file in $(find -L "$SKILLS_ABS" -maxdepth 2 -name "SKILL.md" | sort); do
         skill_name=$(basename "$(dirname "$skill_file")")
         has_frontmatter=$(head -1 "$skill_file" | grep -c "^---" || true)
         if [ "$has_frontmatter" -eq 0 ]; then
@@ -173,7 +173,7 @@ test-submodule:
         echo "FAIL: conversation-api/SKILL.md not found"
         exit 1
       fi
-      REF_COUNT=$(find "$CONVO/references" -type f 2>/dev/null | wc -l | tr -d ' ')
+      REF_COUNT=$(find -L "$CONVO/references" -type f 2>/dev/null | wc -l | tr -d ' ')
       echo "PASS: conversation-api skill found with $REF_COUNT reference files"
 
     - |
