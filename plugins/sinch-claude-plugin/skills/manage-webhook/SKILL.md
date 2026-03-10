@@ -63,19 +63,27 @@ Manage webhooks in Sinch Conversation API using the Conversation API specificati
 
 ## Webhook Triggers
 
-Available webhook triggers (22 total):
-
-**Message:** `MESSAGE_INBOUND`, `MESSAGE_DELIVERY`, `MESSAGE_SUBMIT`, `MESSAGE_INBOUND_SMART_CONVERSATION_REDACTION`
-
-**Event:** `EVENT_INBOUND`, `EVENT_DELIVERY`
-
-**Conversation:** `CONVERSATION_START`, `CONVERSATION_STOP`, `CONVERSATION_DELETE`
-
-**Contact:** `CONTACT_CREATE`, `CONTACT_UPDATE`, `CONTACT_DELETE`, `CONTACT_MERGE`, `CONTACT_IDENTITIES_DUPLICATION`
-
-**Capability & Opt:** `CAPABILITY`, `OPT_IN`, `OPT_OUT`
-
-**System:** `CHANNEL_EVENT`, `BATCH_STATUS_UPDATE`, `RECORD_NOTIFICATION`, `SMART_CONVERSATION`, `UNSUPPORTED`
+Available webhook triggers:
+- **MESSAGE_DELIVERY**: Delivery receipts for sent messages
+- **EVENT_DELIVERY**: Delivery receipts for sent events
+- **MESSAGE_INBOUND**: Inbound messages from end users
+- **EVENT_INBOUND**: Inbound events from end users
+- **CONVERSATION_START**: New conversation started
+- **CONVERSATION_STOP**: Active conversation stopped
+- **CONVERSATION_DELETE**: Conversation deleted
+- **CONTACT_CREATE**: New contact created
+- **CONTACT_UPDATE**: Contact updated
+- **CONTACT_DELETE**: Contact deleted
+- **CONTACT_MERGE**: Contacts merged
+- **OPT_IN**: Opt-in events
+- **OPT_OUT**: Opt-out events
+- **CAPABILITY**: Capability query results
+- **CHANNEL_EVENT**: Channel-specific events
+- **SMART_CONVERSATION**: Smart conversation analysis
+- **MESSAGE_INBOUND_SMART_CONVERSATION_REDACTION**: Smart conversation redaction
+- **CONTACT_IDENTITIES_DUPLICATION**: Contact identity duplication detected
+- **RECORD_NOTIFICATION**: Record notifications
+- **MESSAGE_SUBMIT**: Message submission events
 
 ## Webhook Operations
 
@@ -104,69 +112,15 @@ Available webhook triggers (22 total):
 - Remove webhook by ID
 - Webhook will stop receiving callbacks immediately
 
-## HMAC Signature Validation
-
-When a webhook has a `secret` configured, Sinch signs each payload using HMAC-SHA256. Verify authenticity using these headers:
-
-- `x-sinch-webhook-signature` — the HMAC signature
-- `x-sinch-webhook-signature-timestamp` — Unix timestamp of the signature
-- `x-sinch-webhook-signature-nonce` — unique nonce per request
-- `x-sinch-webhook-signature-algorithm` — algorithm used (HMAC-SHA256)
-
-**Signature format:** `HMAC-SHA256(rawBody + '.' + nonce + '.' + timestamp, secret)`
-
-Always verify the signature before processing webhook payloads in production.
-
-## Webhook Scripts
-
-Pre-built scripts for webhook management:
-
-```bash
-node scripts/webhooks/create_webhook.cjs --app-id APP_ID --target https://your-server.com/webhook --triggers MESSAGE_INBOUND,MESSAGE_DELIVERY
-node scripts/webhooks/list_webhooks.cjs --app-id APP_ID
-node scripts/webhooks/get_webhook.cjs --webhook-id WEBHOOK_ID
-node scripts/webhooks/update_webhook.cjs --webhook-id WEBHOOK_ID --target https://new-url.com/webhook --triggers MESSAGE_INBOUND
-node scripts/webhooks/delete_webhook.cjs --webhook-id WEBHOOK_ID
-node scripts/webhooks/test_webhook_triggers.cjs --webhook-id WEBHOOK_ID --test-url https://webhook.site/your-id
-```
-
-Requires environment variables: `SINCH_PROJECT_ID`, `SINCH_KEY_ID`, `SINCH_KEY_SECRET`, `SINCH_REGION`.
-
-## Code Generation References
-
-Multi-language webhook examples:
-
-- **Create:** [references/webhooks/create/](references/webhooks/create/) — JavaScript, Python, Java
-- **List:** [references/webhooks/list/](references/webhooks/list/)
-- **Get:** [references/webhooks/get/](references/webhooks/get/)
-- **Update:** [references/webhooks/update/](references/webhooks/update/)
-- **Delete:** [references/webhooks/delete/](references/webhooks/delete/)
-
-Webhook trigger reference docs:
-
-- [references/webhooks/triggers/message-inbound.md](references/webhooks/triggers/message-inbound.md)
-- [references/webhooks/triggers/message-delivery.md](references/webhooks/triggers/message-delivery.md)
-- [references/webhooks/triggers/message-submit.md](references/webhooks/triggers/message-submit.md)
-- [references/webhooks/triggers/event-inbound.md](references/webhooks/triggers/event-inbound.md)
-- [references/webhooks/triggers/event-delivery.md](references/webhooks/triggers/event-delivery.md)
-- [references/webhooks/triggers/conversation-lifecycle.md](references/webhooks/triggers/conversation-lifecycle.md)
-- [references/webhooks/triggers/contact-management.md](references/webhooks/triggers/contact-management.md)
-- [references/webhooks/triggers/capability.md](references/webhooks/triggers/capability.md)
-- [references/webhooks/triggers/opt-inout.md](references/webhooks/triggers/opt-inout.md)
-- [references/webhooks/triggers/smart-conversations.md](references/webhooks/triggers/smart-conversations.md)
-- [references/webhooks/triggers/system-events.md](references/webhooks/triggers/system-events.md)
-
 ## Notes
 
 - **MCP Note**: MCP Sinch does not provide webhook management tools, so this skill always uses the Conversation API endpoints
 - Maximum 5 webhooks per app
 - Webhook target URLs should use HTTPS in production
-- Webhook secret is optional but recommended for verifying webhook authenticity via HMAC-SHA256
-- Triggers can be combined — a webhook can subscribe to multiple trigger types
-- Webhooks are scoped to apps — each webhook belongs to a specific app
-- Use the Conversation API endpoints directly — reference the OpenAPI spec for exact parameter names and types
+- Webhook secret is optional but recommended for verifying webhook authenticity
+- Triggers can be combined - a webhook can subscribe to multiple trigger types
+- Webhooks are scoped to apps - each webhook belongs to a specific app
+- Use the Conversation API endpoints directly - reference the OpenAPI spec for exact parameter names and types
 - Webhook callbacks are sent as HTTP POST requests to the target URL
 - For testing, you can use HTTP URLs, but production webhooks should use HTTPS
-- **Webhook authentication**: Supports both OAuth2.0 and HMAC authentication methods
-- **Retry policy**: Sinch automatically retries failed webhook deliveries with exponential backoff
 

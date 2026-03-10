@@ -91,23 +91,14 @@ Channel identities are channel-specific:
 - **KAKAOTALK**: KakaoTalk user ID
 - **APPLEBC**: Apple user identifier
 
-## Contact Auto-Creation
-
-When sending messages via the Conversation API, contacts are automatically created if the recipient doesn't exist. This behavior depends on the app's processing mode:
-
-- **CONVERSATION mode** — a contact and conversation are auto-created when sending to a new recipient. The contact is associated with the channel identity used.
-- **DISPATCH mode** — contacts are not auto-created. Messages are dispatched without contact/conversation context. You must create contacts explicitly if needed.
-
-Auto-created contacts will have the channel identity from the message but no display name or email. You can update them afterward using the Update Contact endpoint.
-
 ## Notes
 
 - **MCP Note**: MCP Sinch does not provide contact management tools, so this skill always uses the Conversation API endpoints
 - Contacts can have multiple channel identities
 - Channel identities must be unique per channel
-- Use the Conversation API endpoints directly — reference the OpenAPI spec for exact parameter names and types
-- **Contact auto-creation**: Contacts are automatically created when sending messages to new recipients (CONVERSATION mode). In DISPATCH mode, contacts must be created explicitly.
-- Contacts are scoped to projects (not apps)
+- Use the Conversation API endpoints directly - reference the OpenAPI spec for exact parameter names and types
+- Contact creation is automatic when sending messages to new recipients
+- Contacts are scoped to apps
 - List contacts supports filtering by `channel` and `identity` query parameters
 - Maximum page_size for list contacts is 20 (default is 10)
 
