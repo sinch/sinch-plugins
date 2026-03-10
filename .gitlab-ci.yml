@@ -304,6 +304,8 @@ sync_to_github:
     - |
       echo "machine gitlab.com login oauth2 password ${SKILLS_REPO_TOKEN}" > ~/.netrc && chmod 600 ~/.netrc
       git submodule update --init --recursive
+      echo "Pulling latest sinch-skills from main..."
+      (cd plugins/sinch-claude-plugin/.sinch-skills && git fetch origin main && git checkout origin/main)
       PLUGIN_DIR="plugins/sinch-claude-plugin"
       SUBMOD_PATH="$PLUGIN_DIR/.sinch-skills"
       SKILLS_PATH="$PLUGIN_DIR/skills"
@@ -392,6 +394,8 @@ build_artifacts:
       echo "machine gitlab.com login oauth2 password ${SKILLS_REPO_TOKEN}" > ~/.netrc && chmod 600 ~/.netrc
       git submodule sync --recursive
       git submodule update --init --recursive
+      echo "Pulling latest sinch-skills from main..."
+      (cd plugins/sinch-claude-plugin/.sinch-skills && git fetch origin main && git checkout origin/main)
 
     - SKILLS_DIR="plugins/sinch-claude-plugin/skills"
     - VERSION_FOR_ZIP="${NEW_VERSION:-$CURRENT_VERSION}"
