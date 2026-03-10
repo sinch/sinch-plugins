@@ -5,6 +5,7 @@
 # Required variables (set in Settings → CI/CD → Variables):
 #   GITHUB_PAT_2 - Personal Access Token with for synching with GitHub repos (MUST be kept secret)
 #   GITHUB_REPO_URL - GitHub repository URL (e.g., github.com/sinch/sinch-plugins or https://github.com/sinch/sinch-plugins)
+#   SKILLS_REPO_TOKEN - Access token with read access to sinch-skills repo (for submodule cloning)
 #
 # Predefined GitLab CI variables (automatically available):
 #   CI_COMMIT_SHORT_SHA   - Short commit SHA (first 8 chars)
@@ -39,8 +40,7 @@ default:
 variables:
   # Make the pipeline input available in `rules:` and `script:` blocks.
   VERSION_BUMP_TYPE: $[[ inputs.version_bump_type ]]
-  GIT_SUBMODULE_STRATEGY: recursive
-  GIT_SUBMODULE_DEPTH: 1
+  GIT_SUBMODULE_STRATEGY: none
 
 stages:
   - test
@@ -58,11 +58,14 @@ test-submodule:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   before_script:
     - apk add --no-cache git jq zip
+    - git config --global url."https://oauth2:${SKILLS_REPO_TOKEN}@gitlab.com/".insteadOf="https://gitlab.com/"
+    - git submodule sync --recursive
+    - git submodule update --init --recursive
   script:
     - PLUGIN_DIR="plugins/sinch-claude-plugin"
     - PLUGIN_JSON="$PLUGIN_DIR/.claude-plugin/plugin.json"
 
-    # 1. Verify submodule was initialized by GIT_SUBMODULE_STRATEGY
+    # 1. Verify submodule was initialized
     - |
       echo "=== 1. Submodule initialization ==="
       SUBMOD_PATH="$PLUGIN_DIR/sinch-skills"
@@ -434,7 +437,7 @@ sync_to_github:
       fi
     # 4. Dereference submodule + symlink for GitHub (submodule points to private GitLab repo)
     - |
-      git config --global url."https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/".insteadOf="https://gitlab.com/"
+      git config --global url."https://oauth2:${SKILLS_REPO_TOKEN}@gitlab.com/".insteadOf="https://gitlab.com/"
       git submodule update --init --recursive
       PLUGIN_DIR="plugins/sinch-claude-plugin"
       SUBMOD_PATH="$PLUGIN_DIR/sinch-skills"
@@ -521,7 +524,7 @@ build_artifacts:
 
     - |
       echo "Initializing submodules after custom checkout..."
-      git config --global url."https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/".insteadOf="https://gitlab.com/"
+      git config --global url."https://oauth2:${SKILLS_REPO_TOKEN}@gitlab.com/".insteadOf="https://gitlab.com/"
       git submodule sync --recursive
       git submodule update --init --recursive
 
