@@ -1,5 +1,5 @@
 ---
-description: Send a message via Sinch Conversation API (SMS, WhatsApp, RCS, Messenger, Viber, and more)
+description: Send a message via Sinch Conversation API (SMS, RCS)
 allowed-tools:
   - mcp__sinch__send-text-message
   - mcp__sinch__send-media-message
@@ -7,22 +7,22 @@ allowed-tools:
   - mcp__sinch__send-choice-message
   - mcp__sinch__send-template-message
   - mcp__sinch__sinch-mcp-configuration
-argument-hint: --to=<phone> --message=<text> [--channel=SMS|WHATSAPP|RCS|MESSENGER|VIBERBM|...] [--type=text|media|location|choice|template]
+argument-hint: --to=<phone> --message=<text> [--channel=SMS|RCS] [--type=text|media|location|choice|template]
 ---
 
 # Send Message
 
-Send a message to a recipient using the Sinch Conversation API. Supports all channels: SMS, WhatsApp, RCS, MMS, Messenger, Viber, Instagram, Telegram, LINE, WeChat, KakaoTalk, and Apple Messages for Business.
+Send a message to a recipient using the Sinch Conversation API. Supports SMS and RCS channels.
 
 ## Input
 
 - `--to` / `-t`: Recipient phone number (E.164 format, e.g., +14155551234) - required
 - `--message` / `-m`: Text content - required for text messages
-- `--channel` / `-c`: Channel (SMS, WHATSAPP, RCS, MESSENGER, VIBERBM, MMS, INSTAGRAM, TELEGRAM, LINE, WECHAT, KAKAOTALK, APPLEBC) - optional, defaults to SMS
+- `--channel` / `-c`: Channel (SMS, RCS) - optional, defaults to SMS
 - `--type`: Message type (text, media, location, choice, template) - optional, defaults to text
 - `--url`: Media URL for media messages - required when type=media
 - `--template-id`: Template ID for template messages - required when type=template
-- `--fallback`: Comma-separated channel fallback order (e.g., RCS,WHATSAPP,SMS) - optional
+- `--fallback`: Comma-separated channel fallback order (e.g., RCS,SMS) - optional
 
 $ARGUMENTS
 
@@ -33,8 +33,8 @@ $ARGUMENTS
    - Validate that `--to` is provided and in E.164 format (e.g., +14155551234)
    - Validate that `--message` is provided and non-empty (for text messages)
    - If `--channel` is not provided, default to "SMS"
-   - Normalize channel to uppercase (sms → SMS, whatsapp → WHATSAPP)
-   - Validate channel is one of: SMS, WHATSAPP, RCS, MMS, MESSENGER, VIBERBM, INSTAGRAM, TELEGRAM, LINE, WECHAT, KAKAOTALK, APPLEBC
+   - Normalize channel to uppercase (sms → SMS, rcs → RCS)
+   - Validate channel is one of: SMS, RCS
    - If `--type` is not provided, default to "text"
    - Normalize type to lowercase
 
@@ -105,7 +105,7 @@ $ARGUMENTS
 
    - For channel fallback, add `channel_priority_order` to the request body:
      ```json
-     "channel_priority_order": ["RCS", "WHATSAPP", "SMS"]
+     "channel_priority_order": ["RCS", "SMS"]
      ```
 
    - If the direct API call still fails, show the HTTP status + response body, and suggest verifying:
@@ -122,10 +122,10 @@ Send an SMS message:
 /sinch-claude-plugin:api:messages:send --to=+14155551234 --message="Hello"
 ```
 
-Send a WhatsApp message:
+Send an RCS message:
 
 ```
-/sinch-claude-plugin:api:messages:send --to=+14155551234 --message="Hello" --channel=WHATSAPP
+/sinch-claude-plugin:api:messages:send --to=+14155551234 --message="Hello" --channel=RCS
 ```
 
 Send a media message via RCS:
@@ -134,8 +134,8 @@ Send a media message via RCS:
 /sinch-claude-plugin:api:messages:send --to=+14155551234 --type=media --url=https://example.com/image.jpg --channel=RCS
 ```
 
-Send with channel fallback (try RCS first, then WhatsApp, then SMS):
+Send with channel fallback (try RCS first, then SMS):
 
 ```
-/sinch-claude-plugin:api:messages:send --to=+14155551234 --message="Hello" --fallback=RCS,WHATSAPP,SMS
+/sinch-claude-plugin:api:messages:send --to=+14155551234 --message="Hello" --fallback=RCS,SMS
 ```
