@@ -305,7 +305,7 @@ sync_to_github:
       echo "machine gitlab.com login oauth2 password ${SKILLS_REPO_TOKEN}" > ~/.netrc && chmod 600 ~/.netrc
       git submodule update --init --recursive
       PLUGIN_DIR="plugins/sinch-claude-plugin"
-      SUBMOD_PATH="$PLUGIN_DIR/sinch-skills"
+      SUBMOD_PATH="$PLUGIN_DIR/.sinch-skills"
       SKILLS_PATH="$PLUGIN_DIR/skills"
       if [ -d "$SUBMOD_PATH/.git" ] || [ -f "$SUBMOD_PATH/.git" ]; then
         echo "Dereferencing submodule and symlinks for GitHub push..."
