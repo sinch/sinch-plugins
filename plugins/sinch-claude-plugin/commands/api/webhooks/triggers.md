@@ -177,15 +177,6 @@ These triggers can be used with the webhook create and update commands:
 - **Webhooks Documentation**: https://developers.sinch.com/docs/conversation/webhooks/
 - **Webhook Triggers**: https://developers.sinch.com/docs/conversation/api-reference/conversation/tag/Webhooks/#tag/Webhooks/operation/Webhooks_CreateWebhook
 
-## Bundled Trigger References
-
-Detailed trigger payload references (all categories) in `references/webhooks/triggers/`:
-
-- `message-inbound.md`, `message-delivery.md`, `message-submit.md`
-- `event-inbound.md`, `event-delivery.md`
-- `conversation-lifecycle.md`, `contact-management.md`
-- `capability.md`, `opt-inout.md`, `smart-conversations.md`, `system-events.md`
-
 ## Notes
 
 - This command shows only message-related triggers

@@ -128,12 +128,6 @@ Other triggers:
 }
 ```
 
-## Bundled Scripts and References
-
-- **Script**: `scripts/webhooks/create_webhook.cjs` — standalone Node.js script (requires `SINCH_PROJECT_ID`, `SINCH_KEY_ID`, `SINCH_KEY_SECRET`, `SINCH_REGION` env vars)
-- **Code examples**: `references/webhooks/create/` — JavaScript, Python, Java examples
-- **Trigger docs**: `references/webhooks/triggers/` — detailed trigger payload references
-
 ## Notes
 
 - Target URL must be HTTPS for security

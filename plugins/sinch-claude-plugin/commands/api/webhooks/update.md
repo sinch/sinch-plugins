@@ -134,11 +134,6 @@ Other triggers:
 }
 ```
 
-## Bundled Scripts and References
-
-- **Script**: `scripts/webhooks/update_webhook.cjs` — standalone Node.js script (requires `SINCH_PROJECT_ID`, `SINCH_KEY_ID`, `SINCH_KEY_SECRET`, `SINCH_REGION` env vars)
-- **Code examples**: `references/webhooks/update/` — JavaScript, Python, Java
-
 ## Notes
 
 - Only include fields you want to update in the request

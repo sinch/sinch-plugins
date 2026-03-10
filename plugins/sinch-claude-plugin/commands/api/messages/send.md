@@ -139,16 +139,3 @@ Send with channel fallback (try RCS first, then WhatsApp, then SMS):
 ```
 /sinch-claude-plugin:api:messages:send --to=+14155551234 --message="Hello" --fallback=RCS,WHATSAPP,SMS
 ```
-
-## Bundled Scripts and References
-
-Standalone Node.js scripts (require `SINCH_PROJECT_ID`, `SINCH_KEY_ID`, `SINCH_KEY_SECRET`, `SINCH_APP_ID`, `SINCH_REGION` env vars):
-
-- `scripts/sms/send_sms.cjs` — send SMS
-- `scripts/rcs/send_text.cjs`, `send_card.cjs`, `send_carousel.cjs`, `send_choice.cjs`, `send_media.cjs`, `send_location.cjs`, `send_template.cjs` — send RCS messages
-
-Channel-specific guides: `references/channels/sms.md`, `references/channels/whatsapp.md`, `references/channels/rcs.md`, `references/channels/mms.md`
-
-Multi-language code examples: `references/sms/` and `references/rcs/` (JavaScript, Python, Java per message type)
-
-Templates: `references/templates.md` | Batch sending: `references/batch.md`
