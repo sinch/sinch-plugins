@@ -79,18 +79,18 @@ test-submodule:
 
       echo ""
       echo "=== 1b. Symlink resolution ==="
-      SYMLINK="$PLUGIN_DIR/skills"
+      SYMLINK="$PLUGIN_DIR/skills/conversation-api"
       if [ ! -L "$SYMLINK" ]; then
         echo "FAIL: $SYMLINK is not a symlink"
-        ls -la "$SYMLINK"
+        ls -la "$PLUGIN_DIR/skills/"
         exit 1
       fi
       if [ ! -d "$SYMLINK" ]; then
         echo "FAIL: Symlink $SYMLINK does not resolve to a directory"
-        ls -la "$SYMLINK"
+        ls -la "$PLUGIN_DIR/skills/"
         exit 1
       fi
-      echo "PASS: skills -> $(readlink "$SYMLINK") resolves correctly"
+      echo "PASS: conversation-api -> $(readlink "$SYMLINK") resolves correctly"
 
     # 2. Verify plugin.json skills path resolves to a real directory with skills
     - |
@@ -441,15 +441,15 @@ sync_to_github:
       git submodule update --init --recursive
       PLUGIN_DIR="plugins/sinch-claude-plugin"
       SUBMOD_PATH="$PLUGIN_DIR/sinch-skills"
-      SYMLINK_PATH="$PLUGIN_DIR/skills"
+      SKILLS_PATH="$PLUGIN_DIR/skills"
       if [ -d "$SUBMOD_PATH/.git" ] || [ -f "$SUBMOD_PATH/.git" ]; then
-        echo "Dereferencing submodule and symlink for GitHub push..."
-        cp -rL "$SYMLINK_PATH" /tmp/skills-resolved
+        echo "Dereferencing submodule and symlinks for GitHub push..."
+        cp -rL "$SKILLS_PATH" /tmp/skills-resolved
+        git rm -rf "$SKILLS_PATH"
         git rm -rf "$SUBMOD_PATH"
-        git rm -f "$SYMLINK_PATH" 2>/dev/null || true
         git rm -f .gitmodules 2>/dev/null || true
-        cp -r /tmp/skills-resolved "$SYMLINK_PATH"
-        git add "$SYMLINK_PATH"
+        cp -r /tmp/skills-resolved "$SKILLS_PATH"
+        git add "$SKILLS_PATH"
       fi
 
     # 5. Remove .gitlab-ci.yml from final GitHub repo
