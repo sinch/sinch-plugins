@@ -58,7 +58,7 @@ test-submodule:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   before_script:
     - apk add --no-cache git jq zip
-    - git config --global url."https://oauth2:${SKILLS_REPO_TOKEN}@gitlab.com/".insteadOf="https://gitlab.com/"
+    - echo "machine gitlab.com login oauth2 password ${SKILLS_REPO_TOKEN}" > ~/.netrc && chmod 600 ~/.netrc
     - git submodule sync --recursive
     - git submodule update --init --recursive
   script:
@@ -437,7 +437,7 @@ sync_to_github:
       fi
     # 4. Dereference submodule + symlink for GitHub (submodule points to private GitLab repo)
     - |
-      git config --global url."https://oauth2:${SKILLS_REPO_TOKEN}@gitlab.com/".insteadOf="https://gitlab.com/"
+      echo "machine gitlab.com login oauth2 password ${SKILLS_REPO_TOKEN}" > ~/.netrc && chmod 600 ~/.netrc
       git submodule update --init --recursive
       PLUGIN_DIR="plugins/sinch-claude-plugin"
       SUBMOD_PATH="$PLUGIN_DIR/sinch-skills"
@@ -524,7 +524,7 @@ build_artifacts:
 
     - |
       echo "Initializing submodules after custom checkout..."
-      git config --global url."https://oauth2:${SKILLS_REPO_TOKEN}@gitlab.com/".insteadOf="https://gitlab.com/"
+      echo "machine gitlab.com login oauth2 password ${SKILLS_REPO_TOKEN}" > ~/.netrc && chmod 600 ~/.netrc
       git submodule sync --recursive
       git submodule update --init --recursive
 
