@@ -34,11 +34,7 @@ spec:
 ---
 default:
   tags:
-    - saas
-    - general
-    - eu-west-1
-    # Arch is especially important
-    - arm64
+    - default
 
 variables:
   # Make the pipeline input available in `rules:` and `script:` blocks.
