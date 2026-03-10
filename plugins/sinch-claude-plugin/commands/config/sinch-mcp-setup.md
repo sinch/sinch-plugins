@@ -7,7 +7,7 @@ Guide the user through setting up Sinch Conversation API credentials.
 
 ## Overview
 
-This plugin uses the Sinch Conversation API MCP server (defined in `.mcp.json`) to send messages via SMS, WhatsApp, RCS, and other channels. To use these commands, you need to add your Sinch credentials as environment variables in Claude Code's settings.
+This plugin uses the Sinch Conversation API MCP server (defined in `.mcp.json`) to send messages via SMS and RCS channels. To use these commands, you need to add your Sinch credentials as environment variables in Claude Code's settings.
 For more details about the underlying MCP server and tools, see [Sinch MCP Server](https://github.com/sinch/sinch-mcp-server)
 
 ## Required Environment Variables

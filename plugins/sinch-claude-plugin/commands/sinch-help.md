@@ -9,7 +9,8 @@ Configure the required environment variables to enable the Sinch Conversation AP
 
 ## Overview
 
-This plugin uses the Sinch Conversation API MCP server (defined in `.mcp.json`) to send messages via SMS, WhatsApp, RCS, and other channels. To use these commands, you need to add your Sinch credentials as environment variables in Claude Code's settings.
+This plugin uses the Sinch Conversation API MCP server (defined in `.mcp.json`) to send and receive messages via SMS and RCS channels. It supports multiple message types (text, media, location, choice, template), batch messaging (up to 1000 recipients), template management, and channel fallback.
+
 For more details about the underlying MCP server and tools, see [Sinch MCP Server](https://github.com/sinch/sinch-mcp-server)
 
 ## Required Environment Variables
@@ -98,27 +99,30 @@ Skills let you describe what you want in plain English, and the plugin will run 
 
 Important: Skills will only call MCP tools if your `CONVERSATION_*` environment variables are configured in Claude Code and the Sinch MCP server is up and running.
 
-Available skills:
+Available skills (each includes bundled scripts and reference docs):
 
-- [Send Message](../skills/send-message/SKILL.md)
-- [Channel Info](../skills/channel-info/SKILL.md)
-- [List Messages](../skills/list-messages/SKILL.md)
-- [Manage Contact](../skills/manage-contact/SKILL.md)
-- [Manage Webhook](../skills/manage-webhook/SKILL.md)
+- [Send Message](../skills/send-message/SKILL.md) — scripts for SMS/RCS sending, channel guides, multi-language code examples, template and batch references
+- [Channel Info](../skills/channel-info/SKILL.md) — channel-specific reference guides (SMS, RCS)
+- [List Messages](../skills/list-messages/SKILL.md) — list messages script, multi-language code examples
+- [Manage Contact](../skills/manage-contact/SKILL.md) — contact CRUD operations
+- [Manage Webhook](../skills/manage-webhook/SKILL.md) — webhook CRUD scripts, trigger payload references, multi-language code examples
 
 Example prompts:
 
-- "Send a SMS message to +14155551234 saying 'Hello'"
+- "Send an SMS to +14155551234 saying 'Hello'"
+- "Send an RCS message to +14155551234 with fallback to SMS"
+- "Send a template message to +14155551234"
 - "List my last 10 messages"
 - "Create a webhook for MESSAGE_DELIVERY to https://example.com/webhook"
+- "What channels can I use to reach +14155551234?"
 
 **Messages:**
 
-- `/sinch-claude-plugin:api:messages:send` - Send text messages
+- `/sinch-claude-plugin:api:messages:send` - Send messages (text, media, location, choice, template) via SMS and RCS with optional channel fallback
 
 **Senders:**
 
-- `/sinch-claude-plugin:api:senders:list` - List active phone numbers/senders
+- `/sinch-claude-plugin:api:senders:list` - List active phone numbers/senders (SDK and direct API examples in Node.js, Python, Java)
 
 **Webhooks:**
 

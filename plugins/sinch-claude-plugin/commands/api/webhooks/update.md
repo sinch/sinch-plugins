@@ -114,6 +114,7 @@ Other triggers:
 - `OPT_OUT` - User opted out
 - `CAPABILITY` - Channel capability changes
 - `CHANNEL_EVENT` - Channel-specific events
+- `BATCH_STATUS_UPDATE` - Batch operation status updates
 - `SMART_CONVERSATION` - Smart conversation events
 - `RECORD_NOTIFICATION` - Record notification events
 - `UNSUPPORTED` - Unsupported events
@@ -140,3 +141,4 @@ Other triggers:
 - When updating triggers, provide the complete new list (it replaces the existing triggers)
 - Updating the secret will invalidate the old secret immediately
 - The webhook ID cannot be changed
+- **HMAC Signature Verification**: When a secret is set, Sinch signs each webhook payload using HMAC-SHA256. Verify using headers: `x-sinch-webhook-signature`, `x-sinch-webhook-signature-timestamp`, `x-sinch-webhook-signature-nonce`, `x-sinch-webhook-signature-algorithm`. Signature format: `HMAC-SHA256(rawBody + '.' + nonce + '.' + timestamp, secret)`
