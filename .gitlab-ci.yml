@@ -43,11 +43,145 @@ default:
 variables:
   # Make the pipeline input available in `rules:` and `script:` blocks.
   VERSION_BUMP_TYPE: $[[ inputs.version_bump_type ]]
+  GIT_SUBMODULE_STRATEGY: recursive
+  GIT_SUBMODULE_DEPTH: 1
 
 stages:
+  - test
   - pre-release
   - github-sync
   - release
+
+# ================================
+# Stage 0 - Verify submodule (runs on MR pipelines)
+# ================================
+test-submodule:
+  stage: test
+  image: alpine:latest
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  before_script:
+    - apk add --no-cache git jq zip
+  script:
+    - PLUGIN_DIR="plugins/sinch-claude-plugin"
+    - PLUGIN_JSON="$PLUGIN_DIR/.claude-plugin/plugin.json"
+
+    # 1. Verify submodule was initialized by GIT_SUBMODULE_STRATEGY
+    - |
+      echo "=== 1. Submodule initialization ==="
+      SUBMOD_PATH="$PLUGIN_DIR/sinch-skills"
+      if [ ! -d "$SUBMOD_PATH/skills" ]; then
+        echo "FAIL: Submodule not initialized at $SUBMOD_PATH"
+        ls -la "$PLUGIN_DIR/"
+        exit 1
+      fi
+      SUBMOD_SHA=$(cd "$SUBMOD_PATH" && git rev-parse --short HEAD)
+      echo "PASS: Submodule initialized at commit $SUBMOD_SHA"
+
+      echo ""
+      echo "=== 1b. Symlink resolution ==="
+      SYMLINK="$PLUGIN_DIR/skills"
+      if [ ! -L "$SYMLINK" ]; then
+        echo "FAIL: $SYMLINK is not a symlink"
+        ls -la "$SYMLINK"
+        exit 1
+      fi
+      if [ ! -d "$SYMLINK" ]; then
+        echo "FAIL: Symlink $SYMLINK does not resolve to a directory"
+        ls -la "$SYMLINK"
+        exit 1
+      fi
+      echo "PASS: skills -> $(readlink "$SYMLINK") resolves correctly"
+
+    # 2. Verify plugin.json skills path resolves to a real directory with skills
+    - |
+      echo ""
+      echo "=== 2. plugin.json skills path ==="
+      SKILLS_REL=$(jq -r '.skills' "$PLUGIN_JSON")
+      SKILLS_ABS="$PLUGIN_DIR/${SKILLS_REL#./}"
+      echo "plugin.json skills path: $SKILLS_REL"
+      echo "Resolved to: $SKILLS_ABS"
+      if [ ! -d "$SKILLS_ABS" ]; then
+        echo "FAIL: Skills path does not exist: $SKILLS_ABS"
+        echo "Hint: plugin.json 'skills' should be './sinch-skills/skills'"
+        exit 1
+      fi
+      SKILL_COUNT=$(find "$SKILLS_ABS" -maxdepth 2 -name "SKILL.md" | wc -l)
+      if [ "$SKILL_COUNT" -eq 0 ]; then
+        echo "FAIL: No SKILL.md files found under $SKILLS_ABS"
+        ls -la "$SKILLS_ABS/"
+        exit 1
+      fi
+      echo "PASS: Found $SKILL_COUNT skills"
+
+    # 3. Verify each skill has valid frontmatter (name + description)
+    - |
+      echo ""
+      echo "=== 3. Skill frontmatter validation ==="
+      SKILLS_REL=$(jq -r '.skills' "$PLUGIN_JSON")
+      SKILLS_ABS="$PLUGIN_DIR/${SKILLS_REL#./}"
+      ERRORS=0
+      for skill_file in $(find "$SKILLS_ABS" -maxdepth 2 -name "SKILL.md" | sort); do
+        skill_name=$(basename "$(dirname "$skill_file")")
+        has_frontmatter=$(head -1 "$skill_file" | grep -c "^---" || true)
+        if [ "$has_frontmatter" -eq 0 ]; then
+          echo "FAIL: $skill_name — missing YAML frontmatter"
+          ERRORS=$((ERRORS + 1))
+          continue
+        fi
+        fm_name=$(sed -n '/^---$/,/^---$/p' "$skill_file" | grep "^name:" | head -1)
+        fm_desc=$(sed -n '/^---$/,/^---$/p' "$skill_file" | grep "^description:" | head -1)
+        if [ -z "$fm_name" ] || [ -z "$fm_desc" ]; then
+          echo "FAIL: $skill_name — frontmatter missing name or description"
+          ERRORS=$((ERRORS + 1))
+        else
+          echo "  OK: $skill_name"
+        fi
+      done
+      if [ "$ERRORS" -gt 0 ]; then
+        echo "FAIL: $ERRORS skill(s) have invalid frontmatter"
+        exit 1
+      fi
+      echo "PASS: All skills have valid frontmatter"
+
+    # 4. Simulate the release zip build (same logic as build_artifacts job)
+    - |
+      echo ""
+      echo "=== 4. Zip build simulation ==="
+      SKILLS_REL=$(jq -r '.skills' "$PLUGIN_JSON")
+      SKILLS_ABS="$PLUGIN_DIR/${SKILLS_REL#./}"
+      ZIP_FILE="/tmp/test-skills.zip"
+      (cd "$PLUGIN_DIR/sinch-skills" && zip -r "$ZIP_FILE" "skills")
+      ZIP_SIZE=$(wc -c < "$ZIP_FILE" | tr -d ' ')
+      ZIP_ENTRIES=$(unzip -l "$ZIP_FILE" | grep "SKILL.md" | wc -l | tr -d ' ')
+      echo "Zip size: ${ZIP_SIZE} bytes"
+      echo "Skills in zip: $ZIP_ENTRIES"
+      if [ "$ZIP_ENTRIES" -eq 0 ]; then
+        echo "FAIL: Zip contains no SKILL.md files"
+        unzip -l "$ZIP_FILE"
+        exit 1
+      fi
+      echo "PASS: Zip built successfully with $ZIP_ENTRIES skills"
+
+    # 5. Verify conversation-api skill specifically (the primary skill for this plugin)
+    - |
+      echo ""
+      echo "=== 5. conversation-api skill check ==="
+      SKILLS_REL=$(jq -r '.skills' "$PLUGIN_JSON")
+      SKILLS_ABS="$PLUGIN_DIR/${SKILLS_REL#./}"
+      CONVO="$SKILLS_ABS/conversation-api"
+      if [ ! -f "$CONVO/SKILL.md" ]; then
+        echo "FAIL: conversation-api/SKILL.md not found"
+        exit 1
+      fi
+      REF_COUNT=$(find "$CONVO/references" -type f 2>/dev/null | wc -l | tr -d ' ')
+      echo "PASS: conversation-api skill found with $REF_COUNT reference files"
+
+    - |
+      echo ""
+      echo "========================================="
+      echo "All checks passed."
+      echo "========================================="
 
 # ================================
 # Reusable Templates & Anchors
@@ -302,7 +436,24 @@ sync_to_github:
         git fetch --prune origin "$TARGET_BRANCH"
         git checkout -B "$TARGET_BRANCH" "origin/$TARGET_BRANCH"
       fi
-    # 4. Remove .gitlab-ci.yml from final GitHub repo
+    # 4. Dereference submodule + symlink for GitHub (submodule points to private GitLab repo)
+    - |
+      git config --global url."https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/".insteadOf="https://gitlab.com/"
+      git submodule update --init --recursive
+      PLUGIN_DIR="plugins/sinch-claude-plugin"
+      SUBMOD_PATH="$PLUGIN_DIR/sinch-skills"
+      SYMLINK_PATH="$PLUGIN_DIR/skills"
+      if [ -d "$SUBMOD_PATH/.git" ] || [ -f "$SUBMOD_PATH/.git" ]; then
+        echo "Dereferencing submodule and symlink for GitHub push..."
+        cp -rL "$SYMLINK_PATH" /tmp/skills-resolved
+        git rm -rf "$SUBMOD_PATH"
+        git rm -f "$SYMLINK_PATH" 2>/dev/null || true
+        git rm -f .gitmodules 2>/dev/null || true
+        cp -r /tmp/skills-resolved "$SYMLINK_PATH"
+        git add "$SYMLINK_PATH"
+      fi
+
+    # 5. Remove .gitlab-ci.yml from final GitHub repo
     - git rm --ignore-unmatch .gitlab-ci.yml
     # Only amend if there are staged changes (file was actually removed)
     - |
@@ -371,6 +522,12 @@ build_artifacts:
           exit 1
         fi
       fi
+
+    - |
+      echo "Initializing submodules after custom checkout..."
+      git config --global url."https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/".insteadOf="https://gitlab.com/"
+      git submodule sync --recursive
+      git submodule update --init --recursive
 
     - SKILLS_DIR="plugins/sinch-claude-plugin/skills"
     - VERSION_FOR_ZIP="${NEW_VERSION:-$CURRENT_VERSION}"
