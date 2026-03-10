@@ -1,0 +1,57 @@
+description = "Send a choice/quick-reply message (buttons) via Sinch Conversation API"
+
+prompt = """
+# Send Choice Message
+
+Send a message with suggested actions (buttons or quick replies) to a recipient via the Sinch Conversation API. Supported on RCS, WhatsApp, and other interactive channels.
+
+**IMPORTANT: Execute this command directly. Do NOT generate script files. Perform the API call immediately.**
+
+## Input
+
+- `--to` / `-t`: Recipient phone number (E.164) - required
+- `--message` / `-m`: Main message text shown above choices - required
+- `--choices` / `-c`: Comma-separated list of choice labels (e.g., "Yes,No,Maybe") - required
+- `--channel` / `-C`: Channel (RCS, WHATSAPP, SMS) - optional, default RCS for best support
+
+Arguments: {{args}}
+
+## Instructions
+
+**Execute these steps directly - do not write code or scripts:**
+
+0. If {{args}} empty: ask for recipient, message text, and choice labels (comma-separated). Otherwise parse.
+
+1. Validate: --to (E.164), --message (non-empty), --choices (at least one, comma-separated). --channel optional, default RCS.
+
+2. Try MCP tool for choice/suggested-reply message if available. On success display result and exit.
+
+3. If MCP not available: get CONVERSATION_* env vars. If missing, report "Sinch API is not configured."
+
+4. Build message.choice_message: text_message with the main message; choices array - each choice with text_message.text (label) and postback_data (e.g. slug of label). Recipient via channel_identities.
+
+5. POST https://{region}.conversation.api.sinch.com/v1/projects/{projectId}/messages:send with OAuth2, body: app_id, recipient, message.
+
+6. On success: "✅ Choice message sent!" with message ID. Handle errors clearly.
+
+7. Handle all errors gracefully.
+
+## Examples
+
+```
+/sinch:api:messages:send-choice --to=+14155551234 --message="How can we help?" --choices="Sales,Support,Feedback"
+/sinch:api:messages:send-choice -t +14155551234 -m "Confirm order?" -c "Yes,No"
+```
+
+## API Reference
+
+- **MCP Tool**: `mcp__sinch__send-choice-message` (if available)
+- **API Endpoint**: POST /v1/projects/{projectId}/messages:send
+- **Message type**: choice_message (text_message + choices)
+- **Documentation**: https://developers.sinch.com/docs/conversation/message-types
+
+## Notes
+
+- Choice count and layout vary by channel (e.g. RCS supports more buttons).
+- postback_data is sent to your webhook when user taps a choice.
+"""

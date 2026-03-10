@@ -1,0 +1,47 @@
+description = "Search available phone numbers to rent via Sinch Numbers API"
+
+prompt = """
+# Search Available Numbers
+
+Search for available phone numbers to rent from the Sinch Numbers API (by region, type, capability). Uses OAuth2.
+
+**IMPORTANT: Execute this command directly. Do NOT generate script files. Perform the API call immediately.**
+
+## Input
+
+- `--region` / `-r`: Region code (e.g. US, GB) - required
+- `--type` / `-t`: Number type: LOCAL, MOBILE, TOLL_FREE - optional
+- `--capability` / `-c`: Capability: SMS, VOICE (comma-separated for multiple) - optional
+- `--page-size` / `-n`: Results per page - optional, default 10
+- `--format` / `-f`: Output format (table or json) - optional
+
+Arguments: {{args}}
+
+## Instructions
+
+**Execute these steps directly - do not write code or scripts:**
+
+0. If {{args}} empty: ask for region, optional type and capability. Otherwise parse.
+
+1. Validate: --region (e.g. US, GB), optional type, capability, page-size. Get CONVERSATION_* or NUMBERS_* env vars. Numbers API: https://numbers.api.sinch.com/v1. If missing, report "Sinch API is not configured."
+
+2. GET https://numbers.api.sinch.com/v1/projects/{projectId}/availableNumbers or equivalent with query params: regionCode, type, capabilities, pageSize. Use OAuth2.
+
+3. Format response: table (number, type, region, capabilities) or JSON. Display "✅ Available numbers" with count. Handle 401, 404.
+
+4. Handle all errors gracefully.
+
+## Examples
+
+```
+/sinch:api:numbers:search --region=US --type=LOCAL --capability=SMS
+/sinch:api:numbers:search -r US -c SMS,VOICE -n 20
+```
+
+## API Reference
+
+- **Base URL**: https://numbers.api.sinch.com/v1
+- **Active numbers**: GET /projects/{projectId}/activeNumbers
+- **Available numbers**: Check Numbers API docs for search/available endpoint
+- **Documentation**: https://developers.sinch.com/docs/numbers/
+"""
