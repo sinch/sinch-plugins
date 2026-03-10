@@ -106,6 +106,7 @@ Other triggers:
 - `OPT_OUT` - User opted out
 - `CAPABILITY` - Channel capability changes
 - `CHANNEL_EVENT` - Channel-specific events
+- `BATCH_STATUS_UPDATE` - Batch operation status updates
 - `SMART_CONVERSATION` - Smart conversation events
 - `RECORD_NOTIFICATION` - Record notification events
 - `UNSUPPORTED` - Unsupported events
@@ -127,6 +128,12 @@ Other triggers:
 }
 ```
 
+## Bundled Scripts and References
+
+- **Script**: `scripts/webhooks/create_webhook.cjs` — standalone Node.js script (requires `SINCH_PROJECT_ID`, `SINCH_KEY_ID`, `SINCH_KEY_SECRET`, `SINCH_REGION` env vars)
+- **Code examples**: `references/webhooks/create/` — JavaScript, Python, Java examples
+- **Trigger docs**: `references/webhooks/triggers/` — detailed trigger payload references
+
 ## Notes
 
 - Target URL must be HTTPS for security
@@ -134,3 +141,4 @@ Other triggers:
 - The secret is used for verifying webhook signatures to ensure authenticity
 - You can subscribe to multiple triggers in a single webhook
 - Test your webhook endpoint before creating to ensure it's accessible
+- **HMAC Signature Verification**: When a secret is set, Sinch signs each webhook payload using HMAC-SHA256. Verify using headers: `x-sinch-webhook-signature`, `x-sinch-webhook-signature-timestamp`, `x-sinch-webhook-signature-nonce`, `x-sinch-webhook-signature-algorithm`. Signature format: `HMAC-SHA256(rawBody + '.' + nonce + '.' + timestamp, secret)`

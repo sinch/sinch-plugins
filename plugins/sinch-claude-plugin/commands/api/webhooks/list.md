@@ -77,6 +77,11 @@ List webhooks in JSON format:
 }
 ```
 
+## Bundled Scripts and References
+
+- **Script**: `scripts/webhooks/list_webhooks.cjs` — standalone Node.js script (requires `SINCH_PROJECT_ID`, `SINCH_KEY_ID`, `SINCH_KEY_SECRET`, `SINCH_REGION` env vars)
+- **Code examples**: `references/webhooks/list/` — JavaScript, Python, Java
+
 ## Notes
 
 - Webhooks are app-specific, so make sure you have the correct app selected in your configuration

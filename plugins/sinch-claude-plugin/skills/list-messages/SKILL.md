@@ -49,27 +49,57 @@ Retrieve message history from Sinch Conversation API using the Conversation API 
 4. Include required headers: `Authorization`, `Content-Type: application/json`
 5. Use query parameters for filtering: `contact_id`, `conversation_id`, `channel`, `start_time`, `end_time`, `page_size`, `page_token`, `app_id`, `channel_identity`, `messages_source`, `only_recipient_originated`, `view`
 
+## Processing Modes and messages_source
+
+The `messages_source` query parameter controls which messages are returned based on the app's processing mode:
+
+- **`CONVERSATION_SOURCE`** (default) — returns messages sent/received in CONVERSATION processing mode. These messages are tied to conversations and contacts.
+- **`DISPATCH_SOURCE`** — returns messages sent/received in DISPATCH processing mode. These messages have no conversation context.
+
+When the app uses DISPATCH mode, you must set `messages_source=DISPATCH_SOURCE` to retrieve messages. Some query parameters (e.g., `conversation_id`) are not applicable in DISPATCH mode.
+
 ## Filtering Options
 
-- **By contact**: Filter messages for a specific contact
-- **By conversation**: Filter messages in a specific conversation
-- **By channel**: Filter messages by channel (WHATSAPP, SMS, etc.)
-- **By time range**: Filter messages between start_time and end_time
-- **By app**: Filter messages for a specific app ID
-- **Pagination**: Use page_size (default 10, max 1000) and page_token for pagination
+- **By contact**: Filter messages for a specific contact (`contact_id`)
+- **By conversation**: Filter messages in a specific conversation (`conversation_id`) — CONVERSATION_SOURCE only
+- **By channel**: Filter messages by channel (`channel`: WHATSAPP, SMS, etc.)
+- **By time range**: Filter messages between `start_time` and `end_time`
+- **By app**: Filter messages for a specific app ID (`app_id`)
+- **By channel identity**: Filter by channel identity (`channel_identity`)
+- **By direction**: Filter inbound-only messages (`only_recipient_originated=true`)
+- **Pagination**: Use `page_size` (default 10, max 1000) and `page_token` for pagination
 
 ## Message View Options
 
-- **FULL**: Complete message details (default)
-- **BASIC**: Basic message information
+- **FULL**: Complete message details including message content (default)
+- **BASIC**: Basic message metadata without full content — use for listing/overview
+
+## Scripts
+
+Pre-built script for listing messages:
+
+```bash
+node scripts/common/list_messages.cjs --channel SMS --page-size 20
+```
+
+Requires environment variables: `SINCH_PROJECT_ID`, `SINCH_KEY_ID`, `SINCH_KEY_SECRET`, `SINCH_REGION`.
+
+## Code Generation References
+
+Multi-language examples for listing messages:
+
+- [references/rcs/list-messages/javascript-example.md](references/rcs/list-messages/javascript-example.md)
+- [references/rcs/list-messages/python-example.md](references/rcs/list-messages/python-example.md)
+- [references/rcs/list-messages/java-example.md](references/rcs/list-messages/java-example.md)
 
 ## Notes
 
 - **MCP Note**: MCP Sinch does not provide a list messages tool, so this skill always uses the Conversation API endpoint
 - Messages are ordered by accept_time in descending order (most recent first)
-- Use the Conversation API endpoint directly - reference the OpenAPI spec for exact parameter names and types
+- Use the Conversation API endpoint directly — reference the OpenAPI spec for exact parameter names and types
 - If no messages found, inform the user clearly
 - Support pagination for large message lists using `page_token` from response
 - The `messages_source` parameter determines processing mode: `CONVERSATION_SOURCE` for CONVERSATION mode, `DISPATCH_SOURCE` for DISPATCH mode
-- Some query parameters may not be supported depending on the `messages_source` value - check the API spec for details
+- Some query parameters may not be supported depending on the `messages_source` value — check the API spec for details
+- Use `view=BASIC` for listing overviews and `view=FULL` when message content is needed
 

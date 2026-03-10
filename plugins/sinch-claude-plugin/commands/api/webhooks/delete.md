@@ -93,6 +93,11 @@ Webhook Details:
 Are you sure you want to delete this webhook? (yes/no)
 ```
 
+## Bundled Scripts and References
+
+- **Script**: `scripts/webhooks/delete_webhook.cjs` — standalone Node.js script (requires `SINCH_PROJECT_ID`, `SINCH_KEY_ID`, `SINCH_KEY_SECRET`, `SINCH_REGION` env vars)
+- **Code examples**: `references/webhooks/delete/` — JavaScript, Python, Java
+
 ## Notes
 
 - Deletion is permanent and cannot be undone

@@ -32,8 +32,13 @@ Retrieve information about available messaging channels and their capabilities. 
    - Region: Use CONVERSATION_REGION environment variable (us, eu, or br)
    - Base URL: `https://{region}.conversation.api.sinch.com`
 
-3. **Provide comprehensive channel information:**
-   - List all available channels: WhatsApp, SMS, RCS, Messenger, Viber, Instagram, Telegram, LINE, WeChat, KakaoTalk, Apple Messages for Business
+3. **Consider the processing mode:**
+   - **DISPATCH** (default for new apps) — messages dispatched without conversation context. Use for 1-way and 2-way flows where conversation tracking is not needed.
+   - **CONVERSATION** — messages tied to a conversation. Auto-created if none exists.
+   - The processing mode affects how channels are used and whether contacts/conversations are auto-created.
+
+4. **Provide comprehensive channel information:**
+   - List all available channels: WhatsApp, SMS, RCS, MMS, Messenger, Viber, Instagram, Telegram, LINE, WeChat, KakaoTalk, Apple Messages for Business
    - For contacts: Show which channels are configured for that contact
    - Explain channel capabilities and use cases
    - Indicate channel availability status
@@ -64,19 +69,30 @@ Retrieve information about available messaging channels and their capabilities. 
 
 ## Supported Channels
 
-- **WHATSAPP**: WhatsApp Business messages - rich media, templates, interactive messages
-- **SMS**: SMS text messages - universal, simple text
-- **RCS**: Rich Communication Services - rich media, read receipts, typing indicators
-- **MESSENGER**: Facebook Messenger - rich media, quick replies
-- **VIBERBM**: Viber Business Messages - rich media, carousels
-- **MMS**: Multimedia Messaging Service - images, videos
-- **INSTAGRAM**: Instagram Direct Messages - rich media, stories
-- **TELEGRAM**: Telegram messages - rich media, bots
-- **KAKAOTALK**: KakaoTalk messages - rich media, plus friends
-- **KAKAOTALKCHAT**: KakaoTalk chat channel (ConsultationTalk)
-- **LINE**: LINE messages - rich media, stickers
-- **WECHAT**: WeChat messages - rich media, mini programs
-- **APPLEBC**: Apple Messages for Business - rich media, Apple Pay
+| Channel           | Key Considerations                                                       |
+| ----------------- | ------------------------------------------------------------------------ |
+| **SMS**           | Encoding (GSM vs UCS-2), concatenation, sender IDs, opt-out, 10DLC      |
+| **WHATSAPP**      | 24h service window, template approval, opt-in requirements               |
+| **RCS**           | Rich cards, carousels, choices, capability check, carrier approval       |
+| **MMS**           | Media types, 1 MB size limit, US/Canada/Australia only                   |
+| **MESSENGER**     | Facebook Messenger — rich media, quick replies                           |
+| **VIBERBM**       | Viber Business Messages — rich media, carousels                          |
+| **INSTAGRAM**     | Instagram Direct Messages — rich media, stories                          |
+| **TELEGRAM**      | Telegram messages — rich media, bots                                     |
+| **KAKAOTALK**     | KakaoTalk messages — rich media, plus friends                            |
+| **KAKAOTALKCHAT** | KakaoTalk chat channel (ConsultationTalk)                                |
+| **LINE**          | LINE messages — rich media, stickers                                     |
+| **WECHAT**        | WeChat messages — rich media, mini programs                              |
+| **APPLEBC**       | Apple Messages for Business — rich media, Apple Pay                      |
+
+## Channel Reference Guides
+
+Detailed channel-specific documentation is available in `references/channels/`:
+
+- [references/channels/sms.md](references/channels/sms.md) — encoding (GSM vs UCS-2), concatenation, sender IDs, opt-out, 10DLC
+- [references/channels/whatsapp.md](references/channels/whatsapp.md) — 24h service window, template approval, opt-in requirements
+- [references/channels/rcs.md](references/channels/rcs.md) — rich cards, carousels, choices, capability check, carrier approval
+- [references/channels/mms.md](references/channels/mms.md) — media types, 1 MB size limit, US/Canada/Australia only
 
 ## Channel Capabilities
 
@@ -87,14 +103,17 @@ Each channel supports different message types:
 - **Interactive messages**: Buttons, quick replies (channel-dependent)
 - **Location sharing**: Some channels
 - **File attachments**: Channel-dependent
+- **Channel transcoding**: Rich messages sent to channels that don't support them are auto-transcoded to text
 
 ## Notes
 
-- **Prefer MCP tools** if MCP Sinch is configured - use `list-conversation-apps` for app and channel information
+- **Prefer MCP tools** if MCP Sinch is configured — use `list-conversation-apps` for app and channel information
 - **Fallback to Conversation API** if MCP is not configured or MCP tool execution fails
 - Channel availability depends on app configuration and credentials
 - Contacts can have multiple channels associated
 - Some channels require specific setup and approval
-- Capability query is asynchronous - use webhook callbacks to receive results
+- Capability query is asynchronous — use webhook callbacks to receive results
 - Channel information is available in app responses and contact channel_identities
+- **Processing mode** (DISPATCH vs CONVERSATION) is set per app and affects message routing and contact/conversation auto-creation
+- **Channel priority and fallback**: Use `channel_priority_order` to attempt channels in order with automatic fallback
 
