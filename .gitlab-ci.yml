@@ -150,7 +150,7 @@ test-submodule:
       SKILLS_REL=$(jq -r '.skills' "$PLUGIN_JSON")
       SKILLS_ABS="$PLUGIN_DIR/${SKILLS_REL#./}"
       ZIP_FILE="/tmp/test-skills.zip"
-      (cd "$PLUGIN_DIR/sinch-skills" && zip -r "$ZIP_FILE" "skills")
+      (cd "$PLUGIN_DIR" && zip -r "$ZIP_FILE" "skills")
       ZIP_SIZE=$(wc -c < "$ZIP_FILE" | tr -d ' ')
       ZIP_ENTRIES=$(unzip -l "$ZIP_FILE" | grep "SKILL.md" | wc -l | tr -d ' ')
       echo "Zip size: ${ZIP_SIZE} bytes"
