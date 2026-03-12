@@ -32,5 +32,5 @@
     "./commands/api/webhooks/triggers.md"
   ],
   "skills": "./skills",
-  "mcpServers": "./mcp.json"
+  "mcpServers": "./.mcp.json"
 }
