@@ -1,6 +1,6 @@
 {
   "name": "sinch-gemini-extension",
-  "version": "0.0.15",
+  "version": "0.0.17",
   "description": "Gemini CLI extension for Sinch: Conversation API (SMS, RCS, WhatsApp), Voice, Verification, Fax, Numbers, 10DLC, Email (Mailgun, Mailjet), and more",
   "author": {
     "name": "Sinch",

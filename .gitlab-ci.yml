@@ -51,18 +51,16 @@ stages:
 # Reusable Templates & Anchors
 # ================================
 
-# Common rules for release jobs:
-# - push + bump: Normal release flow with version bump
-# - web (any bump_type): Support republish flow - re-syncs existing version
+# Common rules for release jobs (manual trigger only via "Run Pipeline"):
+# - web + bump: Normal release flow with version bump
+# - web + bump_type=none: Support republish flow - re-syncs existing version
 .release_rules:
   rules:
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $VERSION_BUMP_TYPE != "none" && $CI_PIPELINE_SOURCE == "push"
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "web"
 
-# Rules for jobs that run on all triggers (including bump_type=none on push)
+# Rules for jobs that run on manual web triggers
 .all_triggers_rules:
   rules:
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "web"
 
 # Common Git configuration
