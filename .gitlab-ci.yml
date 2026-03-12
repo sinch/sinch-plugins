@@ -57,11 +57,13 @@ stages:
 .release_rules:
   rules:
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "web"
+    - if: $CI_COMMIT_REF_NAME == "PD-158" && $CI_PIPELINE_SOURCE == "web"  # TEMP: remove before merge
 
 # Rules for jobs that run on manual web triggers
 .all_triggers_rules:
   rules:
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "web"
+    - if: $CI_COMMIT_REF_NAME == "PD-158" && $CI_PIPELINE_SOURCE == "web"  # TEMP: remove before merge
 
 # Common Git configuration
 .git_config:
