@@ -1,0 +1,45 @@
+description = "List or get active call information via Sinch Voice API"
+
+prompt = """
+# List / Get Voice Calls
+
+List active calls or get details of a specific call using the Sinch Voice API. Uses Application Key + Secret.
+
+**IMPORTANT: Execute this command directly. Do NOT generate script files. Perform the API call immediately.**
+
+## Input
+
+- `--call-id` / `-i`: Call ID to retrieve - optional (if omitted, list or describe available operations)
+- `--format` / `-f`: Output format (table or json) - optional
+
+Arguments: {{args}}
+
+## Instructions
+
+**Execute these steps directly - do not write code or scripts:**
+
+0. If {{args}} empty: ask "Do you have a call ID to look up, or list recent/active calls?" and get call-id or list preference. Otherwise parse.
+
+1. Validate: optional --call-id, --format. Get VOICE_APPLICATION_KEY and VOICE_APPLICATION_SECRET. If missing, report "Voice API is not configured."
+
+2. If --call-id provided: use Voice API to get call details (endpoint may be GET /calls/{callId} or equivalent per Sinch Voice API docs). Return status, duration, from, to, etc.
+
+3. If listing: use Voice API list/query endpoint if available; otherwise explain that user can check Sinch Dashboard or use call-id for a specific call.
+
+4. Format output as table or JSON. On success display "✅ Call info" or summary. Handle 404, 401 with clear messages.
+
+5. Handle all errors gracefully.
+
+## Examples
+
+```
+/sinch:api:voice:calls --call-id=CALL_ID
+/sinch:api:voice:calls -i CALL_ID --format=json
+```
+
+## API Reference
+
+- **Base URL**: https://calling.api.sinch.com/calling/v1
+- **Auth**: Application Key + Secret (Basic or Signed)
+- **Documentation**: https://developers.sinch.com/docs/voice/
+"""

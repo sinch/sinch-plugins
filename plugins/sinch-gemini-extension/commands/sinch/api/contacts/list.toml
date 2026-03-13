@@ -1,0 +1,45 @@
+description = "List or search contacts in Sinch Conversation API"
+
+prompt = """
+# List Contacts
+
+List or search contacts for your Sinch Conversation API project. Contacts represent end-users with channel identities (phone, WhatsApp, etc.). Uses OAuth2.
+
+**IMPORTANT: Execute this command directly. Do NOT generate script files. Perform the API call immediately.**
+
+## Input
+
+- `--channel` / `-c`: Filter by channel (SMS, WHATSAPP, RCS) - optional
+- `--page-size` / `-n`: Results per page - optional, default 20
+- `--page-token` / `-p`: Pagination token - optional
+- `--format` / `-f`: Output format (table or json) - optional, default table
+
+Arguments: {{args}}
+
+## Instructions
+
+**Execute these steps directly - do not write code or scripts:**
+
+0. If {{args}} empty: use defaults (table, page-size 20). Otherwise parse.
+
+1. Validate: optional --channel, --page-size, --page-token, --format. Get CONVERSATION_* env vars. Conversation API base: https://{region}.conversation.api.sinch.com/v1. If missing, report "Sinch API is not configured."
+
+2. GET https://{region}.conversation.api.sinch.com/v1/projects/{projectId}/contacts with query params (channel, page_size, page_token). OAuth2 Bearer token.
+
+3. Format response: table (id, channel identities, metadata) or JSON. Display "✅ Contacts listed" with count. Include page_token for next page if present.
+
+4. Handle 401, 404. Handle all errors gracefully.
+
+## Examples
+
+```
+/sinch:api:contacts:list
+/sinch:api:contacts:list --channel=WHATSAPP --page-size=50
+/sinch:api:contacts:list -f json
+```
+
+## API Reference
+
+- **Endpoint**: GET /v1/projects/{projectId}/contacts
+- **Documentation**: https://developers.sinch.com/docs/conversation/api-reference/conversation/tag/Contacts/
+"""

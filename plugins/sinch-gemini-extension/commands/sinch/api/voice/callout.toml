@@ -1,0 +1,55 @@
+description = "Make an outbound voice call (TTS callout) via Sinch Voice API"
+
+prompt = """
+# Voice Callout (TTS Call)
+
+Place an outbound voice call using the Sinch Voice API. Supports text-to-speech (TTS) callouts to a phone number. Uses Application Key + Secret (not Conversation API credentials).
+
+**IMPORTANT: Execute this command directly. Do NOT generate script files. Perform the API call immediately.**
+
+## Input
+
+- `--to` / `-t`: Destination phone number (E.164) - required
+- `--text` / `-T`: Text to be spoken (TTS) - required
+- `--cli` / `-c`: Caller ID / CLI (E.164) - optional
+- `--locale` / `-l`: TTS locale (e.g. en-US) - optional, default en-US
+
+Arguments: {{args}}
+
+## Instructions
+
+**Execute these steps directly - do not write code or scripts:**
+
+0. If {{args}} empty: ask for destination number, text to speak, optional caller ID and locale. Otherwise parse.
+
+1. Validate: --to (E.164), --text (non-empty). Optional: --cli (E.164), --locale.
+
+2. Get VOICE_APPLICATION_KEY and VOICE_APPLICATION_SECRET from env (or equivalent Voice app credentials). Voice API uses Application Key/Secret, not OAuth2. If missing, report "Voice API is not configured. Set VOICE_APPLICATION_KEY and VOICE_APPLICATION_SECRET."
+
+3. Request body: method "ttsCallout", ttsCallout: destination (type "number", endpoint), cli, locale, text.
+
+4. POST https://calling.api.sinch.com/calling/v1/callouts with Basic Auth (ApplicationKey:ApplicationSecret) or signed request, Content-Type application/json.
+
+5. On success: "✅ Call initiated" with call ID. Handle 400, 401, 403 with clear messages.
+
+6. Handle all errors gracefully.
+
+## Examples
+
+```
+/sinch:api:voice:callout --to=+14155551234 --text="Hello, this is a test call from Sinch."
+/sinch:api:voice:callout -t +14155551234 -T "Your verification code is 1 2 3 4" --locale=en-US
+```
+
+## API Reference
+
+- **Base URL**: https://calling.api.sinch.com/calling/v1
+- **Endpoint**: POST /callouts
+- **Auth**: Basic (application key:secret) or Application Signed Request
+- **Documentation**: https://developers.sinch.com/docs/voice/
+
+## Notes
+
+- Voice API uses Application Key + Secret from Voice app in Sinch Dashboard, not project OAuth2.
+- Regional endpoints available: calling-use1, calling-euc1, calling-apse1, etc.
+"""
