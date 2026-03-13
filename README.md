@@ -2,21 +2,6 @@
 
 This repository contains Sinch plugins and related artifacts for AI developer tools.
 
-## Development Setup
-
-This repository uses a [git submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules) to include skills from [sinch-skills](https://gitlab.com/sinch/sinch-projects/enterprise-and-messaging/documentation/developer-experience/sinch-skills). When cloning, initialize submodules:
-
-```bash
-# Clone with submodules
-git clone --recurse-submodules <sinch-plugins-url>
-
-# Or init after clone
-git submodule update --init --recursive
-
-# Update sinch-skills to latest
-git submodule update --remote vendor/sinch-skills
-```
-
 ## Claude Code
 
 A Claude Code plugin that integrates the Sinch Conversation API, allowing you to send SMS messages, manage webhooks, and inspect your Sinch configuration directly from your terminal.
@@ -132,18 +117,15 @@ This plugin leverages the [Sinch MCP Server](https://github.com/sinch/sinch-mcp-
 Skills are natural-language workflows that guide Claude through common tasks.
 
 - Skills live under [plugins/sinch-claude-plugin/skills](plugins/sinch-claude-plugin/skills/).
-- Skills are shared from [sinch-skills](https://gitlab.com/sinch/sinch-projects/enterprise-and-messaging/documentation/developer-experience/sinch-skills) via git submodule (see [Development Setup](#development-setup)).
 - Skills are also published as a standalone artifact in this repository's Releases.
 
-Action-oriented skills (plugin-specific):
+Available skills:
 
 - [Send Message](plugins/sinch-claude-plugin/skills/send-message/SKILL.md)
 - [Channel Info](plugins/sinch-claude-plugin/skills/channel-info/SKILL.md)
 - [List Messages](plugins/sinch-claude-plugin/skills/list-messages/SKILL.md)
 - [Manage Contact](plugins/sinch-claude-plugin/skills/manage-contact/SKILL.md)
 - [Manage Webhook](plugins/sinch-claude-plugin/skills/manage-webhook/SKILL.md)
-
-Product-oriented skills (from sinch-skills): conversation-api, voice-api, verification-api, numbers, 10dlc, fax, mailgun, mailjet, and more.
 
 ## Gemini CLI
 
