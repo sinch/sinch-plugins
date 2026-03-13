@@ -5,7 +5,6 @@
 # Required variables (set in Settings → CI/CD → Variables):
 #   GITHUB_PAT_2 - Personal Access Token with for synching with GitHub repos (MUST be kept secret)
 #   GITHUB_REPO_URL - GitHub repository URL (e.g., github.com/sinch/sinch-plugins or https://github.com/sinch/sinch-plugins)
-#   SKILLS_REPO_TOKEN - Access token with read access to sinch-skills repo (for submodule cloning)
 #
 # Predefined GitLab CI variables (automatically available):
 #   CI_COMMIT_SHORT_SHA   - Short commit SHA (first 8 chars)
@@ -40,7 +39,6 @@ default:
 variables:
   # Make the pipeline input available in `rules:` and `script:` blocks.
   VERSION_BUMP_TYPE: $[[ inputs.version_bump_type ]]
-  GIT_SUBMODULE_STRATEGY: none
 
 stages:
   - pre-release
@@ -51,16 +49,18 @@ stages:
 # Reusable Templates & Anchors
 # ================================
 
-# Common rules for release jobs (manual trigger only via "Run Pipeline"):
-# - web + bump: Normal release flow with version bump
-# - web + bump_type=none: Support republish flow - re-syncs existing version
+# Common rules for release jobs:
+# - push + bump: Normal release flow with version bump
+# - web (any bump_type): Support republish flow - re-syncs existing version
 .release_rules:
   rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $VERSION_BUMP_TYPE != "none" && $CI_PIPELINE_SOURCE == "push"
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "web"
 
-# Rules for jobs that run on manual web triggers
+# Rules for jobs that run on all triggers (including bump_type=none on push)
 .all_triggers_rules:
   rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "web"
 
 # Common Git configuration
@@ -298,29 +298,7 @@ sync_to_github:
         git fetch --prune origin "$TARGET_BRANCH"
         git checkout -B "$TARGET_BRANCH" "origin/$TARGET_BRANCH"
       fi
-    # 4. Dereference submodule + symlinks for GitHub (submodule points to private GitLab repo)
-    - |
-      echo "machine gitlab.com login oauth2 password ${SKILLS_REPO_TOKEN}" > ~/.netrc && chmod 600 ~/.netrc
-      git submodule update --init --recursive
-      echo "Pulling latest sinch-skills from main..."
-      (cd vendor/sinch-skills && git fetch origin main && git checkout origin/main)
-      SUBMOD_PATH="vendor/sinch-skills"
-      if [ -d "$SUBMOD_PATH/.git" ] || [ -f "$SUBMOD_PATH/.git" ]; then
-        echo "Dereferencing submodule and symlinks for GitHub push..."
-        for PLUGIN_DIR in plugins/sinch-claude-plugin plugins/sinch-gemini-extension; do
-          SKILLS_PATH="$PLUGIN_DIR/skills"
-          if [ -d "$SKILLS_PATH" ]; then
-            cp -rL "$SKILLS_PATH" /tmp/skills-resolved-$(basename "$PLUGIN_DIR")
-            git rm -rf "$SKILLS_PATH"
-            cp -r /tmp/skills-resolved-$(basename "$PLUGIN_DIR") "$SKILLS_PATH"
-            git add "$SKILLS_PATH"
-          fi
-        done
-        git rm -rf "$SUBMOD_PATH"
-        git rm -f .gitmodules 2>/dev/null || true
-      fi
-
-    # 5. Remove .gitlab-ci.yml from final GitHub repo
+    # 4. Remove .gitlab-ci.yml from final GitHub repo
     - git rm --ignore-unmatch .gitlab-ci.yml
     # Only amend if there are staged changes (file was actually removed)
     - |
@@ -345,12 +323,8 @@ build_artifacts:
       artifacts: true
   extends:
     - .release_rules
-  variables:
-    GIT_SUBMODULE_STRATEGY: none
   before_script:
     - apk add --no-cache git jq zip
-    - git config --global url."https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/".insteadOf "git@gitlab.com:"
-    - git config --global url."https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/".insteadOf "https://gitlab.com/"
   script:
     - git fetch --prune --tags origin "$CI_DEFAULT_BRANCH"
 
@@ -377,7 +351,6 @@ build_artifacts:
           git checkout -B "$CI_DEFAULT_BRANCH" "origin/$CI_DEFAULT_BRANCH"
         fi
       fi
-    - git submodule update --init --recursive
     - mkdir -p dist
     - PLUGIN_FILE="plugins/sinch-claude-plugin/.claude-plugin/plugin.json"
     - CURRENT_VERSION=$(jq -r .version "$PLUGIN_FILE")
@@ -395,14 +368,6 @@ build_artifacts:
         fi
       fi
 
-    - |
-      echo "Initializing submodules after custom checkout..."
-      echo "machine gitlab.com login oauth2 password ${SKILLS_REPO_TOKEN}" > ~/.netrc && chmod 600 ~/.netrc
-      git submodule sync --recursive
-      git submodule update --init --recursive
-      echo "Pulling latest sinch-skills from main..."
-      (cd vendor/sinch-skills && git fetch origin main && git checkout origin/main)
-
     - SKILLS_DIR="plugins/sinch-claude-plugin/skills"
     - VERSION_FOR_ZIP="${NEW_VERSION:-$CURRENT_VERSION}"
     - ZIP_VERSIONED="dist/sinch-agent-skills-${VERSION_FOR_ZIP}.zip"
@@ -412,7 +377,7 @@ build_artifacts:
         echo "ERROR: Skills directory not found: $SKILLS_DIR";
         exit 1;
       fi
-      (cd "plugins/sinch-claude-plugin" && cp -rL skills skills-resolved && zip -r "../../$ZIP_VERSIONED" "skills-resolved" && rm -rf skills-resolved)
+      (cd "plugins/sinch-claude-plugin" && zip -r "../../$ZIP_VERSIONED" "skills")
 
     # Build Gemini extension archives (platform-specific tar.gz files)
     - GEMINI_DIR="plugins/sinch-gemini-extension"
@@ -436,11 +401,10 @@ build_artifacts:
       fi
       # Create platform-specific tar.gz archives (content is identical, names follow Gemini CLI convention)
       # Format: {platform}.{name}.{extension}
-      # -h dereferences symlinks so distributed archives contain real files
       for platform in darwin linux win32; do
         ARCHIVE_NAME="dist/${platform}.sinch-gemini-extension.tar.gz"
         echo "Creating archive: $ARCHIVE_NAME"
-        (cd "$GEMINI_DIR" && tar -chzf "../../$ARCHIVE_NAME" .)
+        (cd "$GEMINI_DIR" && tar -czf "../../$ARCHIVE_NAME" .)
       done
     # Write artifacts.env in script (not after_script) so dotenv artifact is collected
     - |

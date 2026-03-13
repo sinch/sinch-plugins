@@ -1,18 +1,13 @@
-# Sinch - Gemini CLI Extension
+# Sinch Conversation API - Gemini CLI Extension
 
-A [Gemini CLI extension](https://github.com/google-gemini/gemini-cli) that integrates Sinch APIs: Conversation API (SMS, RCS, WhatsApp), Voice, Verification, Fax, Numbers, 10DLC, Email (Mailgun, Mailjet), and more. Use natural language or slash commands to send messages, make calls, verify numbers, send faxes, and manage configuration.
+A [Gemini CLI extension](https://github.com/google-gemini/gemini-cli) that integrates the Sinch Conversation API, enabling you to send SMS messages directly from Gemini CLI using natural language.
 
 ## Features
 
-- **Messaging**: Send text, media, rich cards, carousels, choices, and location via SMS, RCS, WhatsApp; list messages and senders
-- **Webhooks**: Create, list, update, delete webhooks; view trigger reference
-- **Batch & Templates**: Send batch messages (up to 1000 recipients); list, create, delete message templates
-- **Voice & Verification**: Place TTS callouts; start phone verification (SMS/Flashcall/Call) and check codes
-- **Fax & Numbers**: Send and list faxes; number lookup (carrier, etc.); search available numbers to rent
-- **Email**: Send and validate/inspect/optimize with Mailgun; send with Mailjet
-- **Infrastructure**: 10DLC brands and campaigns; Elastic SIP trunks; Provisioning (WhatsApp/RCS senders); list contacts
-- **Help**: Authentication setup guide and command overview (`/sinch:help`, `/sinch:config:auth`)
-- **Natural language**: Use conversational prompts or slash commands with Gemini AI
+- **Send SMS Messages**: Send text messages via SMS
+- **Media Messages**: Send images, videos, and other media via SMS
+- **App Management**: List apps and available messaging templates
+- **Natural Language Interface**: Use conversational commands with Gemini AI
 
 ## Prerequisites
 
@@ -45,28 +40,21 @@ gemini extensions install https://github.com/sinch/sinch-plugins
 
 ### During Installation
 
-When you install the extension, Gemini CLI will prompt you for credentials. At minimum, set Conversation API credentials for messaging:
+When you install the extension, Gemini CLI will automatically prompt you for your Sinch credentials:
 
-- **CONVERSATION_PROJECT_ID**: Your Sinch project ID (required for messaging, batch, templates, webhooks, numbers, fax, 10DLC, provisioning, contacts)
+- **CONVERSATION_PROJECT_ID**: Your Sinch project ID (required)
 - **CONVERSATION_KEY_ID**: Your API key ID (required)
 - **CONVERSATION_KEY_SECRET**: Your API key secret (required, stored securely)
 - **CONVERSATION_REGION**: Your region (us, eu, or br) (required)
-- **CONVERSATION_APP_ID**: Your Sinch Conversation API App ID (required for sending messages)
-
-### Optional Settings (per product)
-
-- **Voice API**: VOICE_APPLICATION_KEY, VOICE_APPLICATION_SECRET (for `/sinch:api:voice:*`)
-- **Verification API**: VERIFICATION_APPLICATION_KEY, VERIFICATION_APPLICATION_SECRET (for `/sinch:api:verification:*`)
-- **Mailgun**: MAILGUN_API_KEY, MAILGUN_DOMAIN, MAILGUN_REGION (us/eu) (for `/sinch:email:mailgun:*`)
-- **Mailjet**: MJ_APIKEY_PUBLIC, MJ_APIKEY_PRIVATE (for `/sinch:email:mailjet:*`)
+- **CONVERSATION_APP_ID**: Your Sinch Conversation API App ID (required)
 
 ### Getting Your Credentials
 
 1. Visit the [Sinch Dashboard](https://dashboard.sinch.com/)
-2. **Conversation API**: Create a project, create an app, configure channels (SMS, RCS, etc.), create an Access Key (Project ID, Key ID, Key Secret, Region, App ID).
-3. **Voice / Verification**: Use Application Key + Secret from the respective app in the dashboard.
-4. **Mailgun / Mailjet**: Use API keys from the Mailgun or Mailjet account (by Sinch) dashboards.
-5. Run `/sinch:config:auth` in Gemini CLI for a full authentication guide.
+2. Create or select a Conversation API project
+3. Create an app and configure SMS channel
+4. Generate API credentials (Access Key)
+5. Copy the Project ID, Key ID, Key Secret, Region, and App ID
 
 ## Verify Installation
 
@@ -84,29 +72,7 @@ Should show: `✓ sinch: command: npx -y @sinch/mcp (stdio) - Connected`
 
 ## Usage
 
-Start Gemini CLI (`gemini`) and use natural language or slash commands. Run `/sinch:help` for a full command overview.
-
-### Slash commands (examples)
-
-| Category | Commands |
-|----------|----------|
-| **Messages** | `/sinch:api:messages:send`, `send-media`, `send-card`, `send-carousel`, `send-choice`, `send-location`, `list` |
-| **Webhooks** | `/sinch:api:webhooks:create`, `list`, `update`, `delete`, `triggers` |
-| **Senders** | `/sinch:api:senders:list` |
-| **Batch** | `/sinch:api:batch:send`, `status` |
-| **Templates** | `/sinch:api:templates:list`, `create`, `delete` |
-| **Voice** | `/sinch:api:voice:callout`, `calls` |
-| **Verification** | `/sinch:api:verification:start`, `check` |
-| **Fax** | `/sinch:api:fax:send`, `list` |
-| **Numbers** | `/sinch:api:numbers:lookup`, `search` |
-| **10DLC** | `/sinch:api:10dlc:brands`, `campaigns` |
-| **SIP** | `/sinch:api:sip:trunks` |
-| **Provisioning** | `/sinch:api:provisioning:setup` |
-| **Contacts** | `/sinch:api:contacts:list` |
-| **Email** | `/sinch:email:mailgun:send`, `validate`, `inspect`, `optimize`; `/sinch:email:mailjet:send` |
-| **Config** | `/sinch:config:auth`, `/sinch:help` |
-
-### Natural language examples
+Once installed, you can use Sinch messaging capabilities in Gemini CLI with natural language:
 
 ```bash
 # Start Gemini CLI
@@ -118,27 +84,23 @@ gemini
 # List your Sinch apps
 "List all my Sinch conversation apps"
 
-# Send media, start verification, send fax
+# Send an SMS with media
 "Send an image to +1234567890 via SMS with URL https://example.com/image.jpg"
-"Start SMS verification for +1234567890"
-"Send a fax to +1234567890 from https://example.com/doc.pdf"
 
-# Email (with Mailgun/Mailjet configured)
-"Send an email via Mailgun to user@example.com with subject Hello and body Hi there"
+# List available templates
+"Show me all my Sinch message templates"
 ```
 
 ## Available MCP Tools
 
-When the Sinch MCP server is connected, these tools are available (used by many slash commands):
+The extension provides access to these Sinch MCP tools:
 
-- **send-text-message** - Send text messages via SMS/RCS
-- **send-media-message** - Send media messages (images, videos) via SMS/RCS
-- **send-template-message** - Send template messages
+- **send-text-message** - Send text messages via SMS
+- **send-media-message** - Send media messages (images, videos) via SMS
+- **send-template-message** - Send template messages via SMS
 - **list-conversation-apps** - List configured apps and channels
 - **list-messaging-templates** - List available message templates
 - **sinch-mcp-configuration** - Check MCP server configuration status
-
-Other commands (batch, templates API, voice, verification, fax, numbers, email, 10DLC, SIP, provisioning, contacts) use direct API calls with your configured credentials when MCP does not expose a matching tool.
 
 ## Managing Settings
 
@@ -190,6 +152,8 @@ gemini extensions enable sinch-gemini-extension --scope workspace
 ```bash
 gemini extensions uninstall sinch-gemini-extension
 ```
+
+## Development
 
 ## Troubleshooting
 
@@ -249,69 +213,48 @@ This creates a symlink so changes are immediately available without reinstalling
 ### Extension Structure
 
 ```
-sinch-gemini-extension/
-├── gemini-extension.json    # Extension manifest (MCP, settings)
-├── README.md                # This file
-└── commands/               # Slash command definitions (TOML)
-    └── sinch/
-        ├── api/             # messages, webhooks, batch, templates, voice, verification, fax, numbers, 10dlc, sip, provisioning, contacts
-        ├── email/           # mailgun, mailjet
-        ├── config/          # auth
-        └── help.toml
+.gemini-extension/
+├── gemini-extension.json    # Extension configuration
+└── README.md                # This file
 ```
 
 ## Examples
 
-### Messaging
+### Send SMS Messages
 
 ```bash
-/sinch:api:messages:send --to=+1234567890 --message="Your order is ready"
-/sinch:api:messages:send-media --to=+1234567890 --url=https://example.com/photo.jpg
-/sinch:api:messages:send-card --to=+1234567890 --title="Welcome" --description="Thanks for signing up"
-/sinch:api:webhooks:list
+# Send a text SMS
+"Send an SMS to +1234567890 with the message: Your order #12345 is ready"
+
+# Send an SMS with more context
+"Send an SMS to +1234567890: Hello from Sinch!"
 ```
 
-### Batch and Templates
+### Send Media Messages via SMS
 
 ```bash
-/sinch:api:batch:send --message="Hello ${name}" --recipients=+15551111111,+15552222222
-/sinch:api:templates:list
-/sinch:api:templates:create --default-language=en-US --text="Hi ${name}!"
+"Send an image via SMS to +1234567890 with this URL: https://example.com/photo.jpg"
+
+"Send a video message to +1234567890 via SMS with URL https://example.com/video.mp4 and caption 'Check this out'"
 ```
 
-### Voice and Verification
+### List and Manage Apps
 
 ```bash
-/sinch:api:voice:callout --to=+1234567890 --text="This is a test call from Sinch"
-/sinch:api:verification:start --to=+1234567890 --method=sms
-/sinch:api:verification:check --id=VERIFICATION_ID --code=1234
-```
+"List all my Sinch conversation apps"
 
-### Fax, Numbers, Email
+"Show me available message templates"
 
-```bash
-/sinch:api:fax:send --to=+1234567890 --content-url=https://example.com/doc.pdf
-/sinch:api:numbers:lookup --numbers=+1234567890
-/sinch:email:mailgun:send --from="Sender <sender@mydomain.com>" --to=user@example.com --subject="Hello" --text="Hi"
-/sinch:email:mailgun:validate --address=user@example.com
-```
-
-### Config and Help
-
-```bash
-/sinch:help
-/sinch:config:auth
+"Check my Sinch app SMS configuration"
 ```
 
 ## API References
 
-- [Sinch Developer Hub](https://developers.sinch.com/) — Conversation, Voice, Verification, Fax, Numbers, 10DLC, etc.
-- [Sinch Conversation API](https://developers.sinch.com/docs/conversation)
+- [Sinch Conversation API Documentation](https://developers.sinch.com/docs/conversation)
 - [Sinch MCP Server](https://github.com/sinch/sinch-mcp-server)
-- [Gemini CLI Extensions](https://geminicli.com/docs/extensions/)
+- [Gemini CLI Extensions Documentation](https://geminicli.com/docs/extensions/)
 - [Message Templates](https://developers.sinch.com/docs/conversation/templates/)
-- [Webhooks](https://developers.sinch.com/docs/conversation/webhooks/)
-- [LLMs index](https://developers.sinch.com/llms.txt)
+- [Webhooks Documentation](https://developers.sinch.com/docs/conversation/webhooks/)
 
 ## Contributing
 

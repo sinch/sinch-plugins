@@ -1,7 +1,7 @@
 {
   "name": "sinch-gemini-extension",
-  "version": "0.0.19",
-  "description": "Gemini CLI extension for Sinch: Conversation API (SMS, RCS, WhatsApp), Voice, Verification, Fax, Numbers, 10DLC, Email (Mailgun, Mailjet), and more",
+  "version": "0.0.14",
+  "description": "Gemini CLI extension for Sinch Conversation API (SMS, RCS, etc.)",
   "author": {
     "name": "Sinch",
     "email": "ecosystems@sinch.com",
@@ -52,55 +52,6 @@
       "name": "CONVERSATION_APP_ID",
       "description": "Your Sinch Conversation API App ID",
       "envVar": "CONVERSATION_APP_ID"
-    },
-    {
-      "name": "VOICE_APPLICATION_KEY",
-      "description": "Sinch Voice API Application Key",
-      "envVar": "VOICE_APPLICATION_KEY"
-    },
-    {
-      "name": "VOICE_APPLICATION_SECRET",
-      "description": "Sinch Voice API Application Secret",
-      "envVar": "VOICE_APPLICATION_SECRET",
-      "sensitive": true
-    },
-    {
-      "name": "VERIFICATION_APPLICATION_KEY",
-      "description": "Sinch Verification API Application Key",
-      "envVar": "VERIFICATION_APPLICATION_KEY"
-    },
-    {
-      "name": "VERIFICATION_APPLICATION_SECRET",
-      "description": "Sinch Verification API Application Secret",
-      "envVar": "VERIFICATION_APPLICATION_SECRET",
-      "sensitive": true
-    },
-    {
-      "name": "MAILGUN_API_KEY",
-      "description": "Mailgun Private API Key",
-      "envVar": "MAILGUN_API_KEY",
-      "sensitive": true
-    },
-    {
-      "name": "MAILGUN_DOMAIN",
-      "description": "Mailgun sending domain",
-      "envVar": "MAILGUN_DOMAIN"
-    },
-    {
-      "name": "MAILGUN_REGION",
-      "description": "Mailgun region (us or eu)",
-      "envVar": "MAILGUN_REGION"
-    },
-    {
-      "name": "MJ_APIKEY_PUBLIC",
-      "description": "Mailjet API Key (public)",
-      "envVar": "MJ_APIKEY_PUBLIC"
-    },
-    {
-      "name": "MJ_APIKEY_PRIVATE",
-      "description": "Mailjet API Secret (private)",
-      "envVar": "MJ_APIKEY_PRIVATE",
-      "sensitive": true
     }
   ]
 }
