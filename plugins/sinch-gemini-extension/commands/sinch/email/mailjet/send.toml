@@ -1,0 +1,46 @@
+description = "Send an email via Mailjet (Sinch) API"
+
+prompt = """
+# Send Email via Mailjet
+
+Send a transactional or marketing email using the Mailjet Send API v3.1. Uses HTTP Basic Auth (API key:Secret key).
+
+**IMPORTANT: Execute this command directly. Do NOT generate script files. Perform the API call immediately.**
+
+## Input
+
+- `--from` / `-f`: Sender email and optional name (e.g. sender@domain.com or "Name <sender@domain.com>") - required
+- `--to` / `-t`: Recipient email address - required
+- `--subject` / `-s`: Email subject - required
+- `--text` / `-T`: Plain text body - optional
+- `--html` / `-H`: HTML body - optional
+- At least one of --text or --html required
+
+Arguments: {{args}}
+
+## Instructions
+
+**Execute these steps directly - do not write code or scripts:**
+
+0. If {{args}} empty: ask for from, to, subject, and text or html. Otherwise parse.
+
+1. Validate: --from, --to, --subject; at least one of --text or --html. Get MJ_APIKEY_PUBLIC and MJ_APIKEY_PRIVATE from env. If missing, report "Mailjet is not configured. Set MJ_APIKEY_PUBLIC and MJ_APIKEY_PRIVATE."
+
+2. Request body: Messages array with one object: From (Email, Name), To ([{Email, Name}]), Subject, TextPart, HTMLPart. POST https://api.mailjet.com/v3.1/send with Basic Auth (MJ_APIKEY_PUBLIC:MJ_APIKEY_PRIVATE), Content-Type application/json.
+
+3. On success: "✅ Email sent" with MessageID/Status. Handle 401, 400 with clear messages.
+
+4. Handle all errors gracefully.
+
+## Examples
+
+```
+/sinch:email:mailjet:send --from=sender@mydomain.com --to=recipient@example.com --subject="Hello" --text="Hello from Mailjet"
+/sinch:email:mailjet:send -f "Me <me@mydomain.com>" -t user@example.com -s "Test" --html="<p>Hi</p>"
+```
+
+## API Reference
+
+- **Endpoint**: POST https://api.mailjet.com/v3.1/send
+- **Auth**: Basic (API key:Secret key)
+"""

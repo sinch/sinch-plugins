@@ -1,0 +1,48 @@
+description = "List or manage WhatsApp/RCS senders via Sinch Provisioning API"
+
+prompt = """
+# Provisioning — Senders (WhatsApp, RCS)
+
+List senders (WhatsApp Business, RCS agents) or get setup guidance using the Sinch Provisioning API. Senders must be provisioned before sending messages on those channels. Uses OAuth2.
+
+**IMPORTANT: Execute this command directly. Do NOT generate script files. Perform the API call immediately.**
+
+## Input
+
+- `--action` / `-a`: list, get, or help - optional, default list
+- `--sender-id` / `-i`: Sender ID (for get) - optional
+- `--format` / `-f`: Output format (table or json) - optional
+
+Arguments: {{args}}
+
+## Instructions
+
+**Execute these steps directly - do not write code or scripts:**
+
+0. If {{args}} empty: ask "List senders, get one by ID, or show setup help?" Otherwise parse.
+
+1. Validate: --action (list|get|help), optional --sender-id. Get CONVERSATION_PROJECT_ID, CONVERSATION_KEY_ID, CONVERSATION_KEY_SECRET. Base: https://provisioning.api.sinch.com/v1. If missing, report "Sinch API is not configured."
+
+2. If list: GET https://provisioning.api.sinch.com/v1/projects/{projectId}/senders with OAuth2. Display table (id, displayName, channel, status) or JSON.
+
+3. If get: GET .../senders/{senderId}. Display sender details.
+
+4. If help: Display short guidance: create sender via Meta Embedded Sign-Up (WhatsApp), verify number, register sender; link to Sinch docs.
+
+5. "✅ Senders listed" or "✅ Sender details". Handle 401, 404. Handle all errors gracefully.
+
+## Examples
+
+```
+/sinch:api:provisioning:setup
+/sinch:api:provisioning:setup --action=get --sender-id=SENDER_ID
+/sinch:api:provisioning:setup --action=help
+```
+
+## API Reference
+
+- **Base URL**: https://provisioning.api.sinch.com/v1
+- **List**: GET /projects/{projectId}/senders
+- **Get**: GET /projects/{projectId}/senders/{senderId}
+- **Documentation**: https://developers.sinch.com/docs/provisioning/
+"""
