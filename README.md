@@ -8,7 +8,7 @@ This repository uses a [git submodule](https://git-scm.com/book/en/v2/Git-Tools-
 
 ```bash
 # Clone with submodules
-git clone --recurse-submodules <sinch-plugins-url>
+git clone --recurse-submodules https://github.com/sinch/skills.git
 
 # Or init after clone
 git submodule update --init --recursive
@@ -39,7 +39,7 @@ A Claude Code plugin that integrates the Sinch Conversation API, allowing you to
 To install this plugin in Claude Code, you typically install it from a marketplace or a local source.
 
 ```bash
-/plugin marketplace add https://github.com/sinch/sinch-plugins.git
+/plugin marketplace add https://github.com/sinch/skills.git
 /plugin install sinch-claude-plugin
 ```
 
@@ -154,13 +154,13 @@ A Gemini CLI extension that integrates the Sinch Conversation API, allowing you 
 #### Install from GitHub
 
 ```bash
-gemini extensions install https://github.com/sinch/sinch-plugins
+gemini extensions install https://github.com/sinch/skills
 ```
 
 #### Install from Local Path
 
 ```bash
-cd sinch-plugins/plugins/sinch-gemini-extension
+cd skills/plugins/sinch-gemini-extension
 gemini extensions install .
 ```
 
