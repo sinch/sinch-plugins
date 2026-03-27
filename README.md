@@ -120,7 +120,7 @@ Skills are natural-language workflows that guide AI agents through common Sinch 
 - Skills are shared from [sinch-skills](https://gitlab.com/sinch/sinch-projects/enterprise-and-messaging/documentation/developer-experience/sinch-skills) via git submodule (see [Development Setup](#development-setup)).
 - Skills are also published as a standalone artifact in this repository's Releases.
 
-Available product skills (from sinch-skills):
+Available product skills:
 
 - **Messaging**: conversation-api, in-app-calling
 - **Phone numbers**: numbers, number-lookup, 10dlc, elastic-sip-trunking
