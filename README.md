@@ -116,6 +116,16 @@ This plugin leverages the [Sinch MCP Server](https://github.com/sinch/sinch-mcp-
 
 Skills are natural-language workflows that guide AI agents through common Sinch tasks.
 
+### Source repository
+
+The skills catalog is maintained at [github.com/sinch/skills](https://github.com/sinch/skills).
+
+### Install with npx
+
+```bash
+npx skills add sinch/skills
+```
+
 - Skills live under [plugins/sinch-claude-plugin/skills](plugins/sinch-claude-plugin/skills/).
 - Skills are shared from [sinch-skills](https://gitlab.com/sinch/sinch-projects/enterprise-and-messaging/documentation/developer-experience/sinch-skills) via git submodule (see [Development Setup](#development-setup)).
 - Skills are also published as a standalone artifact in this repository's Releases.
