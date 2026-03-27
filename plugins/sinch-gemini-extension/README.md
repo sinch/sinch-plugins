@@ -25,7 +25,7 @@ A [Gemini CLI extension](https://github.com/google-gemini/gemini-cli) that integ
 ### Install from GitHub (Recommended)
 
 ```bash
-gemini extensions install https://github.com/sinch/skills
+gemini extensions install https://github.com/sinch/sinch-plugins
 ```
 
 ### Install from Local Path
@@ -38,7 +38,7 @@ gemini extensions install .
 ### Install from Git Repository
 
 ```bash
-gemini extensions install https://github.com/sinch/skills
+gemini extensions install https://github.com/sinch/sinch-plugins
 ```
 
 ## Configuration

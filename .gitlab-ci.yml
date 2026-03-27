@@ -4,7 +4,7 @@
 # ================================
 # Required variables (set in Settings → CI/CD → Variables):
 #   GITHUB_PAT_2 - Personal Access Token with for synching with GitHub repos (MUST be kept secret)
-#   GITHUB_REPO_URL - GitHub repository URL (e.g., github.com/sinch/skills or https://github.com/sinch/skills)
+#   GITHUB_REPO_URL - GitHub repository URL (e.g., github.com/sinch/skills or https://github.com/sinch/sinch-plugins)
 #   SKILLS_REPO_TOKEN - Access token with read access to sinch-skills repo (for submodule cloning)
 #
 # Predefined GitLab CI variables (automatically available):

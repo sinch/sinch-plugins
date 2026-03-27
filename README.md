@@ -1,6 +1,6 @@
-# Sinch Skills
+# Sinch Plugins
 
-This repository contains Sinch's skills and related artifacts for AI developer tools.
+This repository contains Sinch plugins and related artifacts for AI developer tools.
 
 ## Claude Code
 
@@ -24,7 +24,7 @@ A Claude Code plugin that integrates the Sinch Conversation API, allowing you to
 To install this plugin in Claude Code, you typically install it from a marketplace or a local source.
 
 ```bash
-/plugin marketplace add https://github.com/sinch/skills.git
+/plugin marketplace add https://github.com/sinch/sinch-plugins.git
 /plugin install sinch-claude-plugin
 ```
 
@@ -114,11 +114,11 @@ This plugin leverages the [Sinch MCP Server](https://github.com/sinch/sinch-mcp-
 
 ## Skills
 
-Skills are natural-language workflows that guide AI agents through common Sinch tasks.
+Skills are natural-language workflows that guide Claude through common tasks.
 
 ### Source repository
 
-The skills catalog is maintained at [github.com/sinch/skills](https://github.com/sinch/skills).
+The skills catalog is maintained at [github.com/sinch/skills](https://github.com/sinch/sinch-plugins).
 
 ### Install with npx
 
@@ -127,7 +127,7 @@ npx skills add sinch/skills
 ```
 
 - Skills live under [plugins/sinch-claude-plugin/skills](plugins/sinch-claude-plugin/skills/).
-- Skills are shared from [sinch-skills](https://gitlab.com/sinch/sinch-projects/enterprise-and-messaging/documentation/developer-experience/sinch-skills) via git submodule (see [Development Setup](#development-setup)).
+- Skills are shared from [sinch-skills](https://github.com/sinch/sinch-plugins) via git submodule
 - Skills are also published as a standalone artifact in this repository's Releases.
 
 Available product skills:
@@ -140,6 +140,8 @@ Available product skills:
 - **Provisioning**: provisioning-api
 - **Auth**: authentication
 
+Product-oriented skills (from sinch-skills): conversation-api, voice-api, verification-api, numbers, 10dlc, fax, mailgun, mailjet, and more.
+
 ## Gemini CLI
 
 A Gemini CLI extension that integrates the Sinch Conversation API, allowing you to send SMS messages, manage webhooks, and interact with your Sinch configuration directly from Gemini CLI.
@@ -149,7 +151,7 @@ A Gemini CLI extension that integrates the Sinch Conversation API, allowing you 
 #### Install from GitHub
 
 ```bash
-gemini extensions install https://github.com/sinch/skills
+gemini extensions install https://github.com/sinch/sinch-plugins
 ```
 
 #### Install from Local Path
