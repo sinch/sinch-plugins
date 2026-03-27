@@ -39,7 +39,7 @@ A Claude Code plugin that integrates the Sinch Conversation API, allowing you to
 To install this plugin in Claude Code, you typically install it from a marketplace or a local source.
 
 ```bash
-/plugin marketplace add https://github.com/sinch/sinch-plugins.git
+/plugin marketplace add https://github.com/sinch/skills.git
 /plugin install sinch-claude-plugin
 ```
 
@@ -154,13 +154,13 @@ A Gemini CLI extension that integrates the Sinch Conversation API, allowing you 
 #### Install from GitHub
 
 ```bash
-gemini extensions install https://github.com/sinch/sinch-plugins
+gemini extensions install https://github.com/sinch/skills
 ```
 
 #### Install from Local Path
 
 ```bash
-cd sinch-plugins/plugins/sinch-gemini-extension
+cd skills/plugins/sinch-gemini-extension
 gemini extensions install .
 ```
 

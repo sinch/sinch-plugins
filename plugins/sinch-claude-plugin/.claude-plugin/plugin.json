@@ -8,7 +8,7 @@
   "version": "0.2.0",
   "description": "Claude Code plugin for Sinch Conversation API (SMS, RCS, etc.)",
   "homepage": "https://sinch.com/",
-  "repository": "https://github.com/sinch/sinch-plugins",
+  "repository": "https://github.com/sinch/skills",
   "license": "Apache-2.0",
   "keywords": [
     "Sinch",
