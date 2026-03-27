@@ -118,7 +118,7 @@ Skills are natural-language workflows that guide Claude through common tasks.
 
 ### Source repository
 
-The skills catalog is maintained at [github.com/sinch/skills](https://github.com/sinch/sinch-plugins).
+The skills catalog is maintained at [github.com/sinch/skills](https://github.com/sinch/skills).
 
 ### Install with npx
 
