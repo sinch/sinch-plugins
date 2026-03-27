@@ -8,7 +8,7 @@ This repository uses a [git submodule](https://git-scm.com/book/en/v2/Git-Tools-
 
 ```bash
 # Clone with submodules
-git clone --recurse-submodules https://github.com/sinch/skills.git
+git clone --recurse-submodules <sinch-plugins-url>
 
 # Or init after clone
 git submodule update --init --recursive
