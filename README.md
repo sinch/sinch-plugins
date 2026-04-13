@@ -267,3 +267,11 @@ We love hearing feedback, and we are here to help if you run into any issues.
 We will continue to enhance this product with new features in future.
 
 From all of us at Sinch, happy coding!
+
+## Use of Sinch Services
+
+**Use of Sinch Services**
+
+*This repository contains plugins/code that enable developers to interact with Sinch APIs and services from supported developer tools or environments. Use of Sinch services requires a valid Sinch account and is subject to the applicable Sinch Terms of Service available at:* [*https://sinch.com/legal/terms-and-conditions/other-sinch-terms-conditions/sinch-engage/sinch-engage-terms/*](https://sinch.com/legal/terms-and-conditions/other-sinch-terms-conditions/terms-of-service/?utm_source=GitHub&utm_medium=sinch_plugins_repo)
+
+*These plugins may be used with third-party developer tools, extensions, or platforms that are not operated or controlled by Sinch. The plugins are provided on an "as-is" basis, and Sinch is not responsible for the operation, availability, performance, security, or policies of such third-party tools or platforms.*
