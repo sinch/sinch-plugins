@@ -142,6 +142,87 @@ Available product skills:
 
 Product-oriented skills (from sinch-skills): conversation-api, voice-api, verification-api, numbers, 10dlc, fax, mailgun, mailjet, and more.
 
+## Cursor IDE
+
+A Cursor IDE plugin that integrates the Sinch Conversation API, allowing you to send SMS and RCS messages, manage webhooks, and interact with your Sinch configuration directly from Cursor IDE.
+
+### Features
+
+- **Send Messages**: Send text, media, location, choice, and template messages via SMS and RCS.
+- **Multi-channel Messaging**: Automatic channel fallback (e.g., RCS → SMS).
+- **Manage Webhooks**: Create, list, update, and delete webhooks for your Conversation API app.
+- **List Senders**: View active phone numbers and senders.
+- **MCP Integration**: Built on top of the Model Context Protocol (MCP).
+
+### Prerequisites
+
+- [Cursor IDE](https://cursor.sh/) installed.
+- A [Sinch Customer Dashboard](https://dashboard.sinch.com/) account.
+- A Conversation API app with credentials (Project ID, Key ID, Key Secret, App ID, App Region).
+
+### Installation
+
+#### From Cursor Marketplace (Coming Soon)
+
+1. Open Cursor IDE
+2. Go to Extensions/Plugins
+3. Search for "Sinch Conversation API"
+4. Click "Install"
+
+#### Manual Installation
+
+```bash
+git clone https://github.com/sinch/sinch-plugins.git
+cd sinch-plugins/plugins/sinch-cursor-plugin
+cp -r . ~/.cursor/plugins/sinch-cursor-plugin
+```
+
+### Configuration
+
+This plugin relies on the Sinch MCP server, which requires specific environment variables to authenticate with the Sinch API. Add these to your Cursor settings (`~/.cursor/settings.json`):
+
+```json
+{
+  "env": {
+    "CONVERSATION_PROJECT_ID": "your-project-id",
+    "CONVERSATION_KEY_ID": "your-key-id",
+    "CONVERSATION_KEY_SECRET": "your-key-secret",
+    "CONVERSATION_REGION": "us",
+    "CONVERSATION_APP_ID": "your-app-id"
+  }
+}
+```
+
+**Restart Cursor IDE** after updating settings.
+
+### Usage
+
+Once installed and configured, you can use commands from the command palette:
+
+#### Common Commands
+
+- **Send a Message**:
+  ```
+  /sinch-cursor-plugin:api:messages:send --to=+15551234567 --message="Hello from Cursor!"
+  ```
+
+- **Send RCS with SMS Fallback**:
+  ```
+  /sinch-cursor-plugin:api:messages:send --to=+15551234567 --message="Hello" --fallback=RCS,SMS
+  ```
+
+- **List Webhooks**:
+  ```
+  /sinch-cursor-plugin:api:webhooks:list
+  ```
+
+- **List Active Senders**:
+  ```
+  /sinch-cursor-plugin:api:senders:list
+  ```
+
+For detailed installation and configuration instructions, see [plugins/sinch-cursor-plugin/INSTALLATION.md](plugins/sinch-cursor-plugin/INSTALLATION.md).
+
 ## Gemini CLI
 
 A Gemini CLI extension that integrates the Sinch Conversation API, allowing you to send SMS messages, manage webhooks, and interact with your Sinch configuration directly from Gemini CLI.

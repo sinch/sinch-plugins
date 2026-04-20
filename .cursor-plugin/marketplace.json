@@ -1,0 +1,22 @@
+{
+  "name": "sinch-plugins",
+  "owner": "Sinch",
+  "metadata": {
+    "displayName": "Sinch Plugins",
+    "description": "Official Sinch plugins for AI-powered IDEs - integrate messaging, webhooks, and communication APIs directly into your development workflow",
+    "homepage": "https://sinch.com/",
+    "repository": "https://github.com/sinch/sinch-plugins",
+    "license": "Apache-2.0",
+    "keywords": [
+      "sinch",
+      "messaging",
+      "sms",
+      "rcs",
+      "webhooks",
+      "communication-api",
+      "conversation-api",
+      "mcp",
+      "ai"
+    ]
+  }
+}

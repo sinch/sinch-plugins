@@ -121,6 +121,7 @@ version-bump:
         MARKETPLACE_FILE=".claude-plugin/marketplace.json"
         PLUGIN_NAME="sinch-claude-plugin"
         GEMINI_FILE="plugins/sinch-gemini-extension/gemini-extension.json"
+        CURSOR_FILE="plugins/sinch-cursor-plugin/.cursor-plugin/plugin.json"
 
         # Ensure we can read from default branch even if this is a web pipeline.
         git fetch --prune --tags origin "$CI_DEFAULT_BRANCH" || true
@@ -128,9 +129,11 @@ version-bump:
         DEFAULT_PLUGIN_JSON="$(git show "origin/$CI_DEFAULT_BRANCH:$PLUGIN_FILE" 2>/dev/null || cat "$PLUGIN_FILE")"
         DEFAULT_MARKETPLACE_JSON="$(git show "origin/$CI_DEFAULT_BRANCH:$MARKETPLACE_FILE" 2>/dev/null || cat "$MARKETPLACE_FILE")"
         DEFAULT_GEMINI_JSON="$(git show "origin/$CI_DEFAULT_BRANCH:$GEMINI_FILE" 2>/dev/null || cat "$GEMINI_FILE")"
+        DEFAULT_CURSOR_JSON="$(git show "origin/$CI_DEFAULT_BRANCH:$CURSOR_FILE" 2>/dev/null || cat "$CURSOR_FILE")"
 
         DEFAULT_PLUGIN_VERSION="$(echo "$DEFAULT_PLUGIN_JSON" | jq -r .version)"
         DEFAULT_GEMINI_VERSION="$(echo "$DEFAULT_GEMINI_JSON" | jq -r .version)"
+        DEFAULT_CURSOR_VERSION="$(echo "$DEFAULT_CURSOR_JSON" | jq -r .version)"
 
         MATCH_COUNT="$(echo "$DEFAULT_MARKETPLACE_JSON" | jq -r --arg name "$PLUGIN_NAME" '[.plugins[] | select(.name == $name)] | length')"
         if [ "$MATCH_COUNT" != "1" ]; then
@@ -147,6 +150,12 @@ version-bump:
         # Validate Gemini version matches Claude version
         if [ "$DEFAULT_PLUGIN_VERSION" != "$DEFAULT_GEMINI_VERSION" ]; then
           echo "ERROR: version drift on default branch: plugin.json ($DEFAULT_PLUGIN_VERSION) != gemini-extension.json ($DEFAULT_GEMINI_VERSION)."
+          exit 1
+        fi
+
+        # Validate Cursor version matches Claude version
+        if [ "$DEFAULT_PLUGIN_VERSION" != "$DEFAULT_CURSOR_VERSION" ]; then
+          echo "ERROR: version drift on default branch: plugin.json ($DEFAULT_PLUGIN_VERSION) != cursor-plugin.json ($DEFAULT_CURSOR_VERSION)."
           exit 1
         fi
 
@@ -186,6 +195,7 @@ version-bump:
     - MARKETPLACE_FILE=".claude-plugin/marketplace.json"
     - PLUGIN_NAME="sinch-claude-plugin"
     - GEMINI_FILE="plugins/sinch-gemini-extension/gemini-extension.json"
+    - CURSOR_FILE="plugins/sinch-cursor-plugin/.cursor-plugin/plugin.json"
     - CURRENT_VERSION=$(jq -r .version $PLUGIN_FILE)
     - echo "Current version $CURRENT_VERSION"
 
@@ -209,6 +219,15 @@ version-bump:
         exit 1
       fi
       echo "Gemini extension version: $GEMINI_VERSION (synchronized)"
+
+    # Validate Cursor plugin version matches Claude plugin version
+    - |
+      CURSOR_VERSION=$(jq -r .version "$CURSOR_FILE")
+      if [ "$CURSOR_VERSION" != "$CURRENT_VERSION" ]; then
+        echo "ERROR: version drift: plugin.json ($CURRENT_VERSION) != cursor-plugin.json ($CURSOR_VERSION)."
+        exit 1
+      fi
+      echo "Cursor plugin version: $CURSOR_VERSION (synchronized)"
 
     - |
       major=$(echo "$CURRENT_VERSION" | cut -d. -f1)
@@ -238,7 +257,10 @@ version-bump:
     # Update Gemini extension version
     - jq --indent 2 --arg v "$NEW_VERSION" '.version = $v' $GEMINI_FILE > tmp.gemini.json && mv tmp.gemini.json $GEMINI_FILE
 
-    - git add $PLUGIN_FILE $MARKETPLACE_FILE $GEMINI_FILE
+    # Update Cursor plugin version
+    - jq --indent 2 --arg v "$NEW_VERSION" '.version = $v' $CURSOR_FILE > tmp.cursor.json && mv tmp.cursor.json $CURSOR_FILE
+
+    - git add $PLUGIN_FILE $MARKETPLACE_FILE $GEMINI_FILE $CURSOR_FILE
     - |
       git commit -m "ci(release): ${NEW_VERSION} [skip ci]"
 
@@ -307,7 +329,7 @@ sync_to_github:
       SUBMOD_PATH="vendor/sinch-skills"
       if [ -d "$SUBMOD_PATH/.git" ] || [ -f "$SUBMOD_PATH/.git" ]; then
         echo "Dereferencing submodule and symlinks for GitHub push..."
-        for PLUGIN_DIR in plugins/sinch-claude-plugin plugins/sinch-gemini-extension; do
+        for PLUGIN_DIR in plugins/sinch-claude-plugin plugins/sinch-gemini-extension plugins/sinch-cursor-plugin; do
           SKILLS_PATH="$PLUGIN_DIR/skills"
           if [ -d "$SKILLS_PATH" ]; then
             cp -rL "$SKILLS_PATH" /tmp/skills-resolved-$(basename "$PLUGIN_DIR")
@@ -442,6 +464,35 @@ build_artifacts:
         echo "Creating archive: $ARCHIVE_NAME"
         (cd "$GEMINI_DIR" && tar -chzf "../../$ARCHIVE_NAME" .)
       done
+
+    # Build Cursor plugin archives (platform-specific tar.gz files)
+    - CURSOR_DIR="plugins/sinch-cursor-plugin"
+    - |
+      echo "Building Cursor plugin archives: $CURSOR_DIR"
+      if [ ! -d "$CURSOR_DIR" ]; then
+        echo "ERROR: Cursor plugin directory not found: $CURSOR_DIR";
+        exit 1;
+      fi
+      # Ensure .cursor-plugin/plugin.json has correct version
+      CURSOR_PLUGIN_FILE="$CURSOR_DIR/.cursor-plugin/plugin.json"
+      CURSOR_VERSION=$(jq -r .version "$CURSOR_PLUGIN_FILE")
+      if [ -n "${NEW_VERSION:-}" ] && [ "$CURSOR_VERSION" != "$NEW_VERSION" ]; then
+        if [ "${VERSION_BUMP_TYPE:-}" != "none" ]; then
+          echo "WARNING: cursor-plugin.json version ($CURSOR_VERSION) != NEW_VERSION ($NEW_VERSION); updating for packaging."
+          jq --indent 2 --arg v "$NEW_VERSION" '.version = $v' "$CURSOR_PLUGIN_FILE" > tmp.cursor.json && mv tmp.cursor.json "$CURSOR_PLUGIN_FILE"
+        else
+          echo "ERROR: cursor-plugin.json version ($CURSOR_VERSION) != NEW_VERSION ($NEW_VERSION)."
+          exit 1
+        fi
+      fi
+      # Create platform-specific tar.gz archives (content is identical, names follow Cursor convention)
+      # Format: {platform}.{name}.{extension}
+      # -h dereferences symlinks so distributed archives contain real files
+      for platform in darwin linux win32; do
+        ARCHIVE_NAME="dist/${platform}.sinch-cursor-plugin.tar.gz"
+        echo "Creating archive: $ARCHIVE_NAME"
+        (cd "$CURSOR_DIR" && tar -chzf "../../$ARCHIVE_NAME" .)
+      done
     # Write artifacts.env in script (not after_script) so dotenv artifact is collected
     - |
       {
@@ -528,7 +579,7 @@ gitlab_release:
   release:
     tag_name: $TAG_NAME
     name: "Release v${NEW_VERSION}"
-    description: "Sinch Plugins v${NEW_VERSION} - includes sinch-claude-plugin skills and sinch-gemini-extension"
+    description: "Sinch Plugins v${NEW_VERSION} - includes sinch-claude-plugin skills, sinch-gemini-extension, and sinch-cursor-plugin"
     assets:
       links:
         - name: "sinch-agent-skills-${NEW_VERSION}.zip"
@@ -539,6 +590,12 @@ gitlab_release:
           url: "$CI_PROJECT_URL/-/jobs/$ARTIFACTS_JOB_ID/artifacts/raw/dist/linux.sinch-gemini-extension.tar.gz"
         - name: "win32.sinch-gemini-extension.tar.gz"
           url: "$CI_PROJECT_URL/-/jobs/$ARTIFACTS_JOB_ID/artifacts/raw/dist/win32.sinch-gemini-extension.tar.gz"
+        - name: "darwin.sinch-cursor-plugin.tar.gz"
+          url: "$CI_PROJECT_URL/-/jobs/$ARTIFACTS_JOB_ID/artifacts/raw/dist/darwin.sinch-cursor-plugin.tar.gz"
+        - name: "linux.sinch-cursor-plugin.tar.gz"
+          url: "$CI_PROJECT_URL/-/jobs/$ARTIFACTS_JOB_ID/artifacts/raw/dist/linux.sinch-cursor-plugin.tar.gz"
+        - name: "win32.sinch-cursor-plugin.tar.gz"
+          url: "$CI_PROJECT_URL/-/jobs/$ARTIFACTS_JOB_ID/artifacts/raw/dist/win32.sinch-cursor-plugin.tar.gz"
   allow_failure: true
 
 github_release_prepare:
@@ -600,7 +657,7 @@ github_release_prepare:
 
       if [ -z "$release_id" ] || [ "$release_id" = "null" ]; then
         echo "Creating GitHub release for tag $TAG_NAME"
-        RELEASE_BODY=$(printf "Sinch Plugins v%s\n\nIncludes:\n- sinch-agent-skills (Claude Code plugin skills)\n- sinch-gemini-extension (Gemini CLI extension)" "$NEW_VERSION")
+        RELEASE_BODY=$(printf "Sinch Plugins v%s\n\nIncludes:\n- sinch-agent-skills (Claude Code plugin skills)\n- sinch-gemini-extension (Gemini CLI extension)\n- sinch-cursor-plugin (Cursor IDE plugin)" "$NEW_VERSION")
         payload=$(jq -n \
           --arg tag "$TAG_NAME" \
           --arg name "Sinch Plugins v${NEW_VERSION}" \
@@ -652,8 +709,8 @@ github_upload_versioned_asset:
       AUTH_HEADER="Authorization: Bearer ${GITHUB_PAT_2}"
       ACCEPT_HEADER="Accept: application/vnd.github+json"
 
-      # Upload skills zip and platform-specific Gemini extension archives
-      for ASSET_FILE in "dist/sinch-agent-skills-${NEW_VERSION}.zip" "dist/darwin.sinch-gemini-extension.tar.gz" "dist/linux.sinch-gemini-extension.tar.gz" "dist/win32.sinch-gemini-extension.tar.gz"; do
+      # Upload skills zip, platform-specific Gemini extension archives, and Cursor plugin archives
+      for ASSET_FILE in "dist/sinch-agent-skills-${NEW_VERSION}.zip" "dist/darwin.sinch-gemini-extension.tar.gz" "dist/linux.sinch-gemini-extension.tar.gz" "dist/win32.sinch-gemini-extension.tar.gz" "dist/darwin.sinch-cursor-plugin.tar.gz" "dist/linux.sinch-cursor-plugin.tar.gz" "dist/win32.sinch-cursor-plugin.tar.gz"; do
         if [ ! -f "$ASSET_FILE" ]; then
           echo "ERROR: Expected artifact not found: $ASSET_FILE";
           ls -la dist || true;
