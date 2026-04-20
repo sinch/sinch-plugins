@@ -1,4 +1,5 @@
 ---
+name: webhooks-create
 description: Create a new webhook for the Sinch Conversation API app
 allowed-tools:
   - mcp__sinch__sinch-mcp-configuration

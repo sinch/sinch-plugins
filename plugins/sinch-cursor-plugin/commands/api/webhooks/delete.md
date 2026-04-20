@@ -1,4 +1,5 @@
 ---
+name: webhooks-delete
 description: Delete a webhook by ID
 allowed-tools:
   - mcp__sinch__sinch-mcp-configuration

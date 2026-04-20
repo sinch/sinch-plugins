@@ -162,20 +162,13 @@ A Cursor IDE plugin that integrates the Sinch Conversation API, allowing you to 
 
 ### Installation
 
-#### From Cursor Marketplace (Coming Soon)
+Install from the Cursor marketplace (recommended):
 
-1. Open Cursor IDE
-2. Go to Extensions/Plugins
-3. Search for "Sinch Conversation API"
-4. Click "Install"
-
-#### Manual Installation
-
-```bash
-git clone https://github.com/sinch/sinch-plugins.git
-cd sinch-plugins/plugins/sinch-cursor-plugin
-cp -r . ~/.cursor/plugins/sinch-cursor-plugin
 ```
+/add-plugin sinch-cursor-plugin
+```
+
+The `skills/` folder is populated at build time by the pipeline cloning the `sinch-skills` catalog, so end users installing from the marketplace don’t need to clone this repository.
 
 ### Configuration
 
@@ -221,7 +214,7 @@ Once installed and configured, you can use commands from the command palette:
   /sinch-cursor-plugin:api:senders:list
   ```
 
-For detailed installation and configuration instructions, see [plugins/sinch-cursor-plugin/INSTALLATION.md](plugins/sinch-cursor-plugin/INSTALLATION.md).
+For installation, use the Cursor marketplace listing for `sinch-cursor-plugin`.
 
 ## Gemini CLI
 

@@ -1,4 +1,5 @@
 ---
+name: webhooks-list
 description: List all webhooks for the configured Sinch Conversation API app
 allowed-tools:
   - mcp__sinch__sinch-mcp-configuration

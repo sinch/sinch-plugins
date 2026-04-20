@@ -1,4 +1,5 @@
 ---
+name: messages-send
 description: Send a message via Sinch Conversation API (SMS, RCS)
 allowed-tools:
   - mcp__sinch__send-text-message

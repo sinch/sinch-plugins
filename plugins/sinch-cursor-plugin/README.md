@@ -14,13 +14,7 @@ This plugin integrates Sinch Conversation API with Cursor IDE, allowing you to:
 
 ## Installation
 
-Install the plugin using Cursor's plugin command:
-
-```
-/add-plugin https://github.com/sinch/sinch-plugins/plugins/sinch-cursor-plugin
-```
-
-Or install from the Cursor plugin marketplace:
+Install from the Cursor plugin marketplace:
 
 ```
 /add-plugin sinch-cursor-plugin

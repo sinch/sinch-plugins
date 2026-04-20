@@ -1,4 +1,5 @@
 ---
+name: webhooks-update
 description: Update an existing webhook configuration
 allowed-tools:
   - mcp__sinch__sinch-mcp-configuration
