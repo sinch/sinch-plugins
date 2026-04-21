@@ -7,7 +7,7 @@ Guide the user through setting up Sinch Conversation API credentials.
 
 ## Overview
 
-This plugin uses the Sinch Conversation API MCP server (defined in `.mcp.json`) to send messages via SMS and RCS channels. To use these commands, you need to add your Sinch credentials as environment variables in Claude Code's settings.
+This plugin uses the Sinch Conversation API MCP server (defined in `.mcp.json`) to send messages via SMS and RCS channels. To use these commands, you need to add your Sinch credentials as environment variables in Cursor's settings.
 For more details about the underlying MCP server and tools, see [Sinch MCP Server](https://github.com/sinch/sinch-mcp-server)
 
 ## Required Environment Variables
@@ -35,8 +35,8 @@ Ask: "How would you like to configure your Sinch credentials?"
 
 Offer these options:
 
-- **Option A: Generate setup script** — interactive bash script that collects credentials and updates ~/.claude/settings.json automatically
-- **Option B: Manual** — shows instructions to edit ~/.claude/settings.json yourself
+- **Option A: Generate setup script** — interactive bash script that collects credentials and updates ~/.cursor/settings.json automatically
+- **Option B: Manual** — shows instructions to edit ~/.cursor/settings.json yourself
 
 ## If Option A (Setup script):
 
@@ -66,9 +66,9 @@ Paste the script, then save (Ctrl+O, Enter, Ctrl+X)
    bash ~/sinch-setup.sh
 ```
 
-4. Restart Claude Code to load the new environment variables
+4. Restart Cursor to load the new environment variables
 
-5. Run `/sinch-claude-plugin:api:messages:send` to verify the connection
+5. Run `/sinch-cursor-plugin:api:messages:send` to verify the connection
 
 If they choose B, proceed to manual instructions below.
 
@@ -76,12 +76,12 @@ If they choose B, proceed to manual instructions below.
 
 Tell the user:
 
-1. Open or create `~/.claude/settings.json`:
+1. Open or create `~/.cursor/settings.json`:
 
 ```bash
-   mkdir -p ~/.claude
-   [[ -f ~/.claude/settings.json ]] || echo '{}' > ~/.claude/settings.json
-   nano ~/.claude/settings.json
+   mkdir -p ~/.cursor
+   [[ -f ~/.cursor/settings.json ]] || echo '{}' > ~/.cursor/settings.json
+   nano ~/.cursor/settings.json
 ```
 
 2. Add or merge the `env` block with your credentials:
@@ -102,12 +102,12 @@ Tell the user:
 
 4. Save the file.
 
-5. Restart Claude Code.
+5. Restart Cursor.
 
-6. Run `/sinch-claude-plugin:api:messages:send` to verify the connection.
+6. Run `/sinch-cursor-plugin:api:messages:send` to verify the connection.
 
 ## Important Notes
 
-- Credentials are collected directly by the bash script — they are never sent to Claude
+- Credentials are collected directly by the bash script - they are never sent to Cursor
 - The API Secret input is hidden (no echo) for security
-- Remind user not to commit `~/.claude/settings.json` to version control
+- Remind user not to commit `~/.cursor/settings.json` to version control

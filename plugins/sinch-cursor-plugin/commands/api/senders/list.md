@@ -1,4 +1,5 @@
 ---
+name: senders-list
 description: Generate code to fetch Sinch active numbers/senders and handle sender operations
 argument-hint: [generate | debug | explain | pagination | freestyle]
 ---

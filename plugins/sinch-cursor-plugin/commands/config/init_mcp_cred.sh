@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 #
-# Sinch Conversation API — Claude Code Settings Setup
+# Sinch Conversation API — Cursor user settings (env) setup
 #
 set -euo pipefail
 
-SETTINGS_DIR="$HOME/.claude"
+SETTINGS_DIR="$HOME/.cursor"
 SETTINGS_FILE="$SETTINGS_DIR/settings.json"
 
 echo ""
@@ -197,8 +197,8 @@ echo "   CONVERSATION_REGION     = $REGION"
 echo "   CONVERSATION_APP_ID     = $APP_ID"
 echo ""
 echo " Next steps:"
-echo "   1. Restart Claude Code to load the new environment variables"
-echo "   2. Run /sinch-claude-plugin:api:messages:send to verify the connection"
+echo "   1. Restart Cursor to load the new environment variables"
+echo "   2. Run /sinch-cursor-plugin:api:messages:send to verify the connection"
 echo ""
 echo " To undo, restore from backup:"
 echo "   cp \"$BACKUP_FILE\" \"$SETTINGS_FILE\""

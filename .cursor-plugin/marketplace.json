@@ -17,6 +17,14 @@
       "conversation-api",
       "mcp",
       "ai"
-    ]
-  }
+    ],
+    "pluginRoot": "plugins"
+  },
+  "plugins": [
+    {
+      "name": "sinch-cursor-plugin",
+      "source": "./plugins/sinch-cursor-plugin",
+      "description": "Cursor plugin for Sinch Conversation API (SMS, RCS, etc.)"
+    }
+  ]
 }
