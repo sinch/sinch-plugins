@@ -346,6 +346,8 @@ From all of us at Sinch, happy coding!
 
 **Use of Sinch Services**
 
-*This repository contains plugins/code that enable developers to interact with Sinch APIs and services from supported developer tools or environments. Use of Sinch services requires a valid Sinch account and is subject to the applicable Sinch Terms of Service available at:* [*https://sinch.com/legal/terms-and-conditions/other-sinch-terms-conditions/sinch-engage/sinch-engage-terms/*](https://sinch.com/legal/terms-and-conditions/other-sinch-terms-conditions/terms-of-service/?utm_source=GitHub&utm_medium=sinch_plugins_repo)
+*This repository provides developers with a way to interact with Sinch APIs and services from supported developer tools or environments. Use of Sinch services requires a valid Sinch account and is subject to the applicable Sinch Terms of Service available at:* [https://sinch.com/legal/terms-and-conditions/other-sinch-terms-conditions/terms-of-service/](https://sinch.com/legal/terms-and-conditions/other-sinch-terms-conditions/terms-of-service/?utm_source=GitHub&utm_medium=sinch_plugins_repo)
 
-*These plugins may be used with third-party developer tools, extensions, or platforms that are not operated or controlled by Sinch. The plugins are provided on an "as-is" basis, and Sinch is not responsible for the operation, availability, performance, security, or policies of such third-party tools or platforms.*
+*This repository may be used in conjunction with third-party developer tools, IDEs, platforms, or environments that are not operated or controlled by Sinch. Such third-party tools or platforms are subject to their own terms and policies.*
+
+*The plugins in this repository are provided on an "as-is" basis, and Sinch is not responsible for the operation, availability, performance, or security of any third-party tools or platforms.*
