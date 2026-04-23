@@ -196,22 +196,32 @@ Once installed and configured, you can use commands from the command palette:
 
 - **Send a Message**:
   ```
-  /sinch-cursor-plugin:api:messages:send --to=+15551234567 --message="Hello from Cursor!"
+  /send-message --to=+15551234567 --message="Hello from Cursor!"
   ```
 
 - **Send RCS with SMS Fallback**:
   ```
-  /sinch-cursor-plugin:api:messages:send --to=+15551234567 --message="Hello" --fallback=RCS,SMS
+  /send-message --to=+15551234567 --message="Hello" --fallback=RCS,SMS
   ```
 
 - **List Webhooks**:
   ```
-  /sinch-cursor-plugin:api:webhooks:list
+  /list-webhooks
   ```
 
 - **List Active Senders**:
   ```
-  /sinch-cursor-plugin:api:senders:list
+  /list-senders
+  ```
+
+- **Create a Webhook**:
+  ```
+  /create-webhook --url=https://example.com/webhook --triggers=MESSAGE_DELIVERY,MESSAGE_INBOUND
+  ```
+
+- **List Available Webhook Triggers**:
+  ```
+  /list-webhook-triggers
   ```
 
 For installation, use the Cursor marketplace listing for `sinch-cursor-plugin`.

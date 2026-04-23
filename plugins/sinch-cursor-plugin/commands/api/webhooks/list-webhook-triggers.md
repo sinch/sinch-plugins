@@ -1,5 +1,5 @@
 ---
-name: webhooks-triggers
+name: webhook-triggers-list
 description: List available webhook triggers (message-related only)
 allowed-tools:
   - mcp__sinch__sinch-mcp-configuration
