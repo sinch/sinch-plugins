@@ -84,22 +84,22 @@ You can also use specific slash commands for precise control:
 
 **Send a message:**
 ```
-/sinch-cursor-plugin:api:messages:send --to=+14155551234 --message="Hello from Cursor!"
+/send-message --to=+14155551234 --message="Hello from Cursor!"
 ```
 
 **Send with channel fallback:**
 ```
-/sinch-cursor-plugin:api:messages:send --to=+14155551234 --message="Hello" --fallback=RCS,SMS
+/send-message --to=+14155551234 --message="Hello" --fallback=RCS,SMS
 ```
 
 **List webhooks:**
 ```
-/sinch-cursor-plugin:api:webhooks:list
+/list-webhooks
 ```
 
 **Create a webhook:**
 ```
-/sinch-cursor-plugin:api:webhooks:create --url=https://example.com/webhook --triggers=MESSAGE_DELIVERY,MESSAGE_INBOUND
+/create-webhook --url=https://example.com/webhook --triggers=MESSAGE_DELIVERY,MESSAGE_INBOUND
 ```
 
 ## Skills
@@ -132,21 +132,21 @@ The plugin includes comprehensive skills for all major Sinch products:
 ## Available Commands
 
 ### Messages
-- `/sinch-cursor-plugin:api:messages:send` - Send text, media, location, choice, or template messages
+- `/send-message` - Send text, media, location, choice, or template messages
 
 ### Senders
-- `/sinch-cursor-plugin:api:senders:list` - List active phone numbers and senders
+- `/list-senders` - List active phone numbers and senders
 
 ### Webhooks
-- `/sinch-cursor-plugin:api:webhooks:list` - List all configured webhooks
-- `/sinch-cursor-plugin:api:webhooks:create` - Create a new webhook
-- `/sinch-cursor-plugin:api:webhooks:update` - Update an existing webhook
-- `/sinch-cursor-plugin:api:webhooks:delete` - Delete a webhook
-- `/sinch-cursor-plugin:api:webhooks:triggers` - List available webhook triggers
+- `/list-webhooks` - List all configured webhooks
+- `/create-webhook` - Create a new webhook
+- `/update-webhook` - Update an existing webhook
+- `/delete-webhook` - Delete a webhook
+- `/list-webhook-triggers` - List available webhook triggers
 
 ### Configuration
-- `/sinch-cursor-plugin:config:sinch-mcp-setup` - Get setup instructions
-- `/sinch-cursor-plugin:sinch-help` - Get general plugin help
+- `/sinch-mcp-setup` - Get setup instructions
+- `/sinch-help` - Get general plugin help
 
 ## MCP Server Integration
 
