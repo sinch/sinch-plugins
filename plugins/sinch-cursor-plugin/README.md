@@ -1,6 +1,6 @@
 # Sinch Cursor Plugin
 
-Cursor plugin for Sinch Conversation API enabling SMS, RCS, and multi-channel messaging directly from your IDE.
+Ship faster with Sinch in Cursor - SMS, WhatsApp, RCS, voice, email, verification, numbers, and more, all with the help of Skills and Sinch MCP.
 
 ## Overview
 
