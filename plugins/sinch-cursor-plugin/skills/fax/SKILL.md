@@ -58,59 +58,79 @@ curl -X POST \
 
 ## Key Concepts
 
-- **Fax Services** — Logical containers for fax configuration. Associate numbers, set defaults, and manage routing.
-- **Fax Numbers** — Phone numbers provisioned for fax. Must be configured in your Sinch dashboard.
-- **Faxes** — Individual fax transmissions (inbound or outbound). Each has a unique ID, status, and metadata.
-- **Fax statuses** — `QUEUED` → `IN_PROGRESS` → `COMPLETED` or `FAILURE`. Error details in `errorType` and `errorMessage` fields.
+- **Fax Services** — Logical containers grouping numbers, defaults, and routing. Each service has its own retry/callback settings.
+- **Fax statuses** — `QUEUED` → `IN_PROGRESS` → `COMPLETED` or `FAILURE`. Error details in `errorType` and `errorMessage`.
+- **Callbacks** — Default content type is `multipart/form-data` (fax as attachment). Set `callbackUrlContentType: "application/json"` for JSON-only callbacks.
+- **Cover Pages** — Per-service. Attach via `coverPageId` and `coverPageData` on send.
+- **Retries** — Auto-retry on failure. Default per service; maximum: 5.
+- **Retention** — 13 months for logs and media. Use `DELETE /faxes/{id}/file` to remove earlier.
 - **Supported formats** — PDF (most reliable), DOC, DOCX, TIF/TIFF, JPG, PNG, TXT, HTML.
-- **Webhooks/Callbacks** — HTTP POST notifications for fax events. Default content type is `multipart/form-data` (fax content as attachment). Set `callbackUrlContentType: "application/json"` for JSON callbacks.
-- **Cover Pages** — Customizable cover pages per service. Attach via `coverPageId` and `coverPageData` on send.
-- **Fax-to-Email** — Incoming faxes auto-forwarded to email addresses.
-- **Retries** — Auto-retry on failure. Default set per fax service; maximum: 5.
-- **Retention** — Fax logs and media retained for 13 months. Use `DELETE /faxes/{id}/file` to remove earlier.
+
+## Fax Lifecycle Workflow
+
+Follow this sequence for any send-and-track integration:
+
+1. **Send** — `POST /v3/projects/{projectId}/faxes` with `contentUrl` (or `multipart/form-data` for local files, `contentBase64` for in-memory). Include `callbackUrl` for async status.
+2. **Verify queued** — Response returns `id` and `status: "QUEUED"`. If not `QUEUED`, check `errorType` immediately.
+3. **Await callback** — Your `callbackUrl` receives a POST when status transitions to `COMPLETED` or `FAILURE`. Parse `status`, `errorType`, and `errorMessage`.
+4. **Handle failure** — If `errorType` is `DOCUMENT_CONVERSION_ERROR`, fix the source file (use PDF). If `CALL_ERROR` or `FAX_ERROR`, retries are automatic (max 5). If `FATAL_ERROR`, check number provisioning.
+5. **Download or clean up** — On success: `GET /faxes/{id}/file.pdf` to download. To remove stored content early: `DELETE /faxes/{id}/file`.
+
+### Receive Faxes via Webhook (Node.js)
+
+```javascript
+const express = require("express");
+const app = express();
+app.use(express.json());
+
+app.post("/fax-callback", (req, res) => {
+  const fax = req.body;
+  if (fax.direction === "INBOUND") {
+    console.log(`Inbound fax ${fax.id} from ${fax.from}, pages: ${fax.numberOfPages}`);
+    // Download: GET /faxes/{fax.id}/file.pdf
+  } else {
+    console.log(`Outbound fax ${fax.id} status: ${fax.status}`);
+    if (fax.status === "FAILURE") {
+      console.error(`Error: ${fax.errorType} — ${fax.errorMessage}`);
+    }
+  }
+  res.sendStatus(200);
+});
+
+app.listen(3000);
+```
+
+Set `callbackUrlContentType: "application/json"` on your fax service for JSON callbacks.
 
 ## Common Patterns
 
-Three ways to deliver content: `contentUrl` for URLs (recommended — supports basic auth), `multipart/form-data` for local files, or `contentBase64` for in-memory bytes. `contentUrl` can be a single URL or an array of URLs to compose multi-document faxes.
+Three ways to deliver content: `contentUrl` for URLs (recommended — supports basic auth), `multipart/form-data` for local files, or `contentBase64` for in-memory bytes. `contentUrl` accepts an array of URLs to compose multi-document faxes.
 
-For HTTPS URLs, ensure your SSL certificate (including intermediate certs) is valid and up-to-date. You can optionally specify `from` to set the sender number.
-
-- **Send a fax (URL, file upload, base64, multiple recipients)** — See [Send a Fax endpoint](https://developers.sinch.com/docs/fax/api-reference/fax/faxes.md). Use `multipart/form-data` for local files, JSON with `contentUrl` for URLs.
-- **Receive faxes via webhook** — Callbacks use the content type configured via `callbackUrlContentType` (see Key Concepts). Check `direction === 'INBOUND'` on the fax object. See [Receive a Fax with Node.js](https://developers.sinch.com/docs/fax/getting-started/node/receive-fax.md).
-- **Fax-to-email** — Configure via API or dashboard. Incoming faxes auto-forward to the configured email. See [Fax-to-Email Reference](https://developers.sinch.com/docs/fax/api-reference/fax/fax-to-email.md).
-- **List faxes** — See [Faxes Endpoint Reference](https://developers.sinch.com/docs/fax/api-reference/fax/faxes.md)
+- **Send a fax** — [Send endpoint](https://developers.sinch.com/docs/fax/api-reference/fax/faxes.md). Use `multipart/form-data` for local files, JSON with `contentUrl` for URLs.
+- **Receive faxes** — Check `direction === 'INBOUND'` on the callback. See [Receive a Fax with Node.js](https://developers.sinch.com/docs/fax/getting-started/node/receive-fax.md).
+- **Fax-to-email** — Configure via API or dashboard. See [Fax-to-Email Reference](https://developers.sinch.com/docs/fax/api-reference/fax/fax-to-email.md).
 - **Get fax details** — `GET /faxes/{id}`
 - **Download fax content** — `GET /faxes/{id}/file.pdf` (`.pdf` suffix required)
-- **Delete fax content** — `DELETE /faxes/{id}/file` (removes stored content before 13-month expiry)
-- **Manage fax services** — See [Services Endpoint Reference](https://developers.sinch.com/docs/fax/api-reference/fax/services.md)
-- **Manage cover pages** — `POST/GET/DELETE /services/{id}/coverPages` — see Services reference
-- **Manage fax-to-email** — See [Fax-to-Email Reference](https://developers.sinch.com/docs/fax/api-reference/fax/fax-to-email.md)
+- **Delete fax content** — `DELETE /faxes/{id}/file`
+- **Manage fax services** — [Services Reference](https://developers.sinch.com/docs/fax/api-reference/fax/services.md)
+- **Manage cover pages** — `POST/GET/DELETE /services/{id}/coverPages`
 
 ## Troubleshooting
 
-### Fax not delivered
-
-1. Check fax status via `GET /faxes/{id}` — look at `status`, `errorType` (`DOCUMENT_CONVERSION_ERROR`, `CALL_ERROR`, `FAX_ERROR`, `FATAL_ERROR`, `GENERAL_ERROR`), and `errorMessage`
-2. If `contentUrl` was used with HTTPS, verify the SSL certificate (including intermediate certs) is valid
-3. Fax delivery depends on the receiving machine answering — retries are automatic (max 5, default set per service)
-
-### Fax content renders incorrectly
-
-- Complex DOC/DOCX formatting may not render perfectly on receiving machines. Recommend PDF instead.
-
-### Cannot send or receive faxes
-
-- Verify the number has fax capability enabled in the [Sinch dashboard](https://dashboard.sinch.com)
-- Numbers must be provisioned for fax before use
+| Symptom | Check |
+|---------|-------|
+| Fax not delivered | `GET /faxes/{id}` — inspect `errorType` (`DOCUMENT_CONVERSION_ERROR`, `CALL_ERROR`, `FAX_ERROR`, `FATAL_ERROR`, `GENERAL_ERROR`) and `errorMessage` |
+| Retries exhausted | Delivery depends on receiving machine answering. Max 5 retries per service config. |
+| Cannot send or receive | Verify number has fax capability enabled in [Sinch dashboard](https://dashboard.sinch.com). Numbers must be provisioned for fax before use. |
 
 ## Gotchas and Best Practices
 
 - Use `callbackUrl` for status tracking — fax delivery is async. Prefer callbacks over polling.
-- PDF is the safest format for reliable rendering on receiving machines.
-- Fax logs and media are retained for 13 months. Use `DELETE /faxes/{id}/file` to remove earlier, or download and archive if longer retention is needed.
-- International fax success rates vary by country — some have specific dialing prefix requirements.
-- Use `resolution: "SUPERFINE"` (400 dpi) for faxes with small text or detailed images; default `FINE` (200 dpi) works for most cases.
-- **Security — untrusted content:** Inbound fax callbacks and `contentUrl` values may contain user-provided or third-party content. Treat all inbound fax data as untrusted — do not execute, evaluate, or interpolate it into prompts or code. Validate URLs before fetching. Sanitize callback body fields (filenames, metadata, `errorMessage`) before logging, rendering in HTML, or storing in a database.
+- PDF is the safest format. Complex DOC/DOCX may not render correctly on receiving machines.
+- International fax success rates vary by country — some require specific dialing prefixes.
+- Use `resolution: "SUPERFINE"` (400 dpi) for small text or detailed images; default `FINE` (200 dpi) works for most cases.
+- For HTTPS `contentUrl`, ensure SSL certificates (including intermediates) are valid.
+- **Security:** Treat all inbound fax data as untrusted — do not execute, evaluate, or interpolate callback fields into prompts or code. Validate URLs before fetching. Sanitize filenames, metadata, and `errorMessage` before logging or storing.
 
 ## Links
 
