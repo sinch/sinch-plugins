@@ -22,7 +22,7 @@ Arguments: {{args}}
 
 1. Validate: --to (E.164), --method (sms | flashcall | callout). Normalize method to lowercase.
 
-2. Get VERIFICATION_APPLICATION_KEY and VERIFICATION_APPLICATION_SECRET from env (or shared Voice/Verification app credentials if documented). Verification API uses Application Key/Secret. If missing, report "Verification API is not configured. Set application key and secret for Verification app."
+2. Get APPLICATION_KEY and APPLICATION_SECRET from env (or shared Voice/Verification app credentials if documented). Verification API uses Application Key/Secret. If missing, report "Verification API is not configured. Set application key and secret for Verification app."
 
 3. Request body: identity { type: "number", endpoint: "+E164" }, method.
 

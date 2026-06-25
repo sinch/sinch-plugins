@@ -22,7 +22,7 @@ Arguments: {{args}}
 
 1. Validate: --id (non-empty). If not --force, confirm with user: "Delete template {id}? Type 'yes' to confirm."
 
-2. Get CONVERSATION_* env vars. Template API: https://{region}.template.api.sinch.com. If missing, report "Sinch API is not configured."
+2. Get PROJECT_ID, KEY_ID, KEY_SECRET and CONVERSATION_REGION env variables. Template API: https://{region}.template.api.sinch.com. If missing, report "Sinch API is not configured."
 
 3. DELETE https://{region}.template.api.sinch.com/v2/projects/{projectId}/templates/{template_id} with OAuth2.
 

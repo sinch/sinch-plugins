@@ -17,9 +17,9 @@ For more details about the underlying MCP server and tools, see [Sinch MCP Serve
 
 You need to obtain and configure the following 5 variables:
 
-- `CONVERSATION_PROJECT_ID` - Your Sinch project ID
-- `CONVERSATION_KEY_ID` - Your API key ID
-- `CONVERSATION_KEY_SECRET` - Your API key secret
+- `PROJECT_ID` - Your Sinch project ID
+- `KEY_ID` - Your API key ID
+- `KEY_SECRET` - Your API key secret
 - `CONVERSATION_REGION` - Your Sinch region (e.g., `us`, `eu`, `br`)
 - `CONVERSATION_APP_ID` - Your Conversation app ID
 
@@ -51,9 +51,9 @@ Add or update the `env` section in your `settings.json`:
 ```json
 {
   "env": {
-    "CONVERSATION_PROJECT_ID": "your-project-id-here",
-    "CONVERSATION_KEY_ID": "your-key-id-here",
-    "CONVERSATION_KEY_SECRET": "your-key-secret-here",
+    "PROJECT_ID": "your-project-id-here",
+    "KEY_ID": "your-key-id-here",
+    "KEY_SECRET": "your-key-secret-here",
     "CONVERSATION_REGION": "your-app-region (e.g., us, eu, br)",
     "CONVERSATION_APP_ID": "your-app-id-here"
   }
@@ -85,7 +85,7 @@ If the MCP server is configured correctly, the message will be sent. If you enco
 
 **"MCP tool is not available"** - Environment variables are missing or incorrect. Review steps 1-3 above.
 
-**Authentication errors** - Verify your `CONVERSATION_KEY_ID` and `CONVERSATION_KEY_SECRET` are correct.
+**Authentication errors** - Verify your `KEY_ID` and `KEY_SECRET` are correct.
 
 **Channel not configured** - Ensure your Conversation app (identified by `CONVERSATION_APP_ID`) has the channel you're trying to use enabled in the Sinch dashboard.
 

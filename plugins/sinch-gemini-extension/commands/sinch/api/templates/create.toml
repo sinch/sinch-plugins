@@ -24,7 +24,7 @@ Arguments: {{args}}
 
 1. Validate: --default-language (e.g. en-US), --text (non-empty). Parse --variables into array of {key, preview_value}. Build translations array with one item: language_code, variables, text_message.text.
 
-2. Get CONVERSATION_* env vars. Template API: https://{region}.template.api.sinch.com. If missing, report "Sinch API is not configured."
+2. Get PROJECT_ID, KEY_ID, KEY_SECRET and CONVERSATION_REGION env variables. Template API: https://{region}.template.api.sinch.com. If missing, report "Sinch API is not configured."
 
 3. Request body: description, default_translation (default language), translations: [{ language_code, variables: [{key, preview_value}], text_message: { text } }].
 

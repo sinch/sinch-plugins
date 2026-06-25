@@ -47,9 +47,9 @@ gemini extensions install https://github.com/sinch/sinch-plugins
 
 When you install the extension, Gemini CLI will prompt you for credentials. At minimum, set Conversation API credentials for messaging:
 
-- **CONVERSATION_PROJECT_ID**: Your Sinch project ID (required for messaging, batch, templates, webhooks, numbers, fax, 10DLC, provisioning, contacts)
-- **CONVERSATION_KEY_ID**: Your API key ID (required)
-- **CONVERSATION_KEY_SECRET**: Your API key secret (required, stored securely)
+- **PROJECT_ID**: Your Sinch project ID (required for messaging, batch, templates, webhooks, numbers, fax, 10DLC, provisioning, contacts)
+- **KEY_ID**: Your API key ID (required)
+- **KEY_SECRET**: Your API key secret (required, stored securely)
 - **CONVERSATION_REGION**: Your region (us, eu, or br) (required)
 - **CONVERSATION_APP_ID**: Your Sinch Conversation API App ID (required for sending messages)
 
@@ -151,7 +151,7 @@ gemini extensions settings list sinch-gemini-extension
 ### Update a Setting
 
 ```bash
-gemini extensions settings set sinch-gemini-extension CONVERSATION_PROJECT_ID
+gemini extensions settings set sinch-gemini-extension PROJECT_ID
 gemini extensions settings set sinch-gemini-extension "Key Secret"
 ```
 
@@ -204,7 +204,7 @@ gemini extensions settings list sinch-gemini-extension
 If any are missing, set them:
 
 ```bash
-gemini extensions settings set sinch-gemini-extension CONVERSATION_PROJECT_ID
+gemini extensions settings set sinch-gemini-extension PROJECT_ID
 ```
 
 ### MCP Server Not Connected

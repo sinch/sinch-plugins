@@ -27,7 +27,7 @@ Arguments: {{args}}
 
 2. Try MCP tool for sending card/rich message if available (e.g. send-card or equivalent). On success display result and exit.
 
-3. If MCP not available: get CONVERSATION_* env vars. If missing, report "Sinch API is not configured."
+3. If MCP not available: get PROJECT_ID, KEY_ID, KEY_SECRET, CONVERSATION_REGION and CONVERSATION_APP_ID env variables. If missing, report "Sinch API is not configured."
 
 4. Build message.card_message: title, description (if provided), media_message with url (if image-url), choices array from --choices (each: text_message.text, postback_data). Recipient via channel_identities (channel RCS or as specified).
 

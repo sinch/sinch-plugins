@@ -103,7 +103,7 @@ if [[ ! -f "$SETTINGS_FILE" ]]; then
   echo "  ✓ File created."
 else
   echo "  ✓ File exists."
-  
+
   # Validate it's valid JSON
   if ! jq empty "$SETTINGS_FILE" 2>/dev/null; then
     echo "  ✗ Error: $SETTINGS_FILE is not valid JSON."
@@ -132,15 +132,15 @@ echo "[6/7] Analyzing current configuration..."
 HAS_ENV=$(jq 'has("env")' "$SETTINGS_FILE")
 if [[ "$HAS_ENV" == "true" ]]; then
   echo "  → Existing 'env' block found."
-  
+
   # Check each credential
   EXISTING_KEYS=""
-  for key in CONVERSATION_PROJECT_ID CONVERSATION_KEY_ID CONVERSATION_KEY_SECRET CONVERSATION_REGION CONVERSATION_APP_ID; do
+  for key in PROJECT_ID KEY_ID KEY_SECRET CONVERSATION_REGION CONVERSATION_APP_ID; do
     if [[ $(jq -r --arg k "$key" '.env | has($k)' "$SETTINGS_FILE") == "true" ]]; then
       EXISTING_KEYS="$EXISTING_KEYS $key"
     fi
   done
-  
+
   if [[ -n "$EXISTING_KEYS" ]]; then
     echo "  → Will update existing values:$EXISTING_KEYS"
   else
@@ -163,9 +163,9 @@ jq --arg projectId "$PROJECT_ID" \
    --arg appId "$APP_ID" \
    '
    .env = (.env // {}) |
-   .env.CONVERSATION_PROJECT_ID = $projectId |
-   .env.CONVERSATION_KEY_ID = $keyId |
-   .env.CONVERSATION_KEY_SECRET = $keySecret |
+   .env.PROJECT_ID = $projectId |
+   .env.KEY_ID = $keyId |
+   .env.KEY_SECRET = $keySecret |
    .env.CONVERSATION_REGION = $region |
    .env.CONVERSATION_APP_ID = $appId
    ' "$SETTINGS_FILE" > "$SETTINGS_FILE.tmp"
@@ -190,9 +190,9 @@ echo " Setup Complete"
 echo "========================================"
 echo ""
 echo " Configured values:"
-echo "   CONVERSATION_PROJECT_ID = $PROJECT_ID"
-echo "   CONVERSATION_KEY_ID     = $KEY_ID"
-echo "   CONVERSATION_KEY_SECRET = ****${KEY_SECRET: -4}"
+echo "   PROJECT_ID = $PROJECT_ID"
+echo "   KEY_ID     = $KEY_ID"
+echo "   KEY_SECRET = ****${KEY_SECRET: -4}"
 echo "   CONVERSATION_REGION     = $REGION"
 echo "   CONVERSATION_APP_ID     = $APP_ID"
 echo ""

@@ -21,7 +21,7 @@ Arguments: {{args}}
 
 0. If {{args}} empty: ask for recipient fax number and document URL. Otherwise parse.
 
-1. Validate: --to (non-empty), --content-url (valid HTTPS URL). Get CONVERSATION_PROJECT_ID, CONVERSATION_KEY_ID, CONVERSATION_KEY_SECRET (or FAX_* equivalents). Fax API uses OAuth2. Base: https://fax.api.sinch.com/v3. If missing, report "Sinch API is not configured."
+1. Validate: --to (non-empty), --content-url (valid HTTPS URL). Get PROJECT_ID, KEY_ID, KEY_SECRET env variables. If missing, report "Sinch API is not configured." Fax API uses OAuth2. Base: https://fax.api.sinch.com/v3.
 
 2. Request body: to, contentUrl; optional callbackUrl. POST https://fax.api.sinch.com/v3/projects/{projectId}/faxes with OAuth2 Bearer token.
 
