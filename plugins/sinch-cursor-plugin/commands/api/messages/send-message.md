@@ -61,12 +61,12 @@ $ARGUMENTS
 7. Fallback (if MCP is unavailable OR the MCP tool keeps failing): build a direct Conversation API `curl` request.
 
    - Retrieve configuration from environment variables:
-     - `CONVERSATION_PROJECT_ID`
+     - `PROJECT_ID`
+     - `KEY_ID`
+     - `KEY_SECRET`
      - `CONVERSATION_REGION`
      - `CONVERSATION_APP_ID`
-     - `CONVERSATION_KEY_ID`
-     - `CONVERSATION_KEY_SECRET`
-   - If any are missing, report: "Sinch API is not configured. Please set: CONVERSATION_PROJECT_ID, CONVERSATION_KEY_ID, CONVERSATION_KEY_SECRET, CONVERSATION_REGION, CONVERSATION_APP_ID"
+   - If any are missing, report: "Sinch API is not configured. Please set: PROJECT_ID, KEY_ID, KEY_SECRET, CONVERSATION_REGION, CONVERSATION_APP_ID"
 
    - Then output a ready-to-run command (do not write scripts/files):
 
@@ -75,8 +75,8 @@ $ARGUMENTS
      TO="<+14155551234>" \
      MESSAGE="<Hello>" \
      curl -sS -X POST \
-        "https://${CONVERSATION_REGION}.conversation.api.sinch.com/v1/projects/${CONVERSATION_PROJECT_ID}/messages:send" \
-        -u "${CONVERSATION_KEY_ID}:${CONVERSATION_KEY_SECRET}" \
+        "https://${CONVERSATION_REGION}.conversation.api.sinch.com/v1/projects/${PROJECT_ID}/messages:send" \
+        -u "${KEY_ID}:${KEY_SECRET}" \
         -H "Content-Type: application/json" \
         -d "$(cat <<'JSON'
      {

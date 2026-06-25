@@ -23,7 +23,7 @@ Arguments: {{args}}
 
 0. If {{args}} empty: ask for action (list/create), and if create: brand ID, campaign name, use case. Otherwise parse.
 
-1. Validate: --action, for create require --brand-id and --campaign-name. Get CONVERSATION_* env vars. If missing, report "Sinch API is not configured."
+1. Validate: --action, for create require --brand-id and --campaign-name. Get PROJECT_ID, KEY_ID, KEY_SECRET env variables. If missing, report "Sinch API is not configured."
 
 2. If list: GET campaigns endpoint (with optional brand filter). If create: POST with brandId, name, useCase (and other required fields per API). Base: https://us10dlc.api.sinch.com/v1/projects/{projectId}.
 

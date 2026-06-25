@@ -24,7 +24,7 @@ Arguments: {{args}}
 
 1. Validate: optional --batch-id, --metadata-key, --metadata-value, --format (table|json).
 
-2. Get CONVERSATION_* env vars. Batch API base: https://{region}.conversationbatch.api.sinch.com. If missing, report "Sinch API is not configured."
+2. Get PROJECT_ID, KEY_ID, KEY_SECRET, CONVERSATION_REGION and CONVERSATION_APP_ID env variables. If missing, report "Sinch API is not configured."
 
 3. If --batch-id provided: GET https://{region}.conversationbatch.api.sinch.com/v1/projects/{projectId}/messages/{batch_id} with OAuth2. Return batch status, counts (sent, delivered, failed), etc.
 

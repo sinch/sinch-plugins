@@ -22,7 +22,7 @@ Arguments: {{args}}
 
 0. If {{args}} empty: ask "List trunks or create one?" and for create get name, hostname. Otherwise parse.
 
-1. Validate: --action (list|create), for create require --name. Get CONVERSATION_PROJECT_ID, CONVERSATION_KEY_ID, CONVERSATION_KEY_SECRET. Base: https://elastic-trunking.api.sinch.com/v1. If missing, report "Sinch API is not configured."
+1. Validate: --action (list|create), for create require --name. Get PROJECT_ID, KEY_ID, KEY_SECRET env variables. Base: https://elastic-trunking.api.sinch.com/v1. If missing, report "Sinch API is not configured."
 
 2. If list: GET https://elastic-trunking.api.sinch.com/v1/projects/{projectId}/trunks with OAuth2. Display table (id, name, hostName, createTime) or JSON.
 

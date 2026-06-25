@@ -43,12 +43,12 @@ Arguments: {{args}}
 
 4. If MCP tool is NOT available, fallback to direct API implementation:
    - Retrieve Sinch configuration from environment variables:
-     * CONVERSATION_PROJECT_ID
+     * PROJECT_ID
+     * KEY_ID
+     * KEY_SECRET
      * CONVERSATION_REGION
      * CONVERSATION_APP_ID
-     * CONVERSATION_KEY_ID
-     * CONVERSATION_KEY_SECRET
-   - If any are missing, report: "Sinch API is not configured. Please set: CONVERSATION_PROJECT_ID, CONVERSATION_KEY_ID, CONVERSATION_KEY_SECRET, CONVERSATION_REGION, CONVERSATION_APP_ID"
+   - If any are missing, report: "Sinch API is not configured. Please set: PROJECT_ID, KEY_ID, KEY_SECRET, CONVERSATION_REGION, CONVERSATION_APP_ID"
 
 5. Send the message using the Sinch Conversation API:
    - Endpoint: `POST https://{region}.conversation.api.sinch.com/v1/projects/{projectId}/messages:send`

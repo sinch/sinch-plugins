@@ -20,7 +20,7 @@ Arguments: {{args}}
 
 0. If {{args}} empty: use defaults (table format). Otherwise parse.
 
-1. Get CONVERSATION_* or FAX_* env vars. GET https://fax.api.sinch.com/v3/projects/{projectId}/faxes with OAuth2. If missing, report "Sinch API is not configured."
+1. Get PROJECT_ID, KEY_ID, KEY_SECRET env variables. GET https://fax.api.sinch.com/v3/projects/{projectId}/faxes with OAuth2. If missing, report "Sinch API is not configured."
 
 2. Format response: table (id, to, status, createdAt, etc.) or JSON. Display "✅ Faxes listed" with count.
 
