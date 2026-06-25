@@ -36,9 +36,9 @@ This plugin relies on the Sinch MCP server, which requires specific environment 
 
 You need to configure the following variables:
 
-- `CONVERSATION_PROJECT_ID`: Your Sinch Project ID.
-- `CONVERSATION_KEY_ID`: Your Access Key ID.
-- `CONVERSATION_KEY_SECRET`: Your Access Key Secret.
+- `PROJECT_ID`: Your Sinch Project ID.
+- `KEY_ID`: Your Access Key ID.
+- `KEY_SECRET`: Your Access Key Secret.
 - `CONVERSATION_REGION`: The region for your app (e.g., `us`, `eu`, `br`).
 - `CONVERSATION_APP_ID`: The specific Conversation App ID you want to use.
 
@@ -68,9 +68,9 @@ Run the shell script located in the plugin configuration folder:
 ```json
 {
   "env": {
-    "CONVERSATION_PROJECT_ID": "your-project-id",
-    "CONVERSATION_KEY_ID": "your-key-id",
-    "CONVERSATION_KEY_SECRET": "your-key-secret",
+    "PROJECT_ID": "your-project-id",
+    "KEY_ID": "your-key-id",
+    "KEY_SECRET": "your-key-secret",
     "CONVERSATION_REGION": "your-app-region (e.g., us, eu, br)",
     "CONVERSATION_APP_ID": "your-app-id"
   }
@@ -177,9 +177,9 @@ This plugin relies on the Sinch MCP server, which requires specific environment 
 ```json
 {
   "env": {
-    "CONVERSATION_PROJECT_ID": "your-project-id",
-    "CONVERSATION_KEY_ID": "your-key-id",
-    "CONVERSATION_KEY_SECRET": "your-key-secret",
+    "PROJECT_ID": "your-project-id",
+    "KEY_ID": "your-key-id",
+    "KEY_SECRET": "your-key-secret",
     "CONVERSATION_REGION": "us",
     "CONVERSATION_APP_ID": "your-app-id"
   }
@@ -249,9 +249,9 @@ gemini extensions install .
 
 During installation, Gemini CLI will automatically prompt you for your Sinch credentials:
 
-- **CONVERSATION_PROJECT_ID**: Your Sinch project ID (required)
-- **CONVERSATION_KEY_ID**: Your API key ID (required)
-- **CONVERSATION_KEY_SECRET**: Your API key secret (required, stored securely)
+- **PROJECT_ID**: Your Sinch project ID (required)
+- **KEY_ID**: Your API key ID (required)
+- **KEY_SECRET**: Your API key secret (required, stored securely)
 - **CONVERSATION_REGION**: Your region (us, eu, or br) (required)
 - **CONVERSATION_APP_ID**: Your Sinch Conversation API App ID (required)
 

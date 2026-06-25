@@ -18,9 +18,9 @@
         "@sinch/mcp"
       ],
       "env": {
-        "CONVERSATION_PROJECT_ID": "${CONVERSATION_PROJECT_ID}",
-        "CONVERSATION_KEY_ID": "${CONVERSATION_KEY_ID}",
-        "CONVERSATION_KEY_SECRET": "${CONVERSATION_KEY_SECRET}",
+        "PROJECT_ID": "${PROJECT_ID}",
+        "KEY_ID": "${KEY_ID}",
+        "KEY_SECRET": "${KEY_SECRET}",
         "CONVERSATION_REGION": "${CONVERSATION_REGION}",
         "CONVERSATION_APP_ID": "${CONVERSATION_APP_ID}"
       },
@@ -29,23 +29,23 @@
   },
   "settings": [
     {
-      "name": "CONVERSATION_PROJECT_ID",
-      "description": "Your Sinch Conversation API Project ID",
-      "envVar": "CONVERSATION_PROJECT_ID"
+      "name": "PROJECT_ID",
+      "description": "Your Sinch Project ID",
+      "envVar": "PROJECT_ID"
     },
     {
-      "name": "CONVERSATION_KEY_ID",
-      "description": "Your Sinch Conversation API Key ID",
-      "envVar": "CONVERSATION_KEY_ID"
+      "name": "KEY_ID",
+      "description": "Your Sinch Key ID",
+      "envVar": "KEY_ID"
     },
     {
-      "name": "CONVERSATION_KEY_SECRET",
-      "description": "Your Sinch Conversation API Key Secret",
-      "envVar": "CONVERSATION_KEY_SECRET"
+      "name": "KEY_SECRET",
+      "description": "Your Sinch Key Secret",
+      "envVar": "KEY_SECRET"
     },
     {
       "name": "CONVERSATION_REGION",
-      "description": "Your Sinch region (us, eu, or br)",
+      "description": "Your Sinch region (us, eu, or br) for Conversation API",
       "envVar": "CONVERSATION_REGION"
     },
     {
@@ -54,25 +54,14 @@
       "envVar": "CONVERSATION_APP_ID"
     },
     {
-      "name": "VOICE_APPLICATION_KEY",
-      "description": "Sinch Voice API Application Key",
-      "envVar": "VOICE_APPLICATION_KEY"
+      "name": "APPLICATION_KEY",
+      "description": "Sinch Verification/Voice API Application Key",
+      "envVar": "APPLICATION_KEY"
     },
     {
-      "name": "VOICE_APPLICATION_SECRET",
-      "description": "Sinch Voice API Application Secret",
-      "envVar": "VOICE_APPLICATION_SECRET",
-      "sensitive": true
-    },
-    {
-      "name": "VERIFICATION_APPLICATION_KEY",
-      "description": "Sinch Verification API Application Key",
-      "envVar": "VERIFICATION_APPLICATION_KEY"
-    },
-    {
-      "name": "VERIFICATION_APPLICATION_SECRET",
-      "description": "Sinch Verification API Application Secret",
-      "envVar": "VERIFICATION_APPLICATION_SECRET",
+      "name": "APPLICATION_SECRET",
+      "description": "Sinch Verification/Voice API Application Secret",
+      "envVar": "APPLICATION_SECRET",
       "sensitive": true
     },
     {

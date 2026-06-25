@@ -26,7 +26,7 @@ Arguments: {{args}}
 
 2. Try MCP tool for choice/suggested-reply message if available. On success display result and exit.
 
-3. If MCP not available: get CONVERSATION_* env vars. If missing, report "Sinch API is not configured."
+3. If MCP not available: get PROJECT_ID, KEY_ID, KEY_SECRET, CONVERSATION_REGION and CONVERSATION_APP_ID env variables. If missing, report "Sinch API is not configured."
 
 4. Build message.choice_message: text_message with the main message; choices array - each choice with text_message.text (label) and postback_data (e.g. slug of label). Recipient via channel_identities.
 

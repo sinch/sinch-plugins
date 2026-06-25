@@ -22,7 +22,7 @@ Arguments: {{args}}
 
 0. If {{args}} empty: ask "List brands or create a new brand?" and get action, or for create get display name. Otherwise parse.
 
-1. Validate: --action (list|create), for create require --display-name. Get CONVERSATION_PROJECT_ID, CONVERSATION_KEY_ID, CONVERSATION_KEY_SECRET. If missing, report "Sinch API is not configured."
+1. Validate: --action (list|create), for create require --display-name. Get PROJECT_ID, KEY_ID, KEY_SECRET env variables. If missing, report "Sinch API is not configured."
 
 2. If list: GET https://us10dlc.api.sinch.com/v1/projects/{projectId}/brandRegistrations with OAuth2. Display table or JSON.
 

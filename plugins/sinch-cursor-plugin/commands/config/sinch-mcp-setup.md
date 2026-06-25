@@ -14,9 +14,9 @@ For more details about the underlying MCP server and tools, see [Sinch MCP Serve
 
 You need to obtain and configure the following 5 variables:
 
-- `CONVERSATION_PROJECT_ID` - Your Sinch project ID
-- `CONVERSATION_KEY_ID` - Your API key ID
-- `CONVERSATION_KEY_SECRET` - Your API key secret
+- `PROJECT_ID` - Your Sinch project ID
+- `KEY_ID` - Your API key ID
+- `KEY_SECRET` - Your API key secret
 - `CONVERSATION_REGION` - Your Sinch region (e.g., `us`, `eu`, `br`)
 - `CONVERSATION_APP_ID` - Your Conversation app ID
 
@@ -89,9 +89,9 @@ Tell the user:
 ```json
 {
   "env": {
-    "CONVERSATION_PROJECT_ID": "your-project-id",
-    "CONVERSATION_KEY_ID": "your-api-key",
-    "CONVERSATION_KEY_SECRET": "your-api-secret",
+    "PROJECT_ID": "your-project-id",
+    "KEY_ID": "your-api-key",
+    "KEY_SECRET": "your-api-secret",
     "CONVERSATION_REGION": "your-app-region (e.g., us, eu, br)",
     "CONVERSATION_APP_ID": "your-app-id"
   }

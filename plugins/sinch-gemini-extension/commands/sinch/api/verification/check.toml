@@ -23,7 +23,7 @@ Arguments: {{args}}
 
 1. Validate: --id (non-empty), --code (non-empty), optional --method (default sms).
 
-2. Get Verification API application key and secret from env. If missing, report "Verification API is not configured."
+2. Get APPLICATION_KEY and APPLICATION_SECRET env variables. If missing, report "Verification API is not configured."
 
 3. Request body: method ("sms" or as specified), sms: { code: "<code>" } (for SMS method). Use appropriate body for flashcall/callout if API differs.
 

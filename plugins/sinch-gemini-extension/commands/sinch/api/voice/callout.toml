@@ -24,7 +24,7 @@ Arguments: {{args}}
 
 1. Validate: --to (E.164), --text (non-empty). Optional: --cli (E.164), --locale.
 
-2. Get VOICE_APPLICATION_KEY and VOICE_APPLICATION_SECRET from env (or equivalent Voice app credentials). Voice API uses Application Key/Secret, not OAuth2. If missing, report "Voice API is not configured. Set VOICE_APPLICATION_KEY and VOICE_APPLICATION_SECRET."
+2. Get APPLICATION_KEY and APPLICATION_SECRET from env (or equivalent Voice app credentials). Voice API uses Application Key/Secret, not OAuth2. If missing, report "Voice API is not configured. Set APPLICATION_KEY and APPLICATION_SECRET."
 
 3. Request body: method "ttsCallout", ttsCallout: destination (type "number", endpoint), cli, locale, text.
 

@@ -28,9 +28,9 @@ After installation, configure the required environment variables for the Sinch M
 
 You need to configure the following 5 environment variables:
 
-- `CONVERSATION_PROJECT_ID` - Your Sinch project ID
-- `CONVERSATION_KEY_ID` - Your API key ID
-- `CONVERSATION_KEY_SECRET` - Your API key secret
+- `PROJECT_ID` - Your Sinch project ID
+- `KEY_ID` - Your API key ID
+- `KEY_SECRET` - Your API key secret
 - `CONVERSATION_REGION` - Your Sinch region (`us`, `eu`, or `br`)
 - `CONVERSATION_APP_ID` - Your Conversation app ID
 
@@ -49,9 +49,9 @@ You need to configure the following 5 environment variables:
 ```json
 {
   "env": {
-    "CONVERSATION_PROJECT_ID": "your-project-id",
-    "CONVERSATION_KEY_ID": "your-key-id",
-    "CONVERSATION_KEY_SECRET": "your-key-secret",
+    "PROJECT_ID": "your-project-id",
+    "KEY_ID": "your-key-id",
+    "KEY_SECRET": "your-key-secret",
     "CONVERSATION_REGION": "us",
     "CONVERSATION_APP_ID": "your-app-id"
   }
@@ -167,7 +167,7 @@ This plugin uses the [@sinch/mcp](https://github.com/sinch/sinch-mcp-server) MCP
 - Check MCP server installation: `npx @sinch/mcp --version`
 
 ### Authentication errors
-- Verify `CONVERSATION_KEY_ID` and `CONVERSATION_KEY_SECRET` are correct
+- Verify `KEY_ID` and `KEY_SECRET` are correct
 - Check that the access key has appropriate permissions in Sinch dashboard
 - Ensure the key is not expired or revoked
 

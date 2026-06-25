@@ -28,7 +28,7 @@ Arguments: {{args}}
 
 2. Try MCP tool `mcp__sinch__send-media-message` with recipient, url, channel, and caption. On success display result and skip to step 7.
 
-3. If MCP not available, get config from env: CONVERSATION_PROJECT_ID, CONVERSATION_REGION, CONVERSATION_APP_ID, CONVERSATION_KEY_ID, CONVERSATION_KEY_SECRET. If missing, report "Sinch API is not configured."
+3. If MCP not available, get PROJECT_ID, CONVERSATION_REGION, CONVERSATION_APP_ID, KEY_ID, KEY_SECRET env variables. If missing, report "Sinch API is not configured."
 
 4. Send via Conversation API: POST https://{region}.conversation.api.sinch.com/v1/projects/{projectId}/messages:send with OAuth2 Bearer token. Request body: app_id, recipient (channel_identities with channel and identity), message.media_message with url and optional caption.
 
