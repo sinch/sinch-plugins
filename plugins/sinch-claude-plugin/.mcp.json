@@ -13,6 +13,10 @@
                 "CONVERSATION_REGION": "${CONVERSATION_REGION}",
                 "CONVERSATION_APP_ID": "${CONVERSATION_APP_ID}"
             }
+        },
+        "sinch-docs": {
+            "type": "http",
+            "url": "https://developers.sinch.com/mcp"
         }
     }
 }

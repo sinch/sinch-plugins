@@ -25,6 +25,9 @@
         "CONVERSATION_APP_ID": "${CONVERSATION_APP_ID}"
       },
       "timeout": 15000
+    },
+    "sinch-docs": {
+      "httpUrl": "https://developers.sinch.com/mcp"
     }
   },
   "settings": [

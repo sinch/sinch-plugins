@@ -2,6 +2,17 @@
 
 This repository contains Sinch plugins and related artifacts for AI developer tools.
 
+## MCP Servers
+
+Each plugin ships two MCP servers:
+
+| Server | Key | Transport | Purpose |
+|---|---|---|---|
+| **Sinch Build MCP** | `sinch` | stdio (`npx -y @sinch/mcp`) | Call Sinch Conversation API tools (send messages, manage webhooks, list senders). Requires credentials. |
+| **Sinch Docs MCP** | `sinch-docs` | remote HTTP (`https://developers.sinch.com/mcp`) | Search and read Sinch developer documentation. No credentials required. |
+
+Config field names differ by client: Cursor uses `url`, Claude Code uses `type` + `url`, Gemini CLI uses `httpUrl`.
+
 ## Claude Code
 
 A Claude Code plugin that integrates the Sinch Conversation API, allowing you to send SMS messages, manage webhooks, and inspect your Sinch configuration directly from your terminal.
@@ -30,7 +41,7 @@ To install this plugin in Claude Code, you typically install it from a marketpla
 
 ### Configuration
 
-This plugin relies on the Sinch MCP server, which requires specific environment variables to authenticate with the Sinch API. These variables must be set in your Claude Code settings.
+This plugin includes the Sinch Build MCP (`sinch`) and the Sinch Docs MCP (`sinch-docs`). The Build MCP requires specific environment variables to authenticate with the Sinch API; these must be set in your Claude Code settings. The Docs MCP needs no credentials.
 
 ### Required Environment Variables
 
@@ -110,7 +121,7 @@ Once installed and configured, you can use natural language or specific slash co
 
 ### Architecture
 
-This plugin leverages the [Sinch MCP Server](https://github.com/sinch/sinch-mcp-server) to communicate with the Sinch Conversation API. It defines a set of tools and prompts that Claude Code uses to perform actions on your behalf.
+This plugin leverages the [Sinch Build MCP Server](https://github.com/sinch/sinch-mcp-server) (`@sinch/mcp`) to communicate with the Sinch Conversation API, plus the [Sinch Docs MCP](https://developers.sinch.com/mcp) for developer documentation. It defines a set of tools and prompts that Claude Code uses to perform actions on your behalf.
 
 ## Skills
 
@@ -172,7 +183,7 @@ The `skills/` folder is populated at build time by the pipeline cloning the `sin
 
 ### Configuration
 
-This plugin relies on the Sinch MCP server, which requires specific environment variables to authenticate with the Sinch API. Add these to your Cursor settings (`~/.cursor/settings.json`):
+This plugin includes the Sinch Build MCP (`sinch`) and the Sinch Docs MCP (`sinch-docs`). The Build MCP requires specific environment variables to authenticate with the Sinch API; add these to your Cursor settings (`~/.cursor/settings.json`). The Docs MCP needs no credentials:
 
 ```json
 {
@@ -247,7 +258,7 @@ gemini extensions install .
 
 ### Configuration
 
-During installation, Gemini CLI will automatically prompt you for your Sinch credentials:
+This extension includes the Sinch Build MCP (`sinch`) and the Sinch Docs MCP (`sinch-docs` via `httpUrl`). The Docs MCP needs no credentials. During installation, Gemini CLI will automatically prompt you for your Sinch Build credentials:
 
 - **CONVERSATION_PROJECT_ID**: Your Sinch project ID (required)
 - **CONVERSATION_KEY_ID**: Your API key ID (required)
