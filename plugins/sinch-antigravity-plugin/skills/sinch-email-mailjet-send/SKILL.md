@@ -18,13 +18,13 @@ Send a transactional or marketing email using the Mailjet Send API v3.1. Uses HT
 - `--html` / `-H`: HTML body - optional
 - At least one of --text or --html required
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. If {{args}} empty: ask for from, to, subject, and text or html. Otherwise parse.
+0. If $ARGUMENTS empty: ask for from, to, subject, and text or html. Otherwise parse.
 
 1. Validate: --from, --to, --subject; at least one of --text or --html. Get MJ_APIKEY_PUBLIC and MJ_APIKEY_PRIVATE from env. If missing, report "Mailjet is not configured. Set MJ_APIKEY_PUBLIC and MJ_APIKEY_PRIVATE."
 
@@ -37,8 +37,8 @@ Arguments: {{args}}
 ## Examples
 
 ```
-/sinch:email:mailjet:send --from=sender@mydomain.com --to=recipient@example.com --subject="Hello" --text="Hello from Mailjet"
-/sinch:email:mailjet:send -f "Me <me@mydomain.com>" -t user@example.com -s "Test" --html="<p>Hi</p>"
+/sinch-email-mailjet-send --from=sender@mydomain.com --to=recipient@example.com --subject="Hello" --text="Hello from Mailjet"
+/sinch-email-mailjet-send -f "Me <me@mydomain.com>" -t user@example.com -s "Test" --html="<p>Hi</p>"
 ```
 
 ## API Reference

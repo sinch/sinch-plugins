@@ -17,13 +17,13 @@ Send a rich card message (title, description, image, optional buttons) to a reci
 - `--image-url` / `-i`: URL of card image - optional
 - `--choices` / `-C`: Comma-separated button labels (e.g., "Learn More,Contact Us") - optional
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. If {{args}} empty: ask for recipient, title, description, image URL, and optional choices. Otherwise parse arguments.
+0. If $ARGUMENTS empty: ask for recipient, title, description, image URL, and optional choices. Otherwise parse arguments.
 
 1. Validate: --to (E.164), --title (non-empty). Optional: description, image-url (HTTPS), choices (comma-separated strings).
 
@@ -42,8 +42,8 @@ Arguments: {{args}}
 ## Examples
 
 ```
-/sinch:api:messages:send-card --to=+14155551234 --title="Welcome" --description="Thanks for signing up" --image-url=https://example.com/promo.jpg
-/sinch:api:messages:send-card -t +14155551234 -T "Sale" -d "50% off" -C "Shop Now,Details"
+/sinch-api-messages-send-card --to=+14155551234 --title="Welcome" --description="Thanks for signing up" --image-url=https://example.com/promo.jpg
+/sinch-api-messages-send-card -t +14155551234 -T "Sale" -d "50% off" -C "Shop Now,Details"
 ```
 
 ## API Reference

@@ -16,13 +16,13 @@ Send a media message (image, video, audio, or document) to a recipient using the
 - `--channel` / `-c`: Channel (SMS, RCS, WHATSAPP, MMS) - optional, defaults to SMS
 - `--caption` / `-C`: Optional caption text for the media
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. Check if {{args}} is empty or only contains the command name:
+0. Check if $ARGUMENTS is empty or only contains the command name:
    - If empty, enter interactive mode: ask for recipient, media URL, channel, and optional caption
    - If arguments provided, proceed to step 1
 
@@ -43,8 +43,8 @@ Arguments: {{args}}
 ## Examples
 
 ```
-/sinch:api:messages:send-media --to=+14155551234 --url=https://example.com/image.jpg
-/sinch:api:messages:send-media -t +14155551234 -u https://example.com/video.mp4 --channel=RCS --caption="Check this out"
+/sinch-api-messages-send-media --to=+14155551234 --url=https://example.com/image.jpg
+/sinch-api-messages-send-media -t +14155551234 -u https://example.com/video.mp4 --channel=RCS --caption="Check this out"
 ```
 
 ## API Reference

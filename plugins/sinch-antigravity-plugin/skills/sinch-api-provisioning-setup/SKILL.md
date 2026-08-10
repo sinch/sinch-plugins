@@ -15,13 +15,13 @@ List senders (WhatsApp Business, RCS agents) or get setup guidance using the Sin
 - `--sender-id` / `-i`: Sender ID (for get) - optional
 - `--format` / `-f`: Output format (table or json) - optional
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. If {{args}} empty: ask "List senders, get one by ID, or show setup help?" Otherwise parse.
+0. If $ARGUMENTS empty: ask "List senders, get one by ID, or show setup help?" Otherwise parse.
 
 1. Validate: --action (list|get|help), optional --sender-id. Get CONVERSATION_PROJECT_ID, CONVERSATION_KEY_ID, CONVERSATION_KEY_SECRET. Base: https://provisioning.api.sinch.com/v1. If missing, report "Sinch API is not configured."
 
@@ -36,9 +36,9 @@ Arguments: {{args}}
 ## Examples
 
 ```
-/sinch:api:provisioning:setup
-/sinch:api:provisioning:setup --action=get --sender-id=SENDER_ID
-/sinch:api:provisioning:setup --action=help
+/sinch-api-provisioning-setup
+/sinch-api-provisioning-setup --action=get --sender-id=SENDER_ID
+/sinch-api-provisioning-setup --action=help
 ```
 
 ## API Reference

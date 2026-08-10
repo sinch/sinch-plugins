@@ -14,13 +14,13 @@ Delete an omni-channel message template by ID using the Sinch Template Managemen
 - `--id` / `-i`: Template ID to delete - required
 - `--force` / `-f`: Skip confirmation - optional
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. If {{args}} empty: ask for template ID. Optionally list templates to help user choose. Otherwise parse.
+0. If $ARGUMENTS empty: ask for template ID. Optionally list templates to help user choose. Otherwise parse.
 
 1. Validate: --id (non-empty). If not --force, confirm with user: "Delete template {id}? Type 'yes' to confirm."
 
@@ -35,8 +35,8 @@ Arguments: {{args}}
 ## Examples
 
 ```
-/sinch:api:templates:delete --id=01F8MECHZX3TBDSZ7XRADM79XE
-/sinch:api:templates:delete -i TEMPLATE_ID --force
+/sinch-api-templates-delete --id=01F8MECHZX3TBDSZ7XRADM79XE
+/sinch-api-templates-delete -i TEMPLATE_ID --force
 ```
 
 ## API Reference

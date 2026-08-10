@@ -16,13 +16,13 @@ List or search contacts for your Sinch Conversation API project. Contacts repres
 - `--page-token` / `-p`: Pagination token - optional
 - `--format` / `-f`: Output format (table or json) - optional, default table
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. If {{args}} empty: use defaults (table, page-size 20). Otherwise parse.
+0. If $ARGUMENTS empty: use defaults (table, page-size 20). Otherwise parse.
 
 1. Validate: optional --channel, --page-size, --page-token, --format. Get CONVERSATION_* env vars. Conversation API base: https://{region}.conversation.api.sinch.com/v1. If missing, report "Sinch API is not configured."
 
@@ -35,9 +35,9 @@ Arguments: {{args}}
 ## Examples
 
 ```
-/sinch:api:contacts:list
-/sinch:api:contacts:list --channel=WHATSAPP --page-size=50
-/sinch:api:contacts:list -f json
+/sinch-api-contacts-list
+/sinch-api-contacts-list --channel=WHATSAPP --page-size=50
+/sinch-api-contacts-list -f json
 ```
 
 ## API Reference

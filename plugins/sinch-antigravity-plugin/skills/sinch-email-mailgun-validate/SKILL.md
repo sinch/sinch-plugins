@@ -14,13 +14,13 @@ Validate a single email address or run bulk validation using the Mailgun Validat
 - `--address` / `-a`: Email address to validate - required
 - `--format` / `-f`: Output format (table or json) - optional
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. If {{args}} empty: ask for email address to validate. Otherwise parse.
+0. If $ARGUMENTS empty: ask for email address to validate. Otherwise parse.
 
 1. Validate: --address (valid email format). Get MAILGUN_API_KEY. Base: api.mailgun.net or api.eu.mailgun.net per MAILGUN_REGION. If missing, report "Mailgun is not configured. Set MAILGUN_API_KEY."
 
@@ -33,8 +33,8 @@ Arguments: {{args}}
 ## Examples
 
 ```
-/sinch:email:mailgun:validate --address=user@example.com
-/sinch:email:mailgun:validate -a test@example.com --format=json
+/sinch-email-mailgun-validate --address=user@example.com
+/sinch-email-mailgun-validate -a test@example.com --format=json
 ```
 
 ## API Reference

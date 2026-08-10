@@ -18,13 +18,13 @@ List or retrieve messages for a conversation or contact using the Sinch Conversa
 - `--page-token` / `-p`: Pagination token from previous response - optional
 - `--format` / `-f`: Output format (table or json) - optional, default table
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. If {{args}} empty: ask if user wants to list by contact, conversation, or channel; ask for IDs if needed. Otherwise parse.
+0. If $ARGUMENTS empty: ask if user wants to list by contact, conversation, or channel; ask for IDs if needed. Otherwise parse.
 
 1. Validate: optional --channel, --contact-id, --conversation-id, --page-size (number), --page-token, --format (table|json).
 
@@ -43,9 +43,9 @@ Arguments: {{args}}
 ## Examples
 
 ```
-/sinch:api:messages:list --channel=SMS --page-size=10
-/sinch:api:messages:list --contact-id=CONTACT_ID --format=json
-/sinch:api:messages:list -c WHATSAPP -n 20 -f table
+/sinch-api-messages-list --channel=SMS --page-size=10
+/sinch-api-messages-list --contact-id=CONTACT_ID --format=json
+/sinch-api-messages-list -c WHATSAPP -n 20 -f table
 ```
 
 ## API Reference

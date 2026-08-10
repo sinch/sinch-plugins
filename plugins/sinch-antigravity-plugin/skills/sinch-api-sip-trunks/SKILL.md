@@ -16,13 +16,13 @@ List or create SIP trunks using the Sinch Elastic SIP Trunking API. Trunks are t
 - `--host-name` / `-h`: SIP hostname for the trunk (for create) - optional
 - `--format` / `-f`: Output format (table or json) - optional
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. If {{args}} empty: ask "List trunks or create one?" and for create get name, hostname. Otherwise parse.
+0. If $ARGUMENTS empty: ask "List trunks or create one?" and for create get name, hostname. Otherwise parse.
 
 1. Validate: --action (list|create), for create require --name. Get CONVERSATION_PROJECT_ID, CONVERSATION_KEY_ID, CONVERSATION_KEY_SECRET. Base: https://elastic-trunking.api.sinch.com/v1. If missing, report "Sinch API is not configured."
 
@@ -35,8 +35,8 @@ Arguments: {{args}}
 ## Examples
 
 ```
-/sinch:api:sip:trunks
-/sinch:api:sip:trunks --action=create --name="Production" --host-name=sip.example.com
+/sinch-api-sip-trunks
+/sinch-api-sip-trunks --action=create --name="Production" --host-name=sip.example.com
 ```
 
 ## API Reference

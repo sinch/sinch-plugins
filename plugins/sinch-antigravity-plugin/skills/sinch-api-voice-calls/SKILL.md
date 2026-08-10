@@ -14,13 +14,13 @@ List active calls or get details of a specific call using the Sinch Voice API. U
 - `--call-id` / `-i`: Call ID to retrieve - optional (if omitted, list or describe available operations)
 - `--format` / `-f`: Output format (table or json) - optional
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. If {{args}} empty: ask "Do you have a call ID to look up, or list recent/active calls?" and get call-id or list preference. Otherwise parse.
+0. If $ARGUMENTS empty: ask "Do you have a call ID to look up, or list recent/active calls?" and get call-id or list preference. Otherwise parse.
 
 1. Validate: optional --call-id, --format. Get VOICE_APPLICATION_KEY and VOICE_APPLICATION_SECRET. If missing, report "Voice API is not configured."
 
@@ -35,8 +35,8 @@ Arguments: {{args}}
 ## Examples
 
 ```
-/sinch:api:voice:calls --call-id=CALL_ID
-/sinch:api:voice:calls -i CALL_ID --format=json
+/sinch-api-voice-calls --call-id=CALL_ID
+/sinch-api-voice-calls -i CALL_ID --format=json
 ```
 
 ## API Reference

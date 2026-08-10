@@ -14,20 +14,20 @@ Delete a webhook from your Sinch Conversation app. This will stop all event noti
 - `--id` / `-i`: Webhook ID to delete (required)
 - `--force` / `-f`: Skip confirmation prompt (optional)
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. Check if {{args}} is empty or only contains the command name:
+0. Check if $ARGUMENTS is empty or only contains the command name:
    - If empty or no meaningful arguments provided, enter interactive mode:
      * First, list all webhooks to help user choose
      * Ask: "🆔 Which webhook ID do you want to delete?"
      * Use the provided answer as the webhook_id for the following steps
    - If arguments are provided, proceed directly to step 1
 
-1. Parse and validate arguments from {{args}} or interactive input:
+1. Parse and validate arguments from $ARGUMENTS or interactive input:
    - Validate that `--id` is provided and non-empty
    - Check if `--force` flag is present
 
@@ -68,17 +68,17 @@ Arguments: {{args}}
 
 Delete a webhook with confirmation:
 ```
-/sinch:api:webhooks:delete --id=01E9WEBHOOK123
+/sinch-api-webhooks-delete --id=01E9WEBHOOK123
 ```
 
 Delete without confirmation prompt:
 ```
-/sinch:api:webhooks:delete --id=01E9WEBHOOK123 --force
+/sinch-api-webhooks-delete --id=01E9WEBHOOK123 --force
 ```
 
 Using short flags:
 ```
-/sinch:api:webhooks:delete -i 01E9WEBHOOK123 -f
+/sinch-api-webhooks-delete -i 01E9WEBHOOK123 -f
 ```
 
 ## API Reference

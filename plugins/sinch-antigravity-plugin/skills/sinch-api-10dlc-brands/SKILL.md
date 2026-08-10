@@ -16,13 +16,13 @@ List or create 10DLC (US A2P SMS) brand registrations using the Sinch 10DLC API.
 - `--entity-type` / `-e`: Entity type (PRIVATE, PUBLIC, etc.) - optional for create
 - `--format` / `-f`: Output format (table or json) - optional
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. If {{args}} empty: ask "List brands or create a new brand?" and get action, or for create get display name. Otherwise parse.
+0. If $ARGUMENTS empty: ask "List brands or create a new brand?" and get action, or for create get display name. Otherwise parse.
 
 1. Validate: --action (list|create), for create require --display-name. Get CONVERSATION_PROJECT_ID, CONVERSATION_KEY_ID, CONVERSATION_KEY_SECRET. If missing, report "Sinch API is not configured."
 
@@ -35,8 +35,8 @@ Arguments: {{args}}
 ## Examples
 
 ```
-/sinch:api:10dlc:brands
-/sinch:api:10dlc:brands --action=create --display-name="Acme Corp"
+/sinch-api-10dlc-brands
+/sinch-api-10dlc-brands --action=create --display-name="Acme Corp"
 ```
 
 ## API Reference

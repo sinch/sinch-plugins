@@ -13,7 +13,7 @@ Interactive code generator for the Sinch Numbers API. This command helps you gen
 
 No arguments required - this is an interactive command
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
@@ -55,7 +55,7 @@ Arguments: {{args}}
 
 Launch the interactive generator:
 ```
-/sinch:api:senders:list
+/sinch-api-senders-list
 ```
 
 ## API Reference

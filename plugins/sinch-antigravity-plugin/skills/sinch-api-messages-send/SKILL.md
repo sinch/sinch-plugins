@@ -15,13 +15,13 @@ Send a text message to a recipient using the Sinch Conversation API. Currently s
 - `--message` / `-m`: Text content - required
 - `--channel` / `-c`: Channel (SMS or RCS) - optional, defaults to SMS
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. Check if {{args}} is empty or only contains the command name:
+0. Check if $ARGUMENTS is empty or only contains the command name:
    - If empty or no meaningful arguments provided, enter interactive mode:
      * Ask: "📱 What is the recipient's phone number? (E.164 format, e.g., +14155551234)"
      * Ask: "💬 What message do you want to send?"
@@ -29,7 +29,7 @@ Arguments: {{args}}
      * Use the provided answers as the arguments for the following steps
    - If arguments are provided, proceed directly to step 1
 
-1. Parse and validate arguments from {{args}} or interactive input:
+1. Parse and validate arguments from $ARGUMENTS or interactive input:
    - Validate that `--to` is provided and in E.164 format (e.g., +14155551234)
    - Validate that `--message` is provided and non-empty
    - If `--channel` is not provided, default to "SMS"
@@ -90,12 +90,12 @@ Arguments: {{args}}
 
 Send an SMS message:
 ```
-/sinch:api:messages:send --to=+14155551234 --message="Hello"
+/sinch-api-messages-send --to=+14155551234 --message="Hello"
 ```
 
 Send an RCS message:
 ```
-/sinch:api:messages:send --to=+14155551234 --message="Hello" --channel=RCS
+/sinch-api-messages-send --to=+14155551234 --message="Hello" --channel=RCS
 ```
 
 ## API Reference

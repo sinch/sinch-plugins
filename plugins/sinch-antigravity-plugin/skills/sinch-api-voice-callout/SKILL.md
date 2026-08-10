@@ -16,13 +16,13 @@ Place an outbound voice call using the Sinch Voice API. Supports text-to-speech 
 - `--cli` / `-c`: Caller ID / CLI (E.164) - optional
 - `--locale` / `-l`: TTS locale (e.g. en-US) - optional, default en-US
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. If {{args}} empty: ask for destination number, text to speak, optional caller ID and locale. Otherwise parse.
+0. If $ARGUMENTS empty: ask for destination number, text to speak, optional caller ID and locale. Otherwise parse.
 
 1. Validate: --to (E.164), --text (non-empty). Optional: --cli (E.164), --locale.
 
@@ -39,8 +39,8 @@ Arguments: {{args}}
 ## Examples
 
 ```
-/sinch:api:voice:callout --to=+14155551234 --text="Hello, this is a test call from Sinch."
-/sinch:api:voice:callout -t +14155551234 -T "Your verification code is 1 2 3 4" --locale=en-US
+/sinch-api-voice-callout --to=+14155551234 --text="Hello, this is a test call from Sinch."
+/sinch-api-voice-callout -t +14155551234 -T "Your verification code is 1 2 3 4" --locale=en-US
 ```
 
 ## API Reference

@@ -14,13 +14,13 @@ Retrieve details about one or more phone numbers using the Sinch Number Lookup A
 - `--numbers` / `-n`: Comma-separated E.164 numbers to look up - required
 - `--format` / `-f`: Output format (table or json) - optional, default table
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. If {{args}} empty: ask for phone number(s) to look up. Otherwise parse.
+0. If $ARGUMENTS empty: ask for phone number(s) to look up. Otherwise parse.
 
 1. Validate: --numbers (at least one E.164). Get CONVERSATION_PROJECT_ID, CONVERSATION_KEY_ID, CONVERSATION_KEY_SECRET. Lookup API: https://lookup.api.sinch.com/v2. If missing, report "Sinch API is not configured."
 
@@ -33,8 +33,8 @@ Arguments: {{args}}
 ## Examples
 
 ```
-/sinch:api:numbers:lookup --numbers=+14155551234
-/sinch:api:numbers:lookup -n +14155551234,+14159876543 --format=json
+/sinch-api-numbers-lookup --numbers=+14155551234
+/sinch-api-numbers-lookup -n +14155551234,+14159876543 --format=json
 ```
 
 ## API Reference

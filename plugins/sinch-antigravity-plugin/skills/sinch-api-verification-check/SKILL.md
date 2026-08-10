@@ -15,13 +15,13 @@ Report the verification code entered by the user to complete a Sinch Verificatio
 - `--code` / `-c`: Code entered by the user (e.g. PIN from SMS) - required
 - `--method` / `-m`: Method used (sms, flashcall, callout) - optional, default sms
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. If {{args}} empty: ask for verification ID and the code the user entered. Otherwise parse.
+0. If $ARGUMENTS empty: ask for verification ID and the code the user entered. Otherwise parse.
 
 1. Validate: --id (non-empty), --code (non-empty), optional --method (default sms).
 
@@ -38,8 +38,8 @@ Arguments: {{args}}
 ## Examples
 
 ```
-/sinch:api:verification:check --id=VERIFICATION_ID --code=1234
-/sinch:api:verification:check -i VERIFICATION_ID -c 5678 --method=sms
+/sinch-api-verification-check --id=VERIFICATION_ID --code=1234
+/sinch-api-verification-check -i VERIFICATION_ID -c 5678 --method=sms
 ```
 
 ## API Reference

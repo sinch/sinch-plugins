@@ -16,13 +16,13 @@ Send a single message definition to up to 1000 recipients in one API call using 
 - `--channel` / `-c`: Channel (SMS, RCS, etc.) - optional, default SMS
 - `--params` / `-p`: Optional JSON object or file mapping recipient index to parameters for substitution
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. If {{args}} empty: ask for message text (with ${variable} placeholders if needed), recipient list (comma-separated or file), and channel. Otherwise parse.
+0. If $ARGUMENTS empty: ask for message text (with ${variable} placeholders if needed), recipient list (comma-separated or file), and channel. Otherwise parse.
 
 1. Validate: --message (non-empty, may contain ${var}), --recipients (1-1000 identities). Parse recipients into array. Build recipient_and_params: each recipient has recipient.identified_by.channel_identities and optional parameters object for ${} substitution.
 
@@ -39,8 +39,8 @@ Arguments: {{args}}
 ## Examples
 
 ```
-/sinch:api:batch:send --message="Hello ${name}, your code is ${code}" --recipients=+15551234567,+15559876543 --params='{"0":{"name":"Alice","code":"111"},"1":{"name":"Bob","code":"222"}}'
-/sinch:api:batch:send -m "Hi!" -r +15551111111,+15552222222 --channel=SMS
+/sinch-api-batch-send --message="Hello ${name}, your code is ${code}" --recipients=+15551234567,+15559876543 --params='{"0":{"name":"Alice","code":"111"},"1":{"name":"Bob","code":"222"}}'
+/sinch-api-batch-send -m "Hi!" -r +15551111111,+15552222222 --channel=SMS
 ```
 
 ## API Reference

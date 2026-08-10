@@ -13,7 +13,7 @@ Display all available webhook trigger types for the Sinch Conversation API. Use 
 
 No arguments required
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
@@ -59,7 +59,7 @@ Arguments: {{args}}
 
 View all available triggers:
 ```
-/sinch:api:webhooks:triggers
+/sinch-api-webhooks-triggers
 ```
 
 ## Common Trigger Combinations

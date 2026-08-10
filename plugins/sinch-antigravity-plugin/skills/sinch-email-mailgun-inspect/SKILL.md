@@ -14,13 +14,13 @@ Submit HTML or email content to Mailgun Inspect for accessibility testing, link 
 - `--html` / `-H`: HTML content to inspect (inline or path to file) - required
 - `--type` / `-t`: Inspection type: accessibility, links, images - optional, default accessibility
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. If {{args}} empty: ask for HTML content (paste or file path) and inspection type. Otherwise parse.
+0. If $ARGUMENTS empty: ask for HTML content (paste or file path) and inspection type. Otherwise parse.
 
 1. Validate: --html (non-empty or path to readable file). Get MAILGUN_API_KEY. Base: api.mailgun.net or api.eu.mailgun.net. If missing, report "Mailgun is not configured."
 
@@ -33,8 +33,8 @@ Arguments: {{args}}
 ## Examples
 
 ```
-/sinch:email:mailgun:inspect --html="<html><body><h1>Hello</h1></body></html>"
-/sinch:email:mailgun:inspect --type=accessibility -H "<p>Content</p>"
+/sinch-email-mailgun-inspect --html="<html><body><h1>Hello</h1></body></html>"
+/sinch-email-mailgun-inspect --type=accessibility -H "<p>Content</p>"
 ```
 
 ## API Reference

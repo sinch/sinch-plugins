@@ -15,13 +15,13 @@ Create a new webhook to receive real-time notifications about message events and
 - `--triggers` / `-T`: Comma-separated list of event triggers (required)
 - `--secret` / `-s`: Secret token for validating webhook requests (optional)
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. Check if {{args}} is empty or only contains the command name:
+0. Check if $ARGUMENTS is empty or only contains the command name:
    - If empty or no meaningful arguments provided, enter interactive mode:
      * Ask: "🌐 What is the target webhook URL? (must be HTTPS)"
      * Ask: "🔔 Which triggers do you want? (comma-separated, or type 'list' to see available triggers)"
@@ -30,7 +30,7 @@ Arguments: {{args}}
      * Use the provided answers as the arguments for the following steps
    - If arguments are provided, proceed directly to step 1
 
-1. Parse and validate arguments from {{args}} or interactive input:
+1. Parse and validate arguments from $ARGUMENTS or interactive input:
    - Validate that `--target` is provided and is a valid HTTPS URL
    - Validate that `--triggers` is provided and non-empty
    - Parse triggers as a comma-separated list
@@ -72,12 +72,12 @@ Arguments: {{args}}
 
 Create a webhook with multiple triggers:
 ```
-/sinch:api:webhooks:create --target=https://example.com/webhook --triggers=MESSAGE_DELIVERY,MESSAGE_INBOUND
+/sinch-api-webhooks-create --target=https://example.com/webhook --triggers=MESSAGE_DELIVERY,MESSAGE_INBOUND
 ```
 
 Create with a custom secret:
 ```
-/sinch:api:webhooks:create -t https://example.com/webhook -T MESSAGE_DELIVERY -s my-secret-token
+/sinch-api-webhooks-create -t https://example.com/webhook -T MESSAGE_DELIVERY -s my-secret-token
 ```
 
 ## API Reference

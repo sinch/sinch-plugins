@@ -16,13 +16,13 @@ Create a new omni-channel message template with the Sinch Template Management AP
 - `--text` / `-t`: Template text with optional ${variable} placeholders - required
 - `--variables` / `-v`: Comma-separated variable names or JSON with key/preview_value - optional
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. If {{args}} empty: ask for description, default language, template text, and variable names (if any). Otherwise parse.
+0. If $ARGUMENTS empty: ask for description, default language, template text, and variable names (if any). Otherwise parse.
 
 1. Validate: --default-language (e.g. en-US), --text (non-empty). Parse --variables into array of {key, preview_value}. Build translations array with one item: language_code, variables, text_message.text.
 
@@ -39,8 +39,8 @@ Arguments: {{args}}
 ## Examples
 
 ```
-/sinch:api:templates:create --default-language=en-US --text="Hello ${name}, your order ${order_id} is ready."
-/sinch:api:templates:create -l en-US -t "Hi ${customer_name}!" -v name,customer_name -d "Welcome template"
+/sinch-api-templates-create --default-language=en-US --text="Hello ${name}, your order ${order_id} is ready."
+/sinch-api-templates-create -l en-US -t "Hi ${customer_name}!" -v name,customer_name -d "Welcome template"
 ```
 
 ## API Reference

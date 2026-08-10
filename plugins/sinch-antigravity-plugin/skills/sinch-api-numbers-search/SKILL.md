@@ -17,13 +17,13 @@ Search for available phone numbers to rent from the Sinch Numbers API (by region
 - `--page-size` / `-n`: Results per page - optional, default 10
 - `--format` / `-f`: Output format (table or json) - optional
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. If {{args}} empty: ask for region, optional type and capability. Otherwise parse.
+0. If $ARGUMENTS empty: ask for region, optional type and capability. Otherwise parse.
 
 1. Validate: --region (e.g. US, GB), optional type, capability, page-size. Get CONVERSATION_* or NUMBERS_* env vars. Numbers API: https://numbers.api.sinch.com/v1. If missing, report "Sinch API is not configured."
 
@@ -36,8 +36,8 @@ Arguments: {{args}}
 ## Examples
 
 ```
-/sinch:api:numbers:search --region=US --type=LOCAL --capability=SMS
-/sinch:api:numbers:search -r US -c SMS,VOICE -n 20
+/sinch-api-numbers-search --region=US --type=LOCAL --capability=SMS
+/sinch-api-numbers-search -r US -c SMS,VOICE -n 20
 ```
 
 ## API Reference

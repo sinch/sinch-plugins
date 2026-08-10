@@ -15,13 +15,13 @@ Send a fax to a recipient using the Sinch Fax API. Document must be available at
 - `--content-url` / `-u`: Public URL of the document to fax (e.g. PDF) - required
 - `--callback-url` / `-c`: Optional webhook URL for status callbacks
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. If {{args}} empty: ask for recipient fax number and document URL. Otherwise parse.
+0. If $ARGUMENTS empty: ask for recipient fax number and document URL. Otherwise parse.
 
 1. Validate: --to (non-empty), --content-url (valid HTTPS URL). Get CONVERSATION_PROJECT_ID, CONVERSATION_KEY_ID, CONVERSATION_KEY_SECRET (or FAX_* equivalents). Fax API uses OAuth2. Base: https://fax.api.sinch.com/v3. If missing, report "Sinch API is not configured."
 
@@ -34,8 +34,8 @@ Arguments: {{args}}
 ## Examples
 
 ```
-/sinch:api:fax:send --to=+14155551234 --content-url=https://example.com/document.pdf
-/sinch:api:fax:send -t +14155551234 -u https://example.com/doc.pdf
+/sinch-api-fax-send --to=+14155551234 --content-url=https://example.com/document.pdf
+/sinch-api-fax-send -t +14155551234 -u https://example.com/doc.pdf
 ```
 
 ## API Reference

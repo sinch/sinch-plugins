@@ -14,13 +14,13 @@ Start a phone number verification using the Sinch Verification API. Supports SMS
 - `--to` / `-t`: Phone number to verify (E.164) - required
 - `--method` / `-m`: Verification method: sms, flashcall, or callout - required (default sms)
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. If {{args}} empty: ask for phone number and method (sms, flashcall, callout). Otherwise parse.
+0. If $ARGUMENTS empty: ask for phone number and method (sms, flashcall, callout). Otherwise parse.
 
 1. Validate: --to (E.164), --method (sms | flashcall | callout). Normalize method to lowercase.
 
@@ -37,8 +37,8 @@ Arguments: {{args}}
 ## Examples
 
 ```
-/sinch:api:verification:start --to=+14155551234 --method=sms
-/sinch:api:verification:start -t +14155551234 -m callout
+/sinch-api-verification-start --to=+14155551234 --method=sms
+/sinch-api-verification-start -t +14155551234 -m callout
 ```
 
 ## API Reference

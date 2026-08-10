@@ -17,13 +17,13 @@ Send a location (latitude, longitude, optional label) to a recipient via the Sin
 - `--label` / `-l`: Optional label for the location (e.g. "Store downtown")
 - `--channel` / `-c`: Channel (RCS, WHATSAPP) - optional
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. If {{args}} empty: ask for recipient, latitude, longitude, and optional label. Otherwise parse.
+0. If $ARGUMENTS empty: ask for recipient, latitude, longitude, and optional label. Otherwise parse.
 
 1. Validate: --to (E.164), --lat (valid number -90 to 90), --lon (valid number -180 to 180). Optional: --label, --channel.
 
@@ -42,8 +42,8 @@ Arguments: {{args}}
 ## Examples
 
 ```
-/sinch:api:messages:send-location --to=+14155551234 --lat=37.7749 --lon=-122.4194
-/sinch:api:messages:send-location -t +14155551234 -y 55.61 -x 13.00 --label="Sinch HQ"
+/sinch-api-messages-send-location --to=+14155551234 --lat=37.7749 --lon=-122.4194
+/sinch-api-messages-send-location -t +14155551234 -y 55.61 -x 13.00 --label="Sinch HQ"
 ```
 
 ## API Reference

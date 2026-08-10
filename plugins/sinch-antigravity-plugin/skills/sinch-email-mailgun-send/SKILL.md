@@ -18,13 +18,13 @@ Send a transactional email using the Mailgun Email API. Uses HTTP Basic Auth (ap
 - `--html` / `-H`: HTML body - optional
 - `--domain` / `-d`: Sending domain (must be verified in Mailgun) - required, or use MAILGUN_DOMAIN env
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. If {{args}} empty: ask for from, to, subject, and text or html body. Otherwise parse.
+0. If $ARGUMENTS empty: ask for from, to, subject, and text or html body. Otherwise parse.
 
 1. Validate: --from, --to, --subject; at least one of --text or --html. --domain or MAILGUN_DOMAIN. Get MAILGUN_API_KEY and MAILGUN_DOMAIN from env. Use MAILGUN_REGION (us or eu) for base URL: api.mailgun.net (US) or api.eu.mailgun.net (EU). If missing, report "Mailgun is not configured. Set MAILGUN_API_KEY, MAILGUN_DOMAIN, and optionally MAILGUN_REGION."
 
@@ -37,8 +37,8 @@ Arguments: {{args}}
 ## Examples
 
 ```
-/sinch:email:mailgun:send --from="Sender <sender@mydomain.com>" --to=recipient@example.com --subject="Hello" --text="Hello from Mailgun"
-/sinch:email:mailgun:send -f "Me <me@mydomain.com>" -t user@example.com -s "Test" --html="<p>Hi</p>"
+/sinch-email-mailgun-send --from="Sender <sender@mydomain.com>" --to=recipient@example.com --subject="Hello" --text="Hello from Mailgun"
+/sinch-email-mailgun-send -f "Me <me@mydomain.com>" -t user@example.com -s "Test" --html="<p>Hi</p>"
 ```
 
 ## API Reference

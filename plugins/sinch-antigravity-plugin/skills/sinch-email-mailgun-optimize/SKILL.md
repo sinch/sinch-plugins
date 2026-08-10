@@ -15,13 +15,13 @@ Check email deliverability, blocklist status, and domain health using Mailgun Op
 - `--domain` / `-d`: Domain to check (for blocklist/health) - optional
 - `--format` / `-f`: Output format (table or json) - optional
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. If {{args}} empty: ask what to do (list monitored domains, check blocklist, check domain health). Otherwise parse.
+0. If $ARGUMENTS empty: ask what to do (list monitored domains, check blocklist, check domain health). Otherwise parse.
 
 1. Validate: --action, optional --domain. Get MAILGUN_API_KEY. Base: api.mailgun.net. If missing, report "Mailgun is not configured."
 
@@ -34,9 +34,9 @@ Arguments: {{args}}
 ## Examples
 
 ```
-/sinch:email:mailgun:optimize
-/sinch:email:mailgun:optimize --action=list-domains
-/sinch:email:mailgun:optimize --action=check-blocklist --domain=mydomain.com
+/sinch-email-mailgun-optimize
+/sinch-email-mailgun-optimize --action=list-domains
+/sinch-email-mailgun-optimize --action=check-blocklist --domain=mydomain.com
 ```
 
 ## API Reference

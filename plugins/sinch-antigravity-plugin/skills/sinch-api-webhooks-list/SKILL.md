@@ -13,18 +13,18 @@ List all webhooks configured for your Sinch Conversation app. Webhooks allow you
 
 - `--format` / `-f`: Output format (json or table) - optional, defaults to table
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. Check if {{args}} is empty or only contains the command name:
+0. Check if $ARGUMENTS is empty or only contains the command name:
    - If empty or no meaningful arguments provided, use default format (table)
    - If user specifies a format preference, use that
    - Proceed to step 1
 
-1. Parse and validate arguments from {{args}} or use defaults:
+1. Parse and validate arguments from $ARGUMENTS or use defaults:
    - If `--format` is not provided, default to "table"
    - Validate that format is either "json" or "table"
    - Normalize format to lowercase
@@ -59,17 +59,17 @@ Arguments: {{args}}
 
 List webhooks in table format:
 ```
-/sinch:api:webhooks:list
+/sinch-api-webhooks-list
 ```
 
 List webhooks in JSON format:
 ```
-/sinch:api:webhooks:list --format=json
+/sinch-api-webhooks-list --format=json
 ```
 
 Using short flag:
 ```
-/sinch:api:webhooks:list -f json
+/sinch-api-webhooks-list -f json
 ```
 
 ## API Reference

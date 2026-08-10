@@ -17,13 +17,13 @@ List or create 10DLC campaigns for a brand using the Sinch 10DLC API. Campaigns 
 - `--use-case` / `-u`: Use case (e.g. MARKETING, CUSTOMER_CARE) - optional for create
 - `--format` / `-f`: Output format (table or json) - optional
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. If {{args}} empty: ask for action (list/create), and if create: brand ID, campaign name, use case. Otherwise parse.
+0. If $ARGUMENTS empty: ask for action (list/create), and if create: brand ID, campaign name, use case. Otherwise parse.
 
 1. Validate: --action, for create require --brand-id and --campaign-name. Get CONVERSATION_* env vars. If missing, report "Sinch API is not configured."
 
@@ -34,8 +34,8 @@ Arguments: {{args}}
 ## Examples
 
 ```
-/sinch:api:10dlc:campaigns
-/sinch:api:10dlc:campaigns --action=create --brand-id=BXXXX --campaign-name="Support" --use-case=CUSTOMER_CARE
+/sinch-api-10dlc-campaigns
+/sinch-api-10dlc-campaigns --action=create --brand-id=BXXXX --campaign-name="Support" --use-case=CUSTOMER_CARE
 ```
 
 ## API Reference

@@ -14,13 +14,13 @@ List faxes for your project using the Sinch Fax API. Supports pagination. Uses O
 - `--format` / `-f`: Output format (table or json) - optional, default table
 - `--page-size` / `-n`: Number of results - optional
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. If {{args}} empty: use defaults (table format). Otherwise parse.
+0. If $ARGUMENTS empty: use defaults (table format). Otherwise parse.
 
 1. Get CONVERSATION_* or FAX_* env vars. GET https://fax.api.sinch.com/v3/projects/{projectId}/faxes with OAuth2. If missing, report "Sinch API is not configured."
 
@@ -31,8 +31,8 @@ Arguments: {{args}}
 ## Examples
 
 ```
-/sinch:api:fax:list
-/sinch:api:fax:list --format=json
+/sinch-api-fax-list
+/sinch-api-fax-list --format=json
 ```
 
 ## API Reference

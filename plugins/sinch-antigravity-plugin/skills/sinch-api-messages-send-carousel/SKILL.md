@@ -14,13 +14,13 @@ Send a carousel of multiple rich cards to a recipient via the Sinch Conversation
 - `--to` / `-t`: Recipient phone number (E.164) - required
 - `--cards` / `-c`: JSON array of card objects, or path to JSON file. Each card: title, description (optional), image_url (optional), choices (optional array of {text, postback_data})
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. If {{args}} empty: ask for recipient and cards (e.g. "Enter cards as JSON array or describe each card: title, description, image URL"). Otherwise parse.
+0. If $ARGUMENTS empty: ask for recipient and cards (e.g. "Enter cards as JSON array or describe each card: title, description, image URL"). Otherwise parse.
 
 1. Validate: --to (E.164), --cards (valid array of at least one card with title). Parse JSON or structured input into cards array.
 
@@ -39,7 +39,7 @@ Arguments: {{args}}
 ## Examples
 
 ```
-/sinch:api:messages:send-carousel --to=+14155551234 --cards='[{"title":"Card 1","description":"First","image_url":"https://example.com/1.jpg"},{"title":"Card 2","description":"Second"}]'
+/sinch-api-messages-send-carousel --to=+14155551234 --cards='[{"title":"Card 1","description":"First","image_url":"https://example.com/1.jpg"},{"title":"Card 2","description":"Second"}]'
 ```
 
 ## API Reference

@@ -16,13 +16,13 @@ Send a message with suggested actions (buttons or quick replies) to a recipient 
 - `--choices` / `-c`: Comma-separated list of choice labels (e.g., "Yes,No,Maybe") - required
 - `--channel` / `-C`: Channel (RCS, WHATSAPP, SMS) - optional, default RCS for best support
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. If {{args}} empty: ask for recipient, message text, and choice labels (comma-separated). Otherwise parse.
+0. If $ARGUMENTS empty: ask for recipient, message text, and choice labels (comma-separated). Otherwise parse.
 
 1. Validate: --to (E.164), --message (non-empty), --choices (at least one, comma-separated). --channel optional, default RCS.
 
@@ -41,8 +41,8 @@ Arguments: {{args}}
 ## Examples
 
 ```
-/sinch:api:messages:send-choice --to=+14155551234 --message="How can we help?" --choices="Sales,Support,Feedback"
-/sinch:api:messages:send-choice -t +14155551234 -m "Confirm order?" -c "Yes,No"
+/sinch-api-messages-send-choice --to=+14155551234 --message="How can we help?" --choices="Sales,Support,Feedback"
+/sinch-api-messages-send-choice -t +14155551234 -m "Confirm order?" -c "Yes,No"
 ```
 
 ## API Reference

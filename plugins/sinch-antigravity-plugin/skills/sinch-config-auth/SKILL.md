@@ -5,7 +5,7 @@ description: Show Sinch API authentication setup guide for all products
 
 # Sinch Authentication Setup
 
-Display a concise authentication guide for Sinch APIs used by this extension. Do NOT generate script files. Output the guide directly.
+Display a concise authentication guide for Sinch APIs used by this plugin. Do NOT generate script files. Output the guide directly.
 
 ## Instructions
 
@@ -24,9 +24,17 @@ Display a concise authentication guide for Sinch APIs used by this extension. Do
 3. **Getting an OAuth2 token (for REST)**
    - POST https://auth.sinch.com/oauth2/token with grant_type=client_credentials, Basic Auth KEY_ID:KEY_SECRET. Use returned access_token as Bearer (valid ~1 hour).
 
-4. **Extension settings**
-   - Configure via: gemini extensions settings set sinch-gemini-extension CONVERSATION_PROJECT_ID
-   - List current: gemini extensions settings list sinch-gemini-extension
+4. **Plugin credentials (Antigravity)**
+   - Antigravity plugins do not prompt for credentials at install time. Export environment variables in your shell before starting `agy`:
+     ```bash
+     export CONVERSATION_PROJECT_ID="your-project-id"
+     export CONVERSATION_KEY_ID="your-key-id"
+     export CONVERSATION_KEY_SECRET="your-key-secret"
+     export CONVERSATION_REGION="us"   # us | eu | br
+     export CONVERSATION_APP_ID="your-app-id"
+     ```
+   - Optional product credentials: VOICE_APPLICATION_KEY, VOICE_APPLICATION_SECRET; VERIFICATION_APPLICATION_KEY, VERIFICATION_APPLICATION_SECRET; MAILGUN_API_KEY, MAILGUN_DOMAIN, MAILGUN_REGION; MJ_APIKEY_PUBLIC, MJ_APIKEY_PRIVATE.
+   - The bundled mcp_config.json passes ${CONVERSATION_*} through to the Build MCP. Restart `agy` after changing env vars.
 
 5. **Links**
    - Dashboard: https://dashboard.sinch.com

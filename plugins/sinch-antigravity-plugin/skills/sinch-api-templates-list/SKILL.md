@@ -13,13 +13,13 @@ List all omni-channel message templates for your project using the Sinch Templat
 
 - `--format` / `-f`: Output format (table or json) - optional, default table
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. If {{args}} empty: use default format (table). Otherwise parse --format.
+0. If $ARGUMENTS empty: use default format (table). Otherwise parse --format.
 
 1. Validate: --format (table|json). Get CONVERSATION_* env vars. Template API base: https://{region}.template.api.sinch.com (us, eu, br). If missing, report "Sinch API is not configured."
 
@@ -32,8 +32,8 @@ Arguments: {{args}}
 ## Examples
 
 ```
-/sinch:api:templates:list
-/sinch:api:templates:list --format=json
+/sinch-api-templates-list
+/sinch-api-templates-list --format=json
 ```
 
 ## API Reference

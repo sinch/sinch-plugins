@@ -16,13 +16,13 @@ Update an existing webhook's configuration including target URL, triggers, or se
 - `--triggers` / `-T`: New comma-separated list of triggers (optional)
 - `--secret` / `-s`: New secret token (optional)
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. Check if {{args}} is empty or only contains the command name:
+0. Check if $ARGUMENTS is empty or only contains the command name:
    - If empty or no meaningful arguments provided, enter interactive mode:
      * Ask: "🆔 What is the webhook ID you want to update?"
      * Ask: "What would you like to update? (target/triggers/secret/multiple)"
@@ -30,7 +30,7 @@ Arguments: {{args}}
      * Use the provided answers as the arguments for the following steps
    - If arguments are provided, proceed directly to step 1
 
-1. Parse and validate arguments from {{args}} or interactive input:
+1. Parse and validate arguments from $ARGUMENTS or interactive input:
    - Validate that `--id` is provided and non-empty
    - At least one of `--target`, `--triggers`, or `--secret` must be provided
    - If `--target` is provided, validate it's a valid HTTPS URL
@@ -69,17 +69,17 @@ Arguments: {{args}}
 
 Update webhook target URL:
 ```
-/sinch:api:webhooks:update --id=01E9WEBHOOK123 --target=https://newurl.com/webhook
+/sinch-api-webhooks-update --id=01E9WEBHOOK123 --target=https://newurl.com/webhook
 ```
 
 Update webhook triggers:
 ```
-/sinch:api:webhooks:update -i 01E9WEBHOOK123 -T MESSAGE_DELIVERY,MESSAGE_INBOUND,CONVERSATION_START
+/sinch-api-webhooks-update -i 01E9WEBHOOK123 -T MESSAGE_DELIVERY,MESSAGE_INBOUND,CONVERSATION_START
 ```
 
 Update multiple fields:
 ```
-/sinch:api:webhooks:update --id=01E9WEBHOOK123 --target=https://newurl.com/webhook --secret=new-secret
+/sinch-api-webhooks-update --id=01E9WEBHOOK123 --target=https://newurl.com/webhook --secret=new-secret
 ```
 
 ## API Reference

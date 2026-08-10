@@ -16,13 +16,13 @@ Get the status of a specific batch job or list batches matching metadata using t
 - `--metadata-value` / `-v`: Metadata value filter when listing - optional
 - `--format` / `-f`: Output format (table or json) - optional, default table
 
-Arguments: {{args}}
+Arguments: $ARGUMENTS
 
 ## Instructions
 
 **Execute these steps directly - do not write code or scripts:**
 
-0. If {{args}} empty: ask "Do you have a batch ID to check, or list recent batches?" and get batch-id or list preference. Otherwise parse.
+0. If $ARGUMENTS empty: ask "Do you have a batch ID to check, or list recent batches?" and get batch-id or list preference. Otherwise parse.
 
 1. Validate: optional --batch-id, --metadata-key, --metadata-value, --format (table|json).
 
@@ -39,9 +39,9 @@ Arguments: {{args}}
 ## Examples
 
 ```
-/sinch:api:batch:status --batch-id=BATCH_ID
-/sinch:api:batch:status
-/sinch:api:batch:status --metadata-key=campaign --metadata-value=welcome --format=json
+/sinch-api-batch-status --batch-id=BATCH_ID
+/sinch-api-batch-status
+/sinch-api-batch-status --metadata-key=campaign --metadata-value=welcome --format=json
 ```
 
 ## API Reference
