@@ -316,7 +316,72 @@ gemini extensions enable sinch
 gemini extensions uninstall sinch
 ```
 
-For detailed documentation, see [plugins/sinch-gemini-extension/.gemini-extension/README.md](plugins/sinch-gemini-extension/.gemini-extension/README.md).
+For detailed documentation, see [plugins/sinch-gemini-extension/README.md](plugins/sinch-gemini-extension/README.md).
+
+## Antigravity CLI
+
+An Antigravity CLI plugin that integrates the Sinch Conversation API and related products. This is the native Antigravity successor to the Gemini CLI extension above; both remain available.
+
+### Prerequisites
+
+- [Antigravity CLI](https://antigravity.google/docs/cli/install) (`agy`) installed and authenticated with Google.
+- A [Sinch Customer Dashboard](https://dashboard.sinch.com/) account.
+- Conversation API credentials (Project ID, Key ID, Key Secret, App ID, Region).
+
+### Installation
+
+```bash
+# From a local checkout
+agy plugin install ./plugins/sinch-antigravity-plugin
+
+# Or from the monorepo (installs every plugin under plugins/)
+agy plugin install https://github.com/sinch/sinch-plugins
+```
+
+Validate first:
+
+```bash
+agy plugin validate ./plugins/sinch-antigravity-plugin
+```
+
+If you already use the Gemini extension:
+
+```bash
+agy plugin import gemini
+```
+
+### Configuration
+
+Antigravity does **not** prompt for credentials at install time. The Docs MCP (`sinch-docs`) needs none; for the Build MCP (`sinch`), export environment variables before starting `agy`:
+
+```bash
+export CONVERSATION_PROJECT_ID="your-project-id"
+export CONVERSATION_KEY_ID="your-key-id"
+export CONVERSATION_KEY_SECRET="your-key-secret"
+export CONVERSATION_REGION="us"
+export CONVERSATION_APP_ID="your-app-id"
+```
+
+Antigravity uses `serverUrl` for remote MCP servers, not Gemini's `httpUrl` or Cursor's `url`.
+
+### Usage
+
+```bash
+agy
+```
+
+Examples:
+
+```
+/sinch-help
+/sinch-api-messages-send --to=+15551234567 --message="Hello from Antigravity"
+/sinch-api-webhooks-list
+/sinch-api-senders-list
+```
+
+Antigravity has no runtime command primitive, so the Gemini CLI slash commands were migrated to skills under `skills/<name>/SKILL.md` (for example `skills/sinch-api-messages-send/`). Antigravity registers each skill as a slash command of the same name.
+
+For full details, see [plugins/sinch-antigravity-plugin/README.md](plugins/sinch-antigravity-plugin/README.md).
 
 ## License
 

@@ -1,0 +1,5 @@
+{
+  "$schema": "https://antigravity.google/schemas/v1/plugin.json",
+  "name": "sinch-antigravity-plugin",
+  "description": "Antigravity CLI plugin for Sinch: Conversation API (SMS, RCS, WhatsApp), Voice, Verification, Fax, Numbers, 10DLC, Email (Mailgun, Mailjet), and more"
+}

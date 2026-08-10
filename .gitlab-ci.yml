@@ -329,7 +329,7 @@ sync_to_github:
       SUBMOD_PATH="vendor/sinch-skills"
       if [ -d "$SUBMOD_PATH/.git" ] || [ -f "$SUBMOD_PATH/.git" ]; then
         echo "Dereferencing submodule and symlinks for GitHub push..."
-        for PLUGIN_DIR in plugins/sinch-claude-plugin plugins/sinch-gemini-extension plugins/sinch-cursor-plugin; do
+        for PLUGIN_DIR in plugins/sinch-claude-plugin plugins/sinch-gemini-extension plugins/sinch-cursor-plugin plugins/sinch-antigravity-plugin; do
           SKILLS_PATH="$PLUGIN_DIR/skills"
           if [ -d "$SKILLS_PATH" ]; then
             cp -rL "$SKILLS_PATH" /tmp/skills-resolved-$(basename "$PLUGIN_DIR")
@@ -493,6 +493,21 @@ build_artifacts:
         echo "Creating archive: $ARCHIVE_NAME"
         (cd "$CURSOR_DIR" && tar -chzf "../../$ARCHIVE_NAME" .)
       done
+
+    # Build Antigravity plugin archives (platform-specific tar.gz files)
+    # plugin.json has no version field (Antigravity schema); skip version sync
+    - AGY_DIR="plugins/sinch-antigravity-plugin"
+    - |
+      echo "Building Antigravity plugin archives: $AGY_DIR"
+      if [ ! -d "$AGY_DIR" ]; then
+        echo "ERROR: Antigravity plugin directory not found: $AGY_DIR";
+        exit 1;
+      fi
+      for platform in darwin linux win32; do
+        ARCHIVE_NAME="dist/${platform}.sinch-antigravity-plugin.tar.gz"
+        echo "Creating archive: $ARCHIVE_NAME"
+        (cd "$AGY_DIR" && tar -chzf "../../$ARCHIVE_NAME" .)
+      done
     # Write artifacts.env in script (not after_script) so dotenv artifact is collected
     - |
       {
@@ -579,7 +594,7 @@ gitlab_release:
   release:
     tag_name: $TAG_NAME
     name: "Release v${NEW_VERSION}"
-    description: "Sinch Plugins v${NEW_VERSION} - includes sinch-claude-plugin skills, sinch-gemini-extension, and sinch-cursor-plugin"
+    description: "Sinch Plugins v${NEW_VERSION} - includes sinch-claude-plugin skills, sinch-gemini-extension, sinch-cursor-plugin, and sinch-antigravity-plugin"
     assets:
       links:
         - name: "sinch-agent-skills-${NEW_VERSION}.zip"
@@ -596,6 +611,12 @@ gitlab_release:
           url: "$CI_PROJECT_URL/-/jobs/$ARTIFACTS_JOB_ID/artifacts/raw/dist/linux.sinch-cursor-plugin.tar.gz"
         - name: "win32.sinch-cursor-plugin.tar.gz"
           url: "$CI_PROJECT_URL/-/jobs/$ARTIFACTS_JOB_ID/artifacts/raw/dist/win32.sinch-cursor-plugin.tar.gz"
+        - name: "darwin.sinch-antigravity-plugin.tar.gz"
+          url: "$CI_PROJECT_URL/-/jobs/$ARTIFACTS_JOB_ID/artifacts/raw/dist/darwin.sinch-antigravity-plugin.tar.gz"
+        - name: "linux.sinch-antigravity-plugin.tar.gz"
+          url: "$CI_PROJECT_URL/-/jobs/$ARTIFACTS_JOB_ID/artifacts/raw/dist/linux.sinch-antigravity-plugin.tar.gz"
+        - name: "win32.sinch-antigravity-plugin.tar.gz"
+          url: "$CI_PROJECT_URL/-/jobs/$ARTIFACTS_JOB_ID/artifacts/raw/dist/win32.sinch-antigravity-plugin.tar.gz"
   allow_failure: true
 
 github_release_prepare:
@@ -657,7 +678,7 @@ github_release_prepare:
 
       if [ -z "$release_id" ] || [ "$release_id" = "null" ]; then
         echo "Creating GitHub release for tag $TAG_NAME"
-        RELEASE_BODY=$(printf "Sinch Plugins v%s\n\nIncludes:\n- sinch-agent-skills (Claude Code plugin skills)\n- sinch-gemini-extension (Gemini CLI extension)\n- sinch-cursor-plugin (Cursor IDE plugin)" "$NEW_VERSION")
+        RELEASE_BODY=$(printf "Sinch Plugins v%s\n\nIncludes:\n- sinch-agent-skills (Claude Code plugin skills)\n- sinch-gemini-extension (Gemini CLI extension)\n- sinch-cursor-plugin (Cursor IDE plugin)\n- sinch-antigravity-plugin (Antigravity CLI plugin)" "$NEW_VERSION")
         payload=$(jq -n \
           --arg tag "$TAG_NAME" \
           --arg name "Sinch Plugins v${NEW_VERSION}" \
@@ -709,8 +730,8 @@ github_upload_versioned_asset:
       AUTH_HEADER="Authorization: Bearer ${GITHUB_PAT_2}"
       ACCEPT_HEADER="Accept: application/vnd.github+json"
 
-      # Upload skills zip, platform-specific Gemini extension archives, and Cursor plugin archives
-      for ASSET_FILE in "dist/sinch-agent-skills-${NEW_VERSION}.zip" "dist/darwin.sinch-gemini-extension.tar.gz" "dist/linux.sinch-gemini-extension.tar.gz" "dist/win32.sinch-gemini-extension.tar.gz" "dist/darwin.sinch-cursor-plugin.tar.gz" "dist/linux.sinch-cursor-plugin.tar.gz" "dist/win32.sinch-cursor-plugin.tar.gz"; do
+      # Upload skills zip, Gemini extension, Cursor plugin, and Antigravity plugin archives
+      for ASSET_FILE in "dist/sinch-agent-skills-${NEW_VERSION}.zip" "dist/darwin.sinch-gemini-extension.tar.gz" "dist/linux.sinch-gemini-extension.tar.gz" "dist/win32.sinch-gemini-extension.tar.gz" "dist/darwin.sinch-cursor-plugin.tar.gz" "dist/linux.sinch-cursor-plugin.tar.gz" "dist/win32.sinch-cursor-plugin.tar.gz" "dist/darwin.sinch-antigravity-plugin.tar.gz" "dist/linux.sinch-antigravity-plugin.tar.gz" "dist/win32.sinch-antigravity-plugin.tar.gz"; do
         if [ ! -f "$ASSET_FILE" ]; then
           echo "ERROR: Expected artifact not found: $ASSET_FILE";
           ls -la dist || true;
