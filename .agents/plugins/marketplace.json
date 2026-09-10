@@ -1,0 +1,20 @@
+{
+  "name": "sinch",
+  "interface": {
+    "displayName": "Sinch Plugins"
+  },
+  "plugins": [
+    {
+      "name": "sinch-codex-plugin",
+      "source": {
+        "source": "local",
+        "path": "./plugins/sinch-codex-plugin"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_USE"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}
