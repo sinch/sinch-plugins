@@ -1,0 +1,34 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "sinch-codex-plugin",
+  "version": "0.3.10",
+  "description": "Sinch Build skills and developer documentation for Codex: Conversation API (SMS, RCS, WhatsApp), Voice, Verification, Numbers, 10DLC, Fax, and Email",
+  "author": {
+    "name": "Sinch",
+    "email": "ecosystems@sinch.com",
+    "url": "https://github.com/sinch"
+  },
+  "homepage": "https://sinch.com/",
+  "repository": "https://github.com/sinch/sinch-plugins",
+  "license": "Apache-2.0",
+  "keywords": ["sinch", "messaging", "sms", "rcs", "voice", "verification", "email", "docs", "mcp"],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Sinch Build",
+        "shortDescription": "Search Sinch developer documentation and build with Sinch APIs.",
+        "longDescription": "Bundles the Sinch Build skills catalog with the hosted Sinch Build Docs MCP server. Codex can retrieve authoritative Sinch developer documentation and follow product guides for Conversation API (SMS, RCS, WhatsApp), Voice, Verification, Numbers, Number Lookup, 10DLC, Elastic SIP Trunking, Fax, Mailgun, Provisioning, and Authentication. Read-only, and no Sinch credentials are required.",
+        "developerName": "Sinch",
+        "category": "Developer Tools",
+        "capabilities": ["Read"],
+        "websiteURL": "https://developers.sinch.com/?utm_source=Codex&utm_medium=sinch_codex_plugin",
+        "termsOfServiceURL": "https://sinch.com/legal/terms-and-conditions/other-sinch-terms-conditions/terms-of-service/",
+        "defaultPrompt": [
+          "Use Sinch Build to show me how to send an RCS message with SMS fallback.",
+          "Use Sinch Build to explain what I need to register a 10DLC brand and campaign.",
+          "Use Sinch Build to look up how Verification API flashcall verification works."
+        ]
+      }
+    }
+  }
+}
