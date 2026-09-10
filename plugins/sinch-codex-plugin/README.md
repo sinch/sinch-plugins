@@ -45,7 +45,7 @@ Restart Codex after adding the marketplace so the plugin appears.
 
 ## MCP servers
 
-This plugin ships only the Sinch Docs MCP. It does **not** include the credentialed Sinch Build MCP (`npx @sinch/mcp`).
+This plugin ships only the Sinch Docs MCP. It does **not** include the credentialed Sinch Build MCP used by the other IDE plugins.
 
 | Server | Key | Transport | Purpose |
 |--------|-----|-----------|---------|
