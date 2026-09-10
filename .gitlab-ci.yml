@@ -122,6 +122,8 @@ version-bump:
         PLUGIN_NAME="sinch-claude-plugin"
         GEMINI_FILE="plugins/sinch-gemini-extension/gemini-extension.json"
         CURSOR_FILE="plugins/sinch-cursor-plugin/.cursor-plugin/plugin.json"
+        CODEX_FILE="plugins/sinch-codex-plugin/plugin.json"
+        CODEX_COMPAT_FILE="plugins/sinch-codex-plugin/.codex-plugin/plugin.json"
 
         # Ensure we can read from default branch even if this is a web pipeline.
         git fetch --prune --tags origin "$CI_DEFAULT_BRANCH" || true
@@ -130,10 +132,14 @@ version-bump:
         DEFAULT_MARKETPLACE_JSON="$(git show "origin/$CI_DEFAULT_BRANCH:$MARKETPLACE_FILE" 2>/dev/null || cat "$MARKETPLACE_FILE")"
         DEFAULT_GEMINI_JSON="$(git show "origin/$CI_DEFAULT_BRANCH:$GEMINI_FILE" 2>/dev/null || cat "$GEMINI_FILE")"
         DEFAULT_CURSOR_JSON="$(git show "origin/$CI_DEFAULT_BRANCH:$CURSOR_FILE" 2>/dev/null || cat "$CURSOR_FILE")"
+        DEFAULT_CODEX_JSON="$(git show "origin/$CI_DEFAULT_BRANCH:$CODEX_FILE" 2>/dev/null || cat "$CODEX_FILE")"
+        DEFAULT_CODEX_COMPAT_JSON="$(git show "origin/$CI_DEFAULT_BRANCH:$CODEX_COMPAT_FILE" 2>/dev/null || cat "$CODEX_COMPAT_FILE")"
 
         DEFAULT_PLUGIN_VERSION="$(echo "$DEFAULT_PLUGIN_JSON" | jq -r .version)"
         DEFAULT_GEMINI_VERSION="$(echo "$DEFAULT_GEMINI_JSON" | jq -r .version)"
         DEFAULT_CURSOR_VERSION="$(echo "$DEFAULT_CURSOR_JSON" | jq -r .version)"
+        DEFAULT_CODEX_VERSION="$(echo "$DEFAULT_CODEX_JSON" | jq -r .version)"
+        DEFAULT_CODEX_COMPAT_VERSION="$(echo "$DEFAULT_CODEX_COMPAT_JSON" | jq -r .version)"
 
         MATCH_COUNT="$(echo "$DEFAULT_MARKETPLACE_JSON" | jq -r --arg name "$PLUGIN_NAME" '[.plugins[] | select(.name == $name)] | length')"
         if [ "$MATCH_COUNT" != "1" ]; then
@@ -156,6 +162,16 @@ version-bump:
         # Validate Cursor version matches Claude version
         if [ "$DEFAULT_PLUGIN_VERSION" != "$DEFAULT_CURSOR_VERSION" ]; then
           echo "ERROR: version drift on default branch: plugin.json ($DEFAULT_PLUGIN_VERSION) != cursor-plugin.json ($DEFAULT_CURSOR_VERSION)."
+          exit 1
+        fi
+
+        if [ "$DEFAULT_PLUGIN_VERSION" != "$DEFAULT_CODEX_VERSION" ]; then
+          echo "ERROR: version drift on default branch: plugin.json ($DEFAULT_PLUGIN_VERSION) != codex plugin.json ($DEFAULT_CODEX_VERSION)."
+          exit 1
+        fi
+
+        if [ "$DEFAULT_PLUGIN_VERSION" != "$DEFAULT_CODEX_COMPAT_VERSION" ]; then
+          echo "ERROR: version drift on default branch: plugin.json ($DEFAULT_PLUGIN_VERSION) != .codex-plugin/plugin.json ($DEFAULT_CODEX_COMPAT_VERSION)."
           exit 1
         fi
 
@@ -196,6 +212,8 @@ version-bump:
     - PLUGIN_NAME="sinch-claude-plugin"
     - GEMINI_FILE="plugins/sinch-gemini-extension/gemini-extension.json"
     - CURSOR_FILE="plugins/sinch-cursor-plugin/.cursor-plugin/plugin.json"
+    - CODEX_FILE="plugins/sinch-codex-plugin/plugin.json"
+    - CODEX_COMPAT_FILE="plugins/sinch-codex-plugin/.codex-plugin/plugin.json"
     - CURRENT_VERSION=$(jq -r .version $PLUGIN_FILE)
     - echo "Current version $CURRENT_VERSION"
 
@@ -230,6 +248,22 @@ version-bump:
       echo "Cursor plugin version: $CURSOR_VERSION (synchronized)"
 
     - |
+      CODEX_VERSION=$(jq -r .version "$CODEX_FILE")
+      if [ "$CODEX_VERSION" != "$CURRENT_VERSION" ]; then
+        echo "ERROR: version drift: plugin.json ($CURRENT_VERSION) != codex plugin.json ($CODEX_VERSION)."
+        exit 1
+      fi
+      echo "Codex plugin version: $CODEX_VERSION (synchronized)"
+
+    - |
+      CODEX_COMPAT_VERSION=$(jq -r .version "$CODEX_COMPAT_FILE")
+      if [ "$CODEX_COMPAT_VERSION" != "$CURRENT_VERSION" ]; then
+        echo "ERROR: version drift: plugin.json ($CURRENT_VERSION) != .codex-plugin/plugin.json ($CODEX_COMPAT_VERSION)."
+        exit 1
+      fi
+      echo "Codex compatibility plugin version: $CODEX_COMPAT_VERSION (synchronized)"
+
+    - |
       major=$(echo "$CURRENT_VERSION" | cut -d. -f1)
       minor=$(echo "$CURRENT_VERSION" | cut -d. -f2)
       patch=$(echo "$CURRENT_VERSION" | cut -d. -f3)
@@ -259,8 +293,10 @@ version-bump:
 
     # Update Cursor plugin version
     - jq --indent 2 --arg v "$NEW_VERSION" '.version = $v' $CURSOR_FILE > tmp.cursor.json && mv tmp.cursor.json $CURSOR_FILE
+    - jq --indent 2 --arg v "$NEW_VERSION" '.version = $v' $CODEX_FILE > tmp.codex.json && mv tmp.codex.json $CODEX_FILE
+    - jq --indent 2 --arg v "$NEW_VERSION" '.version = $v' $CODEX_COMPAT_FILE > tmp.codex-compat.json && mv tmp.codex-compat.json $CODEX_COMPAT_FILE
 
-    - git add $PLUGIN_FILE $MARKETPLACE_FILE $GEMINI_FILE $CURSOR_FILE
+    - git add $PLUGIN_FILE $MARKETPLACE_FILE $GEMINI_FILE $CURSOR_FILE $CODEX_FILE $CODEX_COMPAT_FILE
     - |
       git commit -m "ci(release): ${NEW_VERSION} [skip ci]"
 
@@ -329,7 +365,7 @@ sync_to_github:
       SUBMOD_PATH="vendor/sinch-skills"
       if [ -d "$SUBMOD_PATH/.git" ] || [ -f "$SUBMOD_PATH/.git" ]; then
         echo "Dereferencing submodule and symlinks for GitHub push..."
-        for PLUGIN_DIR in plugins/sinch-claude-plugin plugins/sinch-gemini-extension plugins/sinch-cursor-plugin plugins/sinch-antigravity-plugin; do
+        for PLUGIN_DIR in plugins/sinch-claude-plugin plugins/sinch-gemini-extension plugins/sinch-cursor-plugin plugins/sinch-antigravity-plugin plugins/sinch-codex-plugin; do
           SKILLS_PATH="$PLUGIN_DIR/skills"
           if [ -d "$SKILLS_PATH" ]; then
             cp -rL "$SKILLS_PATH" /tmp/skills-resolved-$(basename "$PLUGIN_DIR")
@@ -508,6 +544,40 @@ build_artifacts:
         echo "Creating archive: $ARCHIVE_NAME"
         (cd "$AGY_DIR" && tar -chzf "../../$ARCHIVE_NAME" .)
       done
+    - CODEX_DIR="plugins/sinch-codex-plugin"
+    - |
+      echo "Building Codex plugin archives: $CODEX_DIR"
+      if [ ! -d "$CODEX_DIR" ]; then
+        echo "ERROR: Codex plugin directory not found: $CODEX_DIR";
+        exit 1;
+      fi
+      CODEX_PLUGIN_FILE="$CODEX_DIR/plugin.json"
+      CODEX_COMPAT_FILE="$CODEX_DIR/.codex-plugin/plugin.json"
+      CODEX_VERSION=$(jq -r .version "$CODEX_PLUGIN_FILE")
+      CODEX_COMPAT_VERSION=$(jq -r .version "$CODEX_COMPAT_FILE")
+      if [ -n "${NEW_VERSION:-}" ] && [ "$CODEX_VERSION" != "$NEW_VERSION" ]; then
+        if [ "${VERSION_BUMP_TYPE:-}" != "none" ]; then
+          echo "WARNING: codex plugin.json version ($CODEX_VERSION) != NEW_VERSION ($NEW_VERSION); updating for packaging."
+          jq --indent 2 --arg v "$NEW_VERSION" '.version = $v' "$CODEX_PLUGIN_FILE" > tmp.codex.json && mv tmp.codex.json "$CODEX_PLUGIN_FILE"
+        else
+          echo "ERROR: codex plugin.json version ($CODEX_VERSION) != NEW_VERSION ($NEW_VERSION)."
+          exit 1
+        fi
+      fi
+      if [ -n "${NEW_VERSION:-}" ] && [ "$CODEX_COMPAT_VERSION" != "$NEW_VERSION" ]; then
+        if [ "${VERSION_BUMP_TYPE:-}" != "none" ]; then
+          echo "WARNING: .codex-plugin/plugin.json version ($CODEX_COMPAT_VERSION) != NEW_VERSION ($NEW_VERSION); updating for packaging."
+          jq --indent 2 --arg v "$NEW_VERSION" '.version = $v' "$CODEX_COMPAT_FILE" > tmp.codex-compat.json && mv tmp.codex-compat.json "$CODEX_COMPAT_FILE"
+        else
+          echo "ERROR: .codex-plugin/plugin.json version ($CODEX_COMPAT_VERSION) != NEW_VERSION ($NEW_VERSION)."
+          exit 1
+        fi
+      fi
+      for platform in darwin linux win32; do
+        ARCHIVE_NAME="dist/${platform}.sinch-codex-plugin.tar.gz"
+        echo "Creating archive: $ARCHIVE_NAME"
+        (cd "$CODEX_DIR" && tar -chzf "../../$ARCHIVE_NAME" .)
+      done
     # Write artifacts.env in script (not after_script) so dotenv artifact is collected
     - |
       {
@@ -594,7 +664,7 @@ gitlab_release:
   release:
     tag_name: $TAG_NAME
     name: "Release v${NEW_VERSION}"
-    description: "Sinch Plugins v${NEW_VERSION} - includes sinch-claude-plugin skills, sinch-gemini-extension, sinch-cursor-plugin, and sinch-antigravity-plugin"
+    description: "Sinch Plugins v${NEW_VERSION} - includes sinch-claude-plugin skills, sinch-gemini-extension, sinch-cursor-plugin, sinch-antigravity-plugin, and sinch-codex-plugin"
     assets:
       links:
         - name: "sinch-agent-skills-${NEW_VERSION}.zip"
@@ -617,6 +687,12 @@ gitlab_release:
           url: "$CI_PROJECT_URL/-/jobs/$ARTIFACTS_JOB_ID/artifacts/raw/dist/linux.sinch-antigravity-plugin.tar.gz"
         - name: "win32.sinch-antigravity-plugin.tar.gz"
           url: "$CI_PROJECT_URL/-/jobs/$ARTIFACTS_JOB_ID/artifacts/raw/dist/win32.sinch-antigravity-plugin.tar.gz"
+        - name: "darwin.sinch-codex-plugin.tar.gz"
+          url: "$CI_PROJECT_URL/-/jobs/$ARTIFACTS_JOB_ID/artifacts/raw/dist/darwin.sinch-codex-plugin.tar.gz"
+        - name: "linux.sinch-codex-plugin.tar.gz"
+          url: "$CI_PROJECT_URL/-/jobs/$ARTIFACTS_JOB_ID/artifacts/raw/dist/linux.sinch-codex-plugin.tar.gz"
+        - name: "win32.sinch-codex-plugin.tar.gz"
+          url: "$CI_PROJECT_URL/-/jobs/$ARTIFACTS_JOB_ID/artifacts/raw/dist/win32.sinch-codex-plugin.tar.gz"
   allow_failure: true
 
 github_release_prepare:
@@ -678,7 +754,7 @@ github_release_prepare:
 
       if [ -z "$release_id" ] || [ "$release_id" = "null" ]; then
         echo "Creating GitHub release for tag $TAG_NAME"
-        RELEASE_BODY=$(printf "Sinch Plugins v%s\n\nIncludes:\n- sinch-agent-skills (Claude Code plugin skills)\n- sinch-gemini-extension (Gemini CLI extension)\n- sinch-cursor-plugin (Cursor IDE plugin)\n- sinch-antigravity-plugin (Antigravity CLI plugin)" "$NEW_VERSION")
+        RELEASE_BODY=$(printf "Sinch Plugins v%s\n\nIncludes:\n- sinch-agent-skills (Claude Code plugin skills)\n- sinch-gemini-extension (Gemini CLI extension)\n- sinch-cursor-plugin (Cursor IDE plugin)\n- sinch-antigravity-plugin (Antigravity CLI plugin)\n- sinch-codex-plugin (OpenAI Codex plugin)" "$NEW_VERSION")
         payload=$(jq -n \
           --arg tag "$TAG_NAME" \
           --arg name "Sinch Plugins v${NEW_VERSION}" \
@@ -731,7 +807,7 @@ github_upload_versioned_asset:
       ACCEPT_HEADER="Accept: application/vnd.github+json"
 
       # Upload skills zip, Gemini extension, Cursor plugin, and Antigravity plugin archives
-      for ASSET_FILE in "dist/sinch-agent-skills-${NEW_VERSION}.zip" "dist/darwin.sinch-gemini-extension.tar.gz" "dist/linux.sinch-gemini-extension.tar.gz" "dist/win32.sinch-gemini-extension.tar.gz" "dist/darwin.sinch-cursor-plugin.tar.gz" "dist/linux.sinch-cursor-plugin.tar.gz" "dist/win32.sinch-cursor-plugin.tar.gz" "dist/darwin.sinch-antigravity-plugin.tar.gz" "dist/linux.sinch-antigravity-plugin.tar.gz" "dist/win32.sinch-antigravity-plugin.tar.gz"; do
+      for ASSET_FILE in "dist/sinch-agent-skills-${NEW_VERSION}.zip" "dist/darwin.sinch-gemini-extension.tar.gz" "dist/linux.sinch-gemini-extension.tar.gz" "dist/win32.sinch-gemini-extension.tar.gz" "dist/darwin.sinch-cursor-plugin.tar.gz" "dist/linux.sinch-cursor-plugin.tar.gz" "dist/win32.sinch-cursor-plugin.tar.gz" "dist/darwin.sinch-antigravity-plugin.tar.gz" "dist/linux.sinch-antigravity-plugin.tar.gz" "dist/win32.sinch-antigravity-plugin.tar.gz" "dist/darwin.sinch-codex-plugin.tar.gz" "dist/linux.sinch-codex-plugin.tar.gz" "dist/win32.sinch-codex-plugin.tar.gz"; do
         if [ ! -f "$ASSET_FILE" ]; then
           echo "ERROR: Expected artifact not found: $ASSET_FILE";
           ls -la dist || true;
