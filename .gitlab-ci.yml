@@ -54,19 +54,23 @@ stages:
 # Common rules for release jobs:
 # - web + bump: Normal release flow with version bump ("Run Pipeline")
 # - web + bump_type=none: Support republish flow - re-syncs existing version
-# - trigger: automated release kicked off by sinch-skills CI when skills/
-#   content changes (PD-384). spec:inputs take their defaults under the
-#   trigger source, so VERSION_BUMP_TYPE is "patch" there.
+# - trigger/pipeline: automated release kicked off by sinch-skills CI when
+#   skills/ content changes (PD-384) - "trigger" is the trigger-token API used
+#   today, "pipeline" is the trigger: keyword form should that ever be used.
+#   spec:inputs take their defaults under both, so VERSION_BUMP_TYPE is
+#   "patch" there.
 .release_rules:
   rules:
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "web"
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "trigger"
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "pipeline"
 
 # Rules for jobs that run on manual web triggers and pipeline triggers
 .all_triggers_rules:
   rules:
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "web"
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "trigger"
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "pipeline"
 
 # Common Git configuration
 .git_config:
@@ -169,7 +173,9 @@ skills-release-gate:
 
       SKIP_RELEASE=false
       if [ -n "$CURRENT_SKILLS_TREE" ] && [ -n "$LAST_RELEASED_TREE" ] && [ "$CURRENT_SKILLS_TREE" = "$LAST_RELEASED_TREE" ]; then
-        if [ "$CI_PIPELINE_SOURCE" = "trigger" ]; then
+        # Automated sources only ("trigger" = trigger-token API, "pipeline" =
+        # trigger: keyword); a manual web run is never skipped, only warned.
+        if [ "$CI_PIPELINE_SOURCE" = "trigger" ] || [ "$CI_PIPELINE_SOURCE" = "pipeline" ]; then
           echo "No skills/ change since the last release - this triggered pipeline will be skipped (zero side effects)."
           SKIP_RELEASE=true
         else
