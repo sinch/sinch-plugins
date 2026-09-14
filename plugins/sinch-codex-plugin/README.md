@@ -9,7 +9,7 @@ This plugin is read-only. Codex can retrieve authoritative Sinch developer docum
 ## What's included
 
 - **Sinch Build Docs MCP** (`sinch-docs`) at `https://developers.sinch.com/mcp` for documentation search. No credentials required.
-- **15 product skills** from the Sinch Build catalog (Conversation API, Voice, Verification, Numbers, Number Lookup, 10DLC, Elastic SIP Trunking, Fax, In-app calling, Mailgun, Provisioning, Authentication).
+- **16 product skills** from the Sinch Build catalog (Conversation API, Voice, Verification, Numbers, Number Lookup, 10DLC, Elastic SIP Trunking, Fax, In-app calling, Mailgun, Provisioning, SDKs, Authentication).
 - **`sinch-help`** for an overview of the bundled guides.
 
 ## Prerequisites
@@ -80,30 +80,31 @@ Ask Codex for `/sinch-help` (or invoke the `sinch-help` skill) for the full list
 
 ### Messaging and communication
 
-- **conversation-api** - Omnichannel messaging across SMS, WhatsApp, RCS, MMS, Viber, and Messenger
-- **in-app-calling** - In-app voice and video SDK for Android, iOS, and JavaScript
-- **voice-api** - Calls, text-to-speech, IVR menus, DTMF input, and conferencing
-- **verification-api** - SMS, flashcall, phone call, data, and WhatsApp verification
-- **fax** - Send and receive faxes programmatically
+- **sinch-conversation-api** - Omnichannel messaging across SMS, WhatsApp, RCS, MMS, Viber, and Messenger
+- **sinch-in-app-calling** - In-app voice and video SDK for Android, iOS, and JavaScript
+- **sinch-voice-api** - Calls, text-to-speech, IVR menus, DTMF input, and conferencing
+- **sinch-verification-api** - SMS, flashcall, phone call, data, and WhatsApp verification
+- **sinch-fax-api** - Send and receive faxes programmatically
 
 ### Phone numbers and provisioning
 
-- **numbers** - Search, rent, manage, and release numbers
-- **number-lookup** - Carrier, line type, porting status, and SIM swap checks
-- **10dlc** - US 10DLC brand and campaign registration
-- **elastic-sip-trunking** - SIP trunks, endpoints, ACLs, and credential lists
-- **provisioning-api** - WhatsApp and RCS sender provisioning
+- **sinch-numbers-api** - Search, rent, manage, and release numbers
+- **sinch-number-lookup-api** - Carrier, line type, porting status, and SIM swap checks
+- **sinch-10dlc** - US 10DLC brand and campaign registration
+- **sinch-elastic-sip-trunking** - SIP trunks, endpoints, ACLs, and credential lists
+- **sinch-provisioning-api** - WhatsApp and RCS sender provisioning
 
 ### Email
 
-- **mailgun** - Send, receive, and track email
-- **mailgun-validate** - Email verification and list hygiene
-- **mailgun-inspect** - Pre-send email quality and accessibility checks
-- **mailgun-optimize** - Inbox placement and deliverability monitoring
+- **sinch-mailgun** - Send, receive, and track email
+- **sinch-mailgun-validate** - Email verification and list hygiene
+- **sinch-mailgun-inspect** - Pre-send email quality and accessibility checks
+- **sinch-mailgun-optimize** - Inbox placement and deliverability monitoring
 
-### Authentication and help
+### SDKs, authentication, and help
 
-- **authentication** - OAuth2, Basic auth, application signing, and API keys
+- **sinch-sdks** - SDK installation and client initialization for Node.js, Python, Java, and .NET
+- **sinch-authentication** - OAuth2, Basic auth, application signing, and API keys
 - **sinch-help** - Overview of the product guides and documentation search
 
 ## Plugin structure
@@ -117,10 +118,12 @@ sinch-codex-plugin/
 ├── README.md
 └── skills/
     ├── sinch-help/SKILL.md
-    └── conversation-api/       # 15 product skill copies from vendor/sinch-skills
+    └── sinch-conversation-api/  # 16 product skill copies from vendor/sinch-skills
 ```
 
-Codex skips any `SKILL.md` that resolves outside the plugin root, so these product skills are real copies rather than symlinks. After updating `vendor/sinch-skills`, run `scripts/sync-codex-skills.sh` (or `scripts/sync-codex-skills.sh --check` to detect drift).
+Codex skips any `SKILL.md` that resolves outside the plugin root, so these product skills are real copies rather than symlinks. Their directory names match the vendor names so that cross-skill links such as `../sinch-authentication/SKILL.md` resolve inside the plugin.
+
+After updating `vendor/sinch-skills`, run `scripts/sync-codex-skills.sh`. Use `scripts/sync-codex-skills.sh --check` to verify the copies are current and that every relative link resolves.
 
 ## Troubleshooting
 

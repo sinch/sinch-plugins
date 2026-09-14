@@ -3,91 +3,125 @@ set -eu
 
 ROOT=$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)
 VENDOR="$ROOT/vendor/sinch-skills/skills"
-DEST="$ROOT/plugins/sinch-codex-plugin/skills"
 PLUGIN_ROOT="$ROOT/plugins/sinch-codex-plugin"
+DEST="$PLUGIN_ROOT/skills"
 CHECK=0
 
 if [ "${1:-}" = "--check" ]; then
   CHECK=1
 fi
 
-PAIRS="
-10dlc:sinch-10dlc
-authentication:sinch-authentication
-conversation-api:sinch-conversation-api
-elastic-sip-trunking:sinch-elastic-sip-trunking
-fax:sinch-fax-api
-in-app-calling:sinch-in-app-calling
-mailgun:sinch-mailgun
-mailgun-inspect:sinch-mailgun-inspect
-mailgun-optimize:sinch-mailgun-optimize
-mailgun-validate:sinch-mailgun-validate
-number-lookup:sinch-number-lookup-api
-numbers:sinch-numbers-api
-provisioning-api:sinch-provisioning-api
-verification-api:sinch-verification-api
-voice-api:sinch-voice-api
+# Directory names match the vendor names so that cross-skill links such as
+# ../sinch-authentication/SKILL.md resolve inside the plugin root.
+SKILLS="
+sinch-10dlc
+sinch-authentication
+sinch-conversation-api
+sinch-elastic-sip-trunking
+sinch-fax-api
+sinch-in-app-calling
+sinch-mailgun
+sinch-mailgun-inspect
+sinch-mailgun-optimize
+sinch-mailgun-validate
+sinch-number-lookup-api
+sinch-numbers-api
+sinch-provisioning-api
+sinch-sdks
+sinch-verification-api
+sinch-voice-api
 "
 
-skill_physical_dir() {
-  (CDPATH= cd -- "$1" && pwd -P)
+# Authored in this repository rather than copied from vendor.
+LOCAL_SKILLS="sinch-help"
+
+ERRORS=$(mktemp)
+trap 'rm -f "$ERRORS"' EXIT
+
+is_known_skill() {
+  for known in $SKILLS $LOCAL_SKILLS; do
+    if [ "$1" = "$known" ]; then
+      return 0
+    fi
+  done
+  return 1
 }
 
-failed=0
-for pair in $PAIRS; do
-  dest_name=${pair%%:*}
-  vendor_name=${pair#*:}
-  src="$VENDOR/$vendor_name"
-  out="$DEST/$dest_name"
+if [ "$CHECK" -eq 0 ]; then
+  mkdir -p "$DEST"
 
-  if [ ! -d "$src" ]; then
-    echo "ERROR: vendor skill missing: $src"
-    failed=1
-    continue
-  fi
+  for existing in "$DEST"/*; do
+    [ -e "$existing" ] || [ -L "$existing" ] || continue
+    name=$(basename "$existing")
+    if ! is_known_skill "$name"; then
+      rm -rf "$existing"
+    fi
+  done
 
-  if [ "$CHECK" -eq 1 ]; then
-    if [ -L "$out" ]; then
-      echo "ERROR: $out is a symlink; Codex requires a real copy inside the plugin root"
-      failed=1
+  for skill in $SKILLS; do
+    if [ ! -d "$VENDOR/$skill" ]; then
+      echo "ERROR: vendor skill missing: $VENDOR/$skill" >> "$ERRORS"
       continue
     fi
-    if [ ! -d "$out" ] || [ ! -f "$out/SKILL.md" ]; then
-      echo "ERROR: Codex skill copy missing: $out/SKILL.md"
-      failed=1
-      continue
-    fi
-    physical=$(skill_physical_dir "$out")
-    case "$physical" in
-      "$PLUGIN_ROOT" | "$PLUGIN_ROOT"/*) ;;
-      *)
-        echo "ERROR: $out resolves outside the plugin root: $physical"
-        failed=1
-        continue
-        ;;
-    esac
-    if ! diff -rq "$src" "$out" >/dev/null; then
-      echo "ERROR: $out is out of date with $src"
-      failed=1
-    fi
-    continue
-  fi
+    rm -rf "$DEST/$skill"
+    cp -R "$VENDOR/$skill" "$DEST/$skill"
+  done
 
-  rm -rf "$out"
-  cp -R "$src" "$out"
-done
-
-if [ "$CHECK" -eq 1 ]; then
-  if [ "$failed" -ne 0 ]; then
-    echo "Codex skill copies are missing or stale. Run: scripts/sync-codex-skills.sh"
+  if [ -s "$ERRORS" ]; then
+    cat "$ERRORS"
     exit 1
   fi
-  echo "Codex skill copies match vendor/sinch-skills and resolve inside the plugin root"
-  exit 0
+  echo "Copied $(echo "$SKILLS" | grep -c .) product skills into $DEST"
 fi
 
-if [ "$failed" -ne 0 ]; then
+for skill in $SKILLS; do
+  out="$DEST/$skill"
+
+  if [ -L "$out" ]; then
+    echo "ERROR: $out is a symlink; Codex requires a real copy inside the plugin root" >> "$ERRORS"
+    continue
+  fi
+  if [ ! -f "$out/SKILL.md" ]; then
+    echo "ERROR: Codex skill copy missing: $out/SKILL.md" >> "$ERRORS"
+    continue
+  fi
+  if ! diff -rq "$VENDOR/$skill" "$out" >/dev/null 2>&1; then
+    echo "ERROR: $out is out of date with $VENDOR/$skill" >> "$ERRORS"
+  fi
+
+  declared=$(sed -n '1,10p' "$out/SKILL.md" | grep -m1 '^name:' | sed 's/^name:[[:space:]]*//' || true)
+  if [ -n "$declared" ] && [ "$declared" != "$skill" ]; then
+    echo "ERROR: $out/SKILL.md declares name '$declared' but lives in '$skill'" >> "$ERRORS"
+  fi
+done
+
+# Every relative markdown link must resolve to a file inside the skills tree.
+for md in $(find "$DEST" -name '*.md'); do
+  dir=$(dirname "$md")
+  for link in $(grep -oE '\]\([^)[:space:]]+\)' "$md" 2>/dev/null | sed 's/^](//; s/)$//' || true); do
+    case "$link" in
+      http://* | https://* | mailto:* | /* | \#*) continue ;;
+    esac
+    path=${link%%\#*}
+    [ -n "$path" ] || continue
+    target="$dir/$path"
+    if [ ! -e "$target" ]; then
+      echo "ERROR: ${md#"$ROOT"/} links to missing path: $path" >> "$ERRORS"
+      continue
+    fi
+    physical=$(CDPATH= cd -- "$(dirname "$target")" 2>/dev/null && pwd -P) || physical=""
+    case "$physical" in
+      "$DEST" | "$DEST"/*) ;;
+      *) echo "ERROR: ${md#"$ROOT"/} links outside the skills tree: $link" >> "$ERRORS" ;;
+    esac
+  done
+done
+
+if [ -s "$ERRORS" ]; then
+  sort -u "$ERRORS"
+  echo
+  echo "Codex skills are stale or contain unresolvable links. Run: scripts/sync-codex-skills.sh"
   exit 1
 fi
 
-echo "Copied product skills into $DEST"
+echo "Codex skills match vendor/sinch-skills; names and relative links resolve inside the plugin root"
