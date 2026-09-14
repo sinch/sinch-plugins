@@ -4,14 +4,14 @@ This repository contains Sinch plugins and related artifacts for AI developer to
 
 ## MCP Servers
 
-Each plugin ships two MCP servers:
+Claude Code, Cursor, Gemini CLI, and Antigravity each ship two MCP servers. The Codex plugin ships only the Docs MCP.
 
 | Server | Key | Transport | Purpose |
 |---|---|---|---|
 | **Sinch Build MCP** | `sinch` | stdio (`npx -y @sinch/mcp`) | Call Sinch Conversation API tools (send messages, manage webhooks, list senders). Requires credentials. |
 | **Sinch Docs MCP** | `sinch-docs` | remote HTTP (`https://developers.sinch.com/mcp`) | Search and read Sinch developer documentation. No credentials required. |
 
-Config field names differ by client: Cursor uses `url`, Claude Code uses `type` + `url`, Gemini CLI uses `httpUrl`.
+Config field names differ by client: Cursor uses `url`, Claude Code uses `type` + `url`, Gemini CLI uses `httpUrl`, Antigravity uses `serverUrl`. Codex uses `type` + `url` in the compatibility `.mcp.json`, and `"type": "streamable-http"` plus `url` in the portable `mcp.json`.
 
 ## Claude Code
 
@@ -393,6 +393,39 @@ Examples:
 Antigravity has no runtime command primitive, so the Gemini CLI slash commands were migrated to skills under `skills/<name>/SKILL.md` (for example `skills/sinch-api-messages-send/`). Antigravity registers each skill as a slash command of the same name.
 
 For full details, see [plugins/sinch-antigravity-plugin/README.md](plugins/sinch-antigravity-plugin/README.md).
+
+## OpenAI Codex
+
+A Codex plugin that bundles the Sinch Build skills catalog with the hosted, no-auth Sinch Docs MCP. It is read-only: Codex can search Sinch developer documentation and follow product guides. It does not include the credentialed Build MCP, and no Sinch credentials are required.
+
+### Installation
+
+```bash
+codex plugin marketplace add sinch/sinch-plugins
+```
+
+From a local checkout of this repository:
+
+```bash
+codex plugin marketplace add .
+```
+
+Then install `sinch-codex-plugin` from the Sinch marketplace in Codex.
+
+### Configuration
+
+No credentials or environment variables are required. After install, the Docs MCP (`sinch-docs` at `https://developers.sinch.com/mcp`) is available without further setup.
+
+### Usage
+
+Ask Codex in natural language, for example:
+
+```
+Use Sinch Build to show me how to send an RCS message with SMS fallback.
+Use Sinch Build to explain what I need to register a 10DLC brand and campaign.
+```
+
+For full details, see [plugins/sinch-codex-plugin/README.md](plugins/sinch-codex-plugin/README.md).
 
 ## License
 

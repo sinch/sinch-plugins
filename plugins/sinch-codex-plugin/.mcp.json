@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "sinch-docs": {
+      "type": "http",
+      "url": "https://developers.sinch.com/mcp"
+    }
+  }
+}

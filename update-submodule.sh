@@ -5,6 +5,7 @@ echo "Updating sinch-skills submodule to latest version..."
 
 # Initialize and update the submodule to the latest remote commit
 git submodule update --init --remote vendor/sinch-skills
+./scripts/sync-codex-skills.sh
 
 # Show the new submodule status
 echo ""
