@@ -51,17 +51,26 @@ stages:
 # Reusable Templates & Anchors
 # ================================
 
-# Common rules for release jobs (manual trigger only via "Run Pipeline"):
-# - web + bump: Normal release flow with version bump
+# Common rules for release jobs:
+# - web + bump: Normal release flow with version bump ("Run Pipeline")
 # - web + bump_type=none: Support republish flow - re-syncs existing version
+# - trigger/pipeline: automated release kicked off by sinch-skills CI when
+#   skills/ content changes (PD-384) - "trigger" is the trigger-token API used
+#   today, "pipeline" is the trigger: keyword form should that ever be used.
+#   spec:inputs take their defaults under both, so VERSION_BUMP_TYPE is
+#   "patch" there.
 .release_rules:
   rules:
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "web"
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "trigger"
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "pipeline"
 
-# Rules for jobs that run on manual web triggers
+# Rules for jobs that run on manual web triggers and pipeline triggers
 .all_triggers_rules:
   rules:
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "web"
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "trigger"
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "pipeline"
 
 # Common Git configuration
 .git_config:
@@ -79,6 +88,26 @@ stages:
       - api_failure
       - runner_system_failure
       - unknown_failure
+
+# Release-skip guard (PD-384). skills-release-gate decides whether a triggered
+# pipeline has anything to release; version-bump re-exports SKIP_RELEASE in
+# release.env, which every downstream job already consumes via needs. Each job
+# runs this guard first so a skipped pipeline has zero side effects (no bump
+# commit, no tag, no release, no GitHub push).
+.skip_release_guard: &skip_release_guard |
+  if [ "${SKIP_RELEASE:-false}" = "true" ]; then
+    echo "SKIP_RELEASE=true - no skills/ change since the last release (triggered pipeline). Nothing to do."
+    exit 0
+  fi
+
+# Variant for jobs using the release: keyword - the release step still runs
+# after a successful script, so exit non-zero (job is allow_failure) to keep
+# the release-cli from creating anything.
+.skip_release_guard_for_release_keyword: &skip_release_guard_for_release_keyword |
+  if [ "${SKIP_RELEASE:-false}" = "true" ]; then
+    echo "SKIP_RELEASE=true - exiting 42 so the release: keyword does not run (job is allow_failure)."
+    exit 42
+  fi
 
 # GitHub URL parsing script (reusable anchor)
 .parse_github_url_script: &parse_github_url_script |
@@ -98,12 +127,110 @@ stages:
   fi
 
 # ================================
+# Stage 0 - Skills release gate (PD-384)
+# ================================
+# Answers: "has skills/ content on sinch-skills main changed since our last
+# release?". The release pipeline always packages skills from sinch-skills
+# origin/main (the submodule pin is not advanced at release time), so the
+# comparison baseline is a state file committed with each release by
+# version-bump: SKILLS_STATE_FILE holds the git tree hash of skills/ on
+# sinch-skills main at the moment of the release.
+#   - unchanged + $CI_PIPELINE_SOURCE == "trigger" -> SKIP_RELEASE=true and the
+#     whole pipeline is side-effect free (guards in every job).
+#   - unchanged + web -> warning only; manual behavior is unchanged.
+#   - missing state file (first run) or unreadable skills repo -> fail open
+#     (release proceeds) with a loud warning, so a broken token can never
+#     block a manual release.
+skills-release-gate:
+  stage: pre-release
+  # node:22 (glibc): the content lint below needs node, matching the image
+  # choice of sinch-skills' own MR validation. node images ship git.
+  image: node:22
+  timeout: 10 minutes
+  extends:
+    - .retry_config
+    - .all_triggers_rules
+  script:
+    - |
+      SKILLS_STATE_FILE=".last-released-skills-tree"
+      SKILLS_REPO_URL="https://gitlab.com/sinch/sinch-projects/enterprise-and-messaging/documentation/developer-experience/sinch-skills.git"
+
+      # Fail-open vs fail-closed boundary (deliberate):
+      #   - Infrastructure problems (clone fails, lint script absent) -> loud
+      #     WARNING, release proceeds. A broken token or repo layout change
+      #     must never block a manual release.
+      #   - Content problems (lint of skills/ actually fails) -> hard exit 1,
+      #     the whole release pipeline stops, for web and trigger sources
+      #     alike. We never publish skills content that fails lint - this
+      #     also guards the bypass where someone pushes to sinch-skills main
+      #     without going through its MR validation.
+      CURRENT_SKILLS_TREE=""
+      if [ -n "${SKILLS_REPO_TOKEN:-}" ]; then
+        echo "machine gitlab.com login oauth2 password ${SKILLS_REPO_TOKEN}" > ~/.netrc && chmod 600 ~/.netrc
+      fi
+      rm -rf /tmp/skills-src
+      # Plain shallow clone (not bare/blobless): the tree hash works the same
+      # and the working tree is needed to lint the real files.
+      if git clone --depth 1 --branch main "$SKILLS_REPO_URL" /tmp/skills-src 2>/dev/null; then
+        CURRENT_SKILLS_TREE="$(git -C /tmp/skills-src rev-parse HEAD:skills)"
+        echo "sinch-skills main skills/ tree: $CURRENT_SKILLS_TREE"
+      else
+        echo "WARNING: could not read sinch-skills repo (SKILLS_REPO_TOKEN missing/invalid?). Failing open: release will proceed."
+      fi
+
+      git fetch --prune origin "$CI_DEFAULT_BRANCH"
+      LAST_RELEASED_TREE="$(git show "origin/$CI_DEFAULT_BRANCH:$SKILLS_STATE_FILE" 2>/dev/null | tr -d '[:space:]' || true)"
+      echo "skills/ tree at last release: ${LAST_RELEASED_TREE:-<none recorded>}"
+
+      SKIP_RELEASE=false
+      if [ -n "$CURRENT_SKILLS_TREE" ] && [ -n "$LAST_RELEASED_TREE" ] && [ "$CURRENT_SKILLS_TREE" = "$LAST_RELEASED_TREE" ]; then
+        # Automated sources only ("trigger" = trigger-token API, "pipeline" =
+        # trigger: keyword); a manual web run is never skipped, only warned.
+        if [ "$CI_PIPELINE_SOURCE" = "trigger" ] || [ "$CI_PIPELINE_SOURCE" = "pipeline" ]; then
+          echo "No skills/ change since the last release - this triggered pipeline will be skipped (zero side effects)."
+          SKIP_RELEASE=true
+        else
+          echo "WARNING: no skills/ change since the last release; continuing anyway because this is a manual ($CI_PIPELINE_SOURCE) pipeline."
+        fi
+      fi
+
+      # Content lint of what would be released (fail-closed). Runs sinch-skills'
+      # own frontmatter linter against its main working tree. Only worth doing
+      # when this pipeline would actually release (SKIP_RELEASE=false) and the
+      # clone succeeded. tessl tile lint is deliberately NOT run here: npx has
+      # to download the tessl platform binary each run (minutes, network), and
+      # the frontmatter rules are the failure mode that has actually bitten us.
+      if [ "$SKIP_RELEASE" = "false" ] && [ -d /tmp/skills-src ]; then
+        if [ -f /tmp/skills-src/scripts/lint-skills.mjs ]; then
+          echo "Linting sinch-skills main content before release..."
+          if ! (cd /tmp/skills-src && npm install --no-save --silent yaml@2.9.0 && node scripts/lint-skills.mjs); then
+            echo "ERROR: sinch-skills main content fails lint - refusing to release it."
+            echo "Fix the offending SKILL.md on sinch-skills main (files listed above), then re-run."
+            exit 1
+          fi
+        else
+          echo "WARNING: scripts/lint-skills.mjs not found in sinch-skills main. Failing open: release will proceed unlinted."
+        fi
+      fi
+
+      {
+        echo "SKIP_RELEASE=${SKIP_RELEASE}"
+        echo "CURRENT_SKILLS_TREE=${CURRENT_SKILLS_TREE}"
+      } > gate.env
+  artifacts:
+    reports:
+      dotenv: gate.env
+
+# ================================
 # Stage 1 - Bump Version
 # ================================
 version-bump:
   stage: pre-release
   image: alpine:latest
   timeout: 10 minutes
+  needs:
+    - job: skills-release-gate
+      artifacts: true
   before_script:
     - apk add --no-cache git jq
     - |
@@ -111,6 +238,15 @@ version-bump:
       git config --global user.email "${GITLAB_USER_EMAIL:-ci@sinch.com}"
       git config --global user.name "${GITLAB_USER_NAME:-CI Release Bot}"
   script:
+    # PD-384: a skipped (triggered, no skills/ change) pipeline must stay
+    # side-effect free, but downstream jobs still need the dotenv artifact,
+    # so re-export SKIP_RELEASE before exiting.
+    - |
+      if [ "${SKIP_RELEASE:-false}" = "true" ]; then
+        echo "SKIP_RELEASE=true - no skills/ change since the last release (triggered pipeline). Skipping version bump."
+        echo "SKIP_RELEASE=true" > release.env
+        exit 0
+      fi
     - BUMP_TYPE="$VERSION_BUMP_TYPE"
     - echo "Bump type is $BUMP_TYPE"
     - |
@@ -195,6 +331,7 @@ version-bump:
         {
           echo "NEW_VERSION=${NEW_VERSION}";
           echo "TAG_NAME=${TAG_NAME}";
+          echo "SKIP_RELEASE=false";
           if [ -n "$RELEASE_COMMIT_SHA" ]; then echo "RELEASE_COMMIT_SHA=${RELEASE_COMMIT_SHA}"; fi
         } > release.env
         exit 0
@@ -296,6 +433,17 @@ version-bump:
     - jq --indent 2 --arg v "$NEW_VERSION" '.version = $v' $CODEX_FILE > tmp.codex.json && mv tmp.codex.json $CODEX_FILE
     - jq --indent 2 --arg v "$NEW_VERSION" '.version = $v' $CODEX_COMPAT_FILE > tmp.codex-compat.json && mv tmp.codex-compat.json $CODEX_COMPAT_FILE
 
+    # PD-384: record which skills/ content this release ships, so the
+    # skills-release-gate can tell future triggered pipelines apart.
+    - |
+      SKILLS_STATE_FILE=".last-released-skills-tree"
+      if [ -n "${CURRENT_SKILLS_TREE:-}" ]; then
+        echo "$CURRENT_SKILLS_TREE" > "$SKILLS_STATE_FILE"
+        git add "$SKILLS_STATE_FILE"
+        echo "Recorded released skills/ tree: $CURRENT_SKILLS_TREE"
+      else
+        echo "WARNING: CURRENT_SKILLS_TREE unavailable; leaving $SKILLS_STATE_FILE untouched."
+      fi
     - git add $PLUGIN_FILE $MARKETPLACE_FILE $GEMINI_FILE $CURSOR_FILE $CODEX_FILE $CODEX_COMPAT_FILE
     - |
       git commit -m "ci(release): ${NEW_VERSION} [skip ci]"
@@ -306,6 +454,7 @@ version-bump:
         echo "NEW_VERSION=${NEW_VERSION}";
         echo "TAG_NAME=${TAG_NAME}";
         echo "RELEASE_COMMIT_SHA=${RELEASE_COMMIT_SHA}";
+        echo "SKIP_RELEASE=false";
       } > release.env
 
       git push origin HEAD:$CI_COMMIT_REF_NAME
@@ -334,6 +483,7 @@ sync_to_github:
     - .retry_config
     - .release_rules
   script:
+    - *skip_release_guard
     # 1. create a fresh clone to avoid messing up the runner's cache or current workspace
     - git clone $CI_REPOSITORY_URL repo_to_sync
     - cd repo_to_sync
@@ -412,6 +562,7 @@ build_artifacts:
     - git config --global url."https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/".insteadOf "git@gitlab.com:"
     - git config --global url."https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/".insteadOf "https://gitlab.com/"
   script:
+    - *skip_release_guard
     - git fetch --prune --tags origin "$CI_DEFAULT_BRANCH"
 
     # For republish (VERSION_BUMP_TYPE=none), build from the tag commit if the tag exists.
@@ -611,6 +762,7 @@ gitlab_tag:
     - apk add --no-cache git
     - !reference [.git_config, before_script]
   script:
+    - *skip_release_guard
     - |
       if [ -z "${TAG_NAME:-}" ] || [ -z "${NEW_VERSION:-}" ]; then
         echo "ERROR: TAG_NAME/NEW_VERSION missing. Did version-bump export release.env?";
@@ -664,6 +816,7 @@ gitlab_release:
     - .retry_config
     - .release_rules
   script:
+    - *skip_release_guard_for_release_keyword
     - echo "Creating GitLab release for $TAG_NAME"
   release:
     tag_name: $TAG_NAME
@@ -718,6 +871,7 @@ github_release_prepare:
     - apk add --no-cache git curl jq
     - !reference [.git_config, before_script]
   script:
+    - *skip_release_guard
     - |
       if [ -z "${TAG_NAME:-}" ] || [ -z "${NEW_VERSION:-}" ]; then
         echo "ERROR: TAG_NAME/NEW_VERSION missing. Did version-bump export release.env?";
@@ -805,6 +959,7 @@ github_upload_versioned_asset:
   before_script:
     - apk add --no-cache curl jq
   script:
+    - *skip_release_guard
     - |
       API="https://api.github.com/repos/${GITHUB_REPO_PATH}"
       AUTH_HEADER="Authorization: Bearer ${GITHUB_PAT_2}"

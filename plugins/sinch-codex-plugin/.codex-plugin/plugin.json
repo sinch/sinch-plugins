@@ -1,6 +1,6 @@
 {
   "name": "sinch-codex-plugin",
-  "version": "0.3.10",
+  "version": "0.3.11",
   "description": "Sinch Build skills and developer documentation for Codex: Conversation API (SMS, RCS, WhatsApp), Voice, Verification, Numbers, 10DLC, Fax, and Email",
   "author": {
     "name": "Sinch",
@@ -10,7 +10,17 @@
   "homepage": "https://sinch.com/",
   "repository": "https://github.com/sinch/sinch-plugins",
   "license": "Apache-2.0",
-  "keywords": ["sinch", "messaging", "sms", "rcs", "voice", "verification", "email", "docs", "mcp"],
+  "keywords": [
+    "sinch",
+    "messaging",
+    "sms",
+    "rcs",
+    "voice",
+    "verification",
+    "email",
+    "docs",
+    "mcp"
+  ],
   "skills": "./skills/",
   "mcpServers": "./.mcp.json",
   "interface": {
@@ -18,7 +28,9 @@
     "shortDescription": "Search Sinch developer documentation and build with Sinch APIs.",
     "developerName": "Sinch",
     "category": "Developer Tools",
-    "capabilities": ["Read"],
+    "capabilities": [
+      "Read"
+    ],
     "websiteURL": "https://developers.sinch.com/?utm_source=Codex&utm_medium=sinch_codex_plugin",
     "termsOfServiceURL": "https://sinch.com/legal/terms-and-conditions/other-sinch-terms-conditions/terms-of-service/"
   }
