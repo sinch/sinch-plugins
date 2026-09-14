@@ -1,6 +1,6 @@
 {
   "name": "sinch-codex-plugin",
-  "version": "0.3.13",
+  "version": "0.3.14",
   "description": "Sinch Build skills and developer documentation for Codex: Conversation API (SMS, RCS, WhatsApp), Voice, Verification, Numbers, 10DLC, Fax, and Email",
   "author": {
     "name": "Sinch",
