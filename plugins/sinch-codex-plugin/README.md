@@ -117,8 +117,10 @@ sinch-codex-plugin/
 ├── README.md
 └── skills/
     ├── sinch-help/SKILL.md
-    └── conversation-api/       # 15 product skill symlinks into vendor/sinch-skills
+    └── conversation-api/       # 15 product skill copies from vendor/sinch-skills
 ```
+
+Codex skips any `SKILL.md` that resolves outside the plugin root, so these product skills are real copies rather than symlinks. After updating `vendor/sinch-skills`, run `scripts/sync-codex-skills.sh` (or `scripts/sync-codex-skills.sh --check` to detect drift).
 
 ## Troubleshooting
 
