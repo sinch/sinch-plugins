@@ -143,25 +143,36 @@ stages:
 #     block a manual release.
 skills-release-gate:
   stage: pre-release
-  image: alpine:latest
-  timeout: 5 minutes
+  # node:22 (glibc): the content lint below needs node, matching the image
+  # choice of sinch-skills' own MR validation. node images ship git.
+  image: node:22
+  timeout: 10 minutes
   extends:
     - .retry_config
     - .all_triggers_rules
-  before_script:
-    - apk add --no-cache git
   script:
     - |
       SKILLS_STATE_FILE=".last-released-skills-tree"
       SKILLS_REPO_URL="https://gitlab.com/sinch/sinch-projects/enterprise-and-messaging/documentation/developer-experience/sinch-skills.git"
 
+      # Fail-open vs fail-closed boundary (deliberate):
+      #   - Infrastructure problems (clone fails, lint script absent) -> loud
+      #     WARNING, release proceeds. A broken token or repo layout change
+      #     must never block a manual release.
+      #   - Content problems (lint of skills/ actually fails) -> hard exit 1,
+      #     the whole release pipeline stops, for web and trigger sources
+      #     alike. We never publish skills content that fails lint - this
+      #     also guards the bypass where someone pushes to sinch-skills main
+      #     without going through its MR validation.
       CURRENT_SKILLS_TREE=""
       if [ -n "${SKILLS_REPO_TOKEN:-}" ]; then
         echo "machine gitlab.com login oauth2 password ${SKILLS_REPO_TOKEN}" > ~/.netrc && chmod 600 ~/.netrc
       fi
       rm -rf /tmp/skills-src
-      if git clone --bare --depth 1 --filter=blob:none --branch main "$SKILLS_REPO_URL" /tmp/skills-src 2>/dev/null; then
-        CURRENT_SKILLS_TREE="$(git --git-dir=/tmp/skills-src rev-parse HEAD:skills)"
+      # Plain shallow clone (not bare/blobless): the tree hash works the same
+      # and the working tree is needed to lint the real files.
+      if git clone --depth 1 --branch main "$SKILLS_REPO_URL" /tmp/skills-src 2>/dev/null; then
+        CURRENT_SKILLS_TREE="$(git -C /tmp/skills-src rev-parse HEAD:skills)"
         echo "sinch-skills main skills/ tree: $CURRENT_SKILLS_TREE"
       else
         echo "WARNING: could not read sinch-skills repo (SKILLS_REPO_TOKEN missing/invalid?). Failing open: release will proceed."
@@ -180,6 +191,25 @@ skills-release-gate:
           SKIP_RELEASE=true
         else
           echo "WARNING: no skills/ change since the last release; continuing anyway because this is a manual ($CI_PIPELINE_SOURCE) pipeline."
+        fi
+      fi
+
+      # Content lint of what would be released (fail-closed). Runs sinch-skills'
+      # own frontmatter linter against its main working tree. Only worth doing
+      # when this pipeline would actually release (SKIP_RELEASE=false) and the
+      # clone succeeded. tessl tile lint is deliberately NOT run here: npx has
+      # to download the tessl platform binary each run (minutes, network), and
+      # the frontmatter rules are the failure mode that has actually bitten us.
+      if [ "$SKIP_RELEASE" = "false" ] && [ -d /tmp/skills-src ]; then
+        if [ -f /tmp/skills-src/scripts/lint-skills.mjs ]; then
+          echo "Linting sinch-skills main content before release..."
+          if ! (cd /tmp/skills-src && npm install --no-save --silent yaml@2.9.0 && node scripts/lint-skills.mjs); then
+            echo "ERROR: sinch-skills main content fails lint - refusing to release it."
+            echo "Fix the offending SKILL.md on sinch-skills main (files listed above), then re-run."
+            exit 1
+          fi
+        else
+          echo "WARNING: scripts/lint-skills.mjs not found in sinch-skills main. Failing open: release will proceed unlinted."
         fi
       fi
 
