@@ -1,3 +1,6 @@
+> **Not a schema.** This file shows Python SDK installation and client-initialization examples.
+> For SDK method signatures and initialization options, fetch the owning product's SDK syntax reference on `developers.sinch.com` (route via the product skill or [llms.txt](https://developers.sinch.com/llms.txt)) before writing code or prose that states payload structure.
+
 # SDK Installation (Python)
 
 `pip install sinch` (v2.0.0+)
