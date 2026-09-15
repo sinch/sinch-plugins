@@ -513,19 +513,28 @@ sync_to_github:
       echo "Pulling latest sinch-skills from main..."
       (cd vendor/sinch-skills && git fetch origin main && git checkout origin/main)
       sh scripts/sync-codex-skills.sh
-      sh scripts/sync-codex-skills.sh --check
       SUBMOD_PATH="vendor/sinch-skills"
       if [ -d "$SUBMOD_PATH/.git" ] || [ -f "$SUBMOD_PATH/.git" ]; then
         echo "Dereferencing submodule and symlinks for GitHub push..."
         for PLUGIN_DIR in plugins/sinch-claude-plugin plugins/sinch-gemini-extension plugins/sinch-cursor-plugin plugins/sinch-antigravity-plugin plugins/sinch-codex-plugin; do
           SKILLS_PATH="$PLUGIN_DIR/skills"
           if [ -d "$SKILLS_PATH" ]; then
-            cp -rL "$SKILLS_PATH" /tmp/skills-resolved-$(basename "$PLUGIN_DIR")
+            RESOLVED_TMP="/tmp/skills-resolved-$(basename "$PLUGIN_DIR")"
+            rm -rf "$RESOLVED_TMP"
+            cp -rL "$SKILLS_PATH" "$RESOLVED_TMP"
             git rm -rf "$SKILLS_PATH"
-            cp -r /tmp/skills-resolved-$(basename "$PLUGIN_DIR") "$SKILLS_PATH"
+            # git rm only drops tracked files; untracked ones (new vendor
+            # content pulled above) would keep the directory alive and make
+            # the copy below nest inside it instead of replacing it.
+            rm -rf "$SKILLS_PATH"
+            cp -r "$RESOLVED_TMP" "$SKILLS_PATH"
             git add "$SKILLS_PATH"
           fi
         done
+        # Validate the dereferenced tree that is about to be pushed, not the
+        # pre-dereference working copy. Runs while vendor/sinch-skills is
+        # still present, since the check diffs against it.
+        sh scripts/sync-codex-skills.sh --check
         git rm -rf "$SUBMOD_PATH"
         git rm -f .gitmodules 2>/dev/null || true
       fi
