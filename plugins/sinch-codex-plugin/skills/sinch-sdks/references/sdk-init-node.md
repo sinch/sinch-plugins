@@ -1,6 +1,11 @@
+> **Not a schema.** This file shows Node.js SDK installation and client-initialization examples.
+> For SDK method signatures and initialization options, fetch the owning product's SDK syntax reference on `developers.sinch.com` (route via the product skill or [llms.txt](https://developers.sinch.com/llms.txt)) before writing code or prose that states payload structure.
+
 # SDK Installation (Node.js)
 
 `npm install @sinch/sdk-core` (v1.4.0+)
+
+> **ESM vs CommonJS** — The SDK uses ESM imports by default: `import { SinchClient } from "@sinch/sdk-core"`. For CommonJS, use `const { SinchClient } = require("@sinch/sdk-core")`.
 
 ## Project-Scoped Auth (Conversation, Numbers, Fax, EST, etc.)
 
