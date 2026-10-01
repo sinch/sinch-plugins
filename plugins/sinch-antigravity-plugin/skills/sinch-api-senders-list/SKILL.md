@@ -29,9 +29,9 @@ Arguments: $ARGUMENTS
 2. Try to call `mcp__sinch__sinch-mcp-configuration` to get the current configuration.
 
 3. If MCP is NOT available, retrieve configuration from environment variables:
-   - CONVERSATION_PROJECT_ID (or NUMBERS_PROJECT_ID)
-   - CONVERSATION_KEY_ID (or NUMBERS_KEY_ID)
-   - CONVERSATION_KEY_SECRET (or NUMBERS_KEY_SECRET)
+   - PROJECT_ID
+   - KEY_ID
+   - KEY_SECRET
    - If any are missing, report: "Sinch API is not configured. Please set the required environment variables."
 
 4. Based on user selection, generate TypeScript code examples showing:

@@ -98,7 +98,7 @@ Tell the user:
 }
 ```
 
-3. If your file already has other content in the `env` block, add the 5 `CONVERSATION_*` keys without removing existing values.
+3. If your file already has other content in the `env` block, add the 5 Sinch keys (`PROJECT_ID`, `KEY_ID`, `KEY_SECRET`, `CONVERSATION_REGION`, `CONVERSATION_APP_ID`) without removing existing values.
 
 4. Save the file.
 

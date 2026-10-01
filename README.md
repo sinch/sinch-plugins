@@ -366,9 +366,9 @@ agy plugin import gemini
 Antigravity does **not** prompt for credentials at install time. The Docs MCP (`sinch-docs`) needs none; for the Build MCP (`sinch`), export environment variables before starting `agy`:
 
 ```bash
-export CONVERSATION_PROJECT_ID="your-project-id"
-export CONVERSATION_KEY_ID="your-key-id"
-export CONVERSATION_KEY_SECRET="your-key-secret"
+export PROJECT_ID="your-project-id"
+export KEY_ID="your-key-id"
+export KEY_SECRET="your-key-secret"
 export CONVERSATION_REGION="us"
 export CONVERSATION_APP_ID="your-app-id"
 ```

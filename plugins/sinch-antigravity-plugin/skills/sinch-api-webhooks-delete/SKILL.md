@@ -34,10 +34,10 @@ Arguments: $ARGUMENTS
 2. Try to call `mcp__sinch__sinch-mcp-configuration` to get the current configuration.
 
 3. If MCP is NOT available, retrieve configuration from environment variables:
-   - CONVERSATION_PROJECT_ID
+   - PROJECT_ID
    - CONVERSATION_REGION
-   - CONVERSATION_KEY_ID
-   - CONVERSATION_KEY_SECRET
+   - KEY_ID
+   - KEY_SECRET
    - If any are missing, report: "Sinch API is not configured. Please set the required environment variables."
 
 4. Verify the webhook exists:

@@ -97,7 +97,7 @@ Once configured, you can use these commands:
 
 Skills let you describe what you want in plain English, and the plugin will run the right actions.
 
-Important: Skills will only call MCP tools if your `CONVERSATION_*` environment variables are configured in Claude Code and the Sinch MCP server is up and running.
+Important: Skills will only call MCP tools if your Sinch environment variables (`PROJECT_ID`, `KEY_ID`, `KEY_SECRET`, `CONVERSATION_REGION`, `CONVERSATION_APP_ID`) are configured in Claude Code and the Sinch MCP server is up and running.
 
 Available skills (each includes bundled scripts and reference docs):
 

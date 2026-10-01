@@ -16,7 +16,7 @@ Display a concise authentication guide for Sinch APIs used by this plugin. Do NO
    - Settings > Access Keys: note **Project ID**, create **Access Key** (Key ID + Key Secret). Store Key Secret securely — shown only once.
 
 2. **Credential types by product**
-   - **OAuth2 (Project ID + Key ID + Key Secret)**: Conversation API, Numbers, Fax, Batch, Templates, Number Lookup, 10DLC, Elastic SIP Trunking, Provisioning. Set: CONVERSATION_PROJECT_ID, CONVERSATION_KEY_ID, CONVERSATION_KEY_SECRET, CONVERSATION_REGION, CONVERSATION_APP_ID (for messaging).
+   - **OAuth2 (Project ID + Key ID + Key Secret)**: Conversation API, Numbers, Fax, Batch, Templates, Number Lookup, 10DLC, Elastic SIP Trunking, Provisioning. Set: PROJECT_ID, KEY_ID, KEY_SECRET, CONVERSATION_REGION, CONVERSATION_APP_ID (for messaging).
    - **Application Key + Secret**: Voice API, Verification API. Set: VOICE_APPLICATION_KEY, VOICE_APPLICATION_SECRET; or verification app credentials.
    - **Mailgun**: MAILGUN_API_KEY, MAILGUN_DOMAIN, MAILGUN_REGION (us or eu).
    - **Mailjet**: MJ_APIKEY_PUBLIC, MJ_APIKEY_PRIVATE.
@@ -27,14 +27,14 @@ Display a concise authentication guide for Sinch APIs used by this plugin. Do NO
 4. **Plugin credentials (Antigravity)**
    - Antigravity plugins do not prompt for credentials at install time. Export environment variables in your shell before starting `agy`:
      ```bash
-     export CONVERSATION_PROJECT_ID="your-project-id"
-     export CONVERSATION_KEY_ID="your-key-id"
-     export CONVERSATION_KEY_SECRET="your-key-secret"
+     export PROJECT_ID="your-project-id"
+     export KEY_ID="your-key-id"
+     export KEY_SECRET="your-key-secret"
      export CONVERSATION_REGION="us"   # us | eu | br
      export CONVERSATION_APP_ID="your-app-id"
      ```
    - Optional product credentials: VOICE_APPLICATION_KEY, VOICE_APPLICATION_SECRET; VERIFICATION_APPLICATION_KEY, VERIFICATION_APPLICATION_SECRET; MAILGUN_API_KEY, MAILGUN_DOMAIN, MAILGUN_REGION; MJ_APIKEY_PUBLIC, MJ_APIKEY_PRIVATE.
-   - The bundled mcp_config.json passes ${CONVERSATION_*} through to the Build MCP. Restart `agy` after changing env vars.
+   - The bundled mcp_config.json passes ${PROJECT_ID}, ${KEY_ID}, ${KEY_SECRET} and ${CONVERSATION_*} through to the Build MCP. Restart `agy` after changing env vars.
 
 5. **Links**
    - Dashboard: https://dashboard.sinch.com
