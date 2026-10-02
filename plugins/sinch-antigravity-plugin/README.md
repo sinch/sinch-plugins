@@ -54,7 +54,7 @@ This plugin ships two MCP servers (same pairing as PD-318 on Claude / Cursor / G
 
 | Server | Key | Transport | Purpose |
 |--------|-----|-----------|---------|
-| **Sinch Build MCP** | `sinch` | stdio (`npx -y @sinch/mcp`) | Conversation API tools (send messages, webhooks, senders). Needs credentials. |
+| **Sinch Build MCP** | `sinch` | stdio (`npx -y @sinch/mcp@0.0.1-alpha.6`) | Conversation API tools (send messages, webhooks, senders). Needs credentials. |
 | **Sinch Docs MCP** | `sinch-docs` | remote HTTP (`serverUrl`: `https://developers.sinch.com/mcp`) | Search/read Sinch developer docs. No credentials. |
 
 Antigravity uses `serverUrl` for remote servers (not Gemini’s `httpUrl` or Cursor’s `url`).
@@ -78,7 +78,7 @@ Optional product credentials (same names as the Gemini extension):
 - Mailgun: `MAILGUN_API_KEY`, `MAILGUN_DOMAIN`, `MAILGUN_REGION`
 - Mailjet: `MJ_APIKEY_PUBLIC`, `MJ_APIKEY_PRIVATE`
 
-The bundled `mcp_config.json` passes `${PROJECT_ID}`, `${KEY_ID}`, `${KEY_SECRET}` and `${CONVERSATION_*}` through to `npx -y @sinch/mcp`. Those placeholders are preserved as-is at install time; set the real values in the process environment.
+The bundled `mcp_config.json` passes `${PROJECT_ID}`, `${KEY_ID}`, `${KEY_SECRET}` and `${CONVERSATION_*}` through to `npx -y @sinch/mcp@0.0.1-alpha.6`. Those placeholders are preserved as-is at install time; set the real values in the process environment.
 
 Restart `agy` after changing env vars.
 

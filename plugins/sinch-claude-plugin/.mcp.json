@@ -4,7 +4,7 @@
             "command": "npx",
             "args": [
                 "-y",
-                "@sinch/mcp"
+                "@sinch/mcp@0.0.1-alpha.6"
             ],
             "env": {
                 "PROJECT_ID": "${PROJECT_ID}",

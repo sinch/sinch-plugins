@@ -80,7 +80,7 @@ gemini extensions list
 gemini mcp list
 ```
 
-Should show: `✓ sinch: command: npx -y @sinch/mcp (stdio) - Connected`
+Should show: `✓ sinch: command: npx -y @sinch/mcp@0.0.1-alpha.6 (stdio) - Connected`
 
 ## Usage
 

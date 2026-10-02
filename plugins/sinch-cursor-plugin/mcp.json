@@ -4,15 +4,9 @@
       "command": "npx",
       "args": [
         "-y",
-        "@sinch/mcp"
+        "@sinch/mcp@0.0.1-alpha.6"
       ],
-      "env": {
-        "PROJECT_ID": "${PROJECT_ID}",
-        "KEY_ID": "${KEY_ID}",
-        "KEY_SECRET": "${KEY_SECRET}",
-        "CONVERSATION_REGION": "${CONVERSATION_REGION}",
-        "CONVERSATION_APP_ID": "${CONVERSATION_APP_ID}"
-      }
+      "envFile": "${userHome}/.sinch/mcp.env"
     },
     "sinch-docs": {
       "url": "https://developers.sinch.com/mcp"

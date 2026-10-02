@@ -8,7 +8,7 @@ Claude Code, Cursor, Gemini CLI, and Antigravity each ship two MCP servers. The 
 
 | Server | Key | Transport | Purpose |
 |---|---|---|---|
-| **Sinch Build MCP** | `sinch` | stdio (`npx -y @sinch/mcp`) | Call Sinch Conversation API tools (send messages, manage webhooks, list senders). Requires credentials. |
+| **Sinch Build MCP** | `sinch` | stdio (`npx -y @sinch/mcp@0.0.1-alpha.6`) | Call Sinch Conversation API tools (send messages, manage webhooks, list senders). Requires credentials. |
 | **Sinch Docs MCP** | `sinch-docs` | remote HTTP (`https://developers.sinch.com/mcp`) | Search and read Sinch developer documentation. No credentials required. |
 
 Config field names differ by client: Cursor uses `url`, Claude Code uses `type` + `url`, Gemini CLI uses `httpUrl`, Antigravity uses `serverUrl`. Codex uses `type` + `url` in the compatibility `.mcp.json`, and `"type": "streamable-http"` plus `url` in the portable `mcp.json`.
@@ -183,21 +183,21 @@ The `skills/` folder is populated at build time by the pipeline cloning the `sin
 
 ### Configuration
 
-This plugin includes the Sinch Build MCP (`sinch`) and the Sinch Docs MCP (`sinch-docs`). The Build MCP requires specific environment variables to authenticate with the Sinch API; add these to your Cursor settings (`~/.cursor/settings.json`). The Docs MCP needs no credentials:
+This plugin includes the Sinch Build MCP (`sinch`) and the Sinch Docs MCP (`sinch-docs`). The Docs MCP needs no credentials. The Build MCP reads its credentials from `~/.sinch/mcp.env` through Cursor's `envFile` option, so it works however Cursor is launched. Run `/sinch-mcp-setup` to generate it, or create it by hand:
 
-```json
-{
-  "env": {
-    "PROJECT_ID": "your-project-id",
-    "KEY_ID": "your-key-id",
-    "KEY_SECRET": "your-key-secret",
-    "CONVERSATION_REGION": "us",
-    "CONVERSATION_APP_ID": "your-app-id"
-  }
-}
+```bash
+mkdir -p ~/.sinch && chmod 700 ~/.sinch
+cat > ~/.sinch/mcp.env <<'EOF'
+PROJECT_ID=your-project-id
+KEY_ID=your-key-id
+KEY_SECRET=your-key-secret
+CONVERSATION_REGION=us
+CONVERSATION_APP_ID=your-app-id
+EOF
+chmod 600 ~/.sinch/mcp.env
 ```
 
-**Restart Cursor IDE** after updating settings.
+Then restart the `sinch` server in **Cursor Settings → MCP**, or reload the window.
 
 ### Usage
 
