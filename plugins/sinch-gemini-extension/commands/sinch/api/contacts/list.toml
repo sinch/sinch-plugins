@@ -22,7 +22,7 @@ Arguments: {{args}}
 
 0. If {{args}} empty: use defaults (table, page-size 20). Otherwise parse.
 
-1. Validate: optional --channel, --page-size, --page-token, --format. Get CONVERSATION_* env vars. Conversation API base: https://{region}.conversation.api.sinch.com/v1. If missing, report "Sinch API is not configured."
+1. Validate: optional --channel, --page-size, --page-token, --format. Get PROJECT_ID, KEY_ID, KEY_SECRET, CONVERSATION_REGION and CONVERSATION_APP_ID env variables. If missing, report "Sinch API is not configured."
 
 2. GET https://{region}.conversation.api.sinch.com/v1/projects/{projectId}/contacts with query params (channel, page_size, page_token). OAuth2 Bearer token.
 

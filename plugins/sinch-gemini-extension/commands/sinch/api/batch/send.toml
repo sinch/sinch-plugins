@@ -24,7 +24,7 @@ Arguments: {{args}}
 
 1. Validate: --message (non-empty, may contain ${var}), --recipients (1-1000 identities). Parse recipients into array. Build recipient_and_params: each recipient has recipient.identified_by.channel_identities and optional parameters object for ${} substitution.
 
-2. Get CONVERSATION_* env vars (project, region, app, key id/secret). Batch API base: https://{region}.conversationbatch.api.sinch.com. If missing, report "Sinch API is not configured."
+2. Get PROJECT_ID, KEY_ID, KEY_SECRET, CONVERSATION_REGION and CONVERSATION_APP_ID env variables. If missing, report "Sinch API is not configured."
 
 3. Request body: app_id, message (e.g. text_message with text), recipient_and_params array. Do NOT use a "messages" array - Batch API expects one message + recipient_and_params.
 

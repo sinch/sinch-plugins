@@ -28,7 +28,7 @@ Arguments: {{args}}
 
 2. Try MCP tool for listing messages if available (e.g. list-messages). On success format and display result, then exit.
 
-3. If MCP not available: get CONVERSATION_* env vars. If missing, report "Sinch API is not configured."
+3. If MCP not available: get PROJECT_ID, KEY_ID, KEY_SECRET and CONVERSATION_REGION env variables. If missing, report "Sinch API is not configured."
 
 4. Use Conversation API list messages endpoint(s): e.g. GET /v1/projects/{projectId}/messages or equivalent with query params (contact_id, conversation_id, channel, page_size, page_token). Use OAuth2 Bearer token.
 

@@ -7,16 +7,16 @@ Guide the user through setting up Sinch Conversation API credentials.
 
 ## Overview
 
-This plugin uses the Sinch Conversation API MCP server (defined in `.mcp.json`) to send messages via SMS and RCS channels. To use these commands, you need to add your Sinch credentials as environment variables in Cursor's settings.
+This plugin uses the Sinch Conversation API MCP server (defined in `mcp.json`) to send messages via SMS and RCS channels. The server reads your Sinch credentials from `~/.sinch/mcp.env`, which Cursor loads through the `envFile` option.
 For more details about the underlying MCP server and tools, see [Sinch MCP Server](https://github.com/sinch/sinch-mcp-server)
 
 ## Required Environment Variables
 
 You need to obtain and configure the following 5 variables:
 
-- `CONVERSATION_PROJECT_ID` - Your Sinch project ID
-- `CONVERSATION_KEY_ID` - Your API key ID
-- `CONVERSATION_KEY_SECRET` - Your API key secret
+- `PROJECT_ID` - Your Sinch project ID
+- `KEY_ID` - Your API key ID
+- `KEY_SECRET` - Your API key secret
 - `CONVERSATION_REGION` - Your Sinch region (e.g., `us`, `eu`, `br`)
 - `CONVERSATION_APP_ID` - Your Conversation app ID
 
@@ -35,8 +35,8 @@ Ask: "How would you like to configure your Sinch credentials?"
 
 Offer these options:
 
-- **Option A: Generate setup script** — interactive bash script that collects credentials and updates ~/.cursor/settings.json automatically
-- **Option B: Manual** — shows instructions to edit ~/.cursor/settings.json yourself
+- **Option A: Generate setup script** — interactive bash script that collects credentials and writes ~/.sinch/mcp.env automatically
+- **Option B: Manual** — shows instructions to create ~/.sinch/mcp.env yourself
 
 ## If Option A (Setup script):
 
@@ -66,7 +66,7 @@ Paste the script, then save (Ctrl+O, Enter, Ctrl+X)
    bash ~/sinch-setup.sh
 ```
 
-4. Restart Cursor to load the new environment variables
+4. Restart the `sinch` server in Cursor Settings → MCP, or reload the window
 
 5. Run `/sinch-cursor-plugin:api:messages:send` to verify the connection
 
@@ -76,38 +76,35 @@ If they choose B, proceed to manual instructions below.
 
 Tell the user:
 
-1. Open or create `~/.cursor/settings.json`:
+1. Create the env file and restrict it to your user:
 
 ```bash
-   mkdir -p ~/.cursor
-   [[ -f ~/.cursor/settings.json ]] || echo '{}' > ~/.cursor/settings.json
-   nano ~/.cursor/settings.json
+   mkdir -p ~/.sinch && chmod 700 ~/.sinch
+   touch ~/.sinch/mcp.env && chmod 600 ~/.sinch/mcp.env
+   nano ~/.sinch/mcp.env
 ```
 
-2. Add or merge the `env` block with your credentials:
+2. Add your credentials, one per line, with no quotes:
 
-```json
-{
-  "env": {
-    "CONVERSATION_PROJECT_ID": "your-project-id",
-    "CONVERSATION_KEY_ID": "your-api-key",
-    "CONVERSATION_KEY_SECRET": "your-api-secret",
-    "CONVERSATION_REGION": "your-app-region (e.g., us, eu, br)",
-    "CONVERSATION_APP_ID": "your-app-id"
-  }
-}
+```
+PROJECT_ID=your-project-id
+KEY_ID=your-api-key
+KEY_SECRET=your-api-secret
+CONVERSATION_REGION=us
+CONVERSATION_APP_ID=your-app-id
 ```
 
-3. If your file already has other content in the `env` block, add the 5 `CONVERSATION_*` keys without removing existing values.
+`CONVERSATION_REGION` is `us`, `eu` or `br`.
 
-4. Save the file.
+3. Save the file.
 
-5. Restart Cursor.
+4. Restart the `sinch` server in Cursor Settings → MCP, or reload the window.
 
-6. Run `/sinch-cursor-plugin:api:messages:send` to verify the connection.
+5. Run `/sinch-cursor-plugin:api:messages:send` to verify the connection.
 
 ## Important Notes
 
 - Credentials are collected directly by the bash script - they are never sent to Cursor
 - The API Secret input is hidden (no echo) for security
-- Remind user not to commit `~/.cursor/settings.json` to version control
+- The env file is created with owner-only permissions (`chmod 600`)
+- Remind user never to copy `~/.sinch/mcp.env` into a project or commit it to version control

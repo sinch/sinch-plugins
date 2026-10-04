@@ -20,7 +20,7 @@ Arguments: {{args}}
 
 0. If {{args}} empty: ask for phone number(s) to look up. Otherwise parse.
 
-1. Validate: --numbers (at least one E.164). Get CONVERSATION_PROJECT_ID, CONVERSATION_KEY_ID, CONVERSATION_KEY_SECRET. Lookup API: https://lookup.api.sinch.com/v2. If missing, report "Sinch API is not configured."
+1. Validate: --numbers (at least one E.164). Get PROJECT_ID, KEY_ID, KEY_SECRET env variables. Lookup API: https://lookup.api.sinch.com/v2. If missing, report "Sinch API is not configured."
 
 2. Request body: numbers (array of E.164 strings). POST https://lookup.api.sinch.com/v2/projects/{projectId}/lookups with OAuth2 Bearer token.
 

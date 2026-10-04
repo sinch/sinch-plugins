@@ -20,7 +20,7 @@ Arguments: {{args}}
 
 0. If {{args}} empty: ask "Do you have a call ID to look up, or list recent/active calls?" and get call-id or list preference. Otherwise parse.
 
-1. Validate: optional --call-id, --format. Get VOICE_APPLICATION_KEY and VOICE_APPLICATION_SECRET. If missing, report "Voice API is not configured."
+1. Validate: optional --call-id, --format. Get APPLICATION_KEY and APPLICATION_SECRET. If missing, report "Voice API is not configured."
 
 2. If --call-id provided: use Voice API to get call details (endpoint may be GET /calls/{callId} or equivalent per Sinch Voice API docs). Return status, duration, from, to, etc.
 

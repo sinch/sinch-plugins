@@ -25,7 +25,7 @@ Arguments: $ARGUMENTS
 
 0. If $ARGUMENTS empty: ask for region, optional type and capability. Otherwise parse.
 
-1. Validate: --region (e.g. US, GB), optional type, capability, page-size. Get CONVERSATION_* or NUMBERS_* env vars. Numbers API: https://numbers.api.sinch.com/v1. If missing, report "Sinch API is not configured."
+1. Validate: --region (e.g. US, GB), optional type, capability, page-size. Get PROJECT_ID, KEY_ID, KEY_SECRET env variables. Numbers API: https://numbers.api.sinch.com/v1. If missing, report "Sinch API is not configured."
 
 2. GET https://numbers.api.sinch.com/v1/projects/{projectId}/availableNumbers or equivalent with query params: regionCode, type, capabilities, pageSize. Use OAuth2.
 

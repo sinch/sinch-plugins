@@ -23,7 +23,7 @@ Arguments: $ARGUMENTS
 
 0. If $ARGUMENTS empty: ask "List senders, get one by ID, or show setup help?" Otherwise parse.
 
-1. Validate: --action (list|get|help), optional --sender-id. Get CONVERSATION_PROJECT_ID, CONVERSATION_KEY_ID, CONVERSATION_KEY_SECRET. Base: https://provisioning.api.sinch.com/v1. If missing, report "Sinch API is not configured."
+1. Validate: --action (list|get|help), optional --sender-id. Get PROJECT_ID, KEY_ID, KEY_SECRET. Base: https://provisioning.api.sinch.com/v1. If missing, report "Sinch API is not configured."
 
 2. If list: GET https://provisioning.api.sinch.com/v1/projects/{projectId}/senders with OAuth2. Display table (id, displayName, channel, status) or JSON.
 

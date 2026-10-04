@@ -5,11 +5,11 @@ description: Get instructions for configuring Sinch Conversation API environment
 
 # Sinch Conversation API Setup
 
-Configure the required environment variables to enable the Sinch Conversation API MCP server in Claude Code.
+Configure the required environment variables to enable the Sinch Conversation API MCP server in Cursor.
 
 ## Overview
 
-This plugin uses the Sinch Conversation API MCP server (defined in `.mcp.json`) to send and receive messages via SMS and RCS channels. It supports multiple message types (text, media, location, choice, template), batch messaging (up to 1000 recipients), template management, and channel fallback.
+This plugin uses the Sinch Conversation API MCP server (defined in `mcp.json`) to send and receive messages via SMS and RCS channels. It supports multiple message types (text, media, location, choice, template), batch messaging (up to 1000 recipients), template management, and channel fallback.
 
 For more details about the underlying MCP server and tools, see [Sinch MCP Server](https://github.com/sinch/sinch-mcp-server)
 
@@ -17,9 +17,9 @@ For more details about the underlying MCP server and tools, see [Sinch MCP Serve
 
 You need to obtain and configure the following 5 variables:
 
-- `CONVERSATION_PROJECT_ID` - Your Sinch project ID
-- `CONVERSATION_KEY_ID` - Your API key ID
-- `CONVERSATION_KEY_SECRET` - Your API key secret
+- `PROJECT_ID` - Your Sinch project ID
+- `KEY_ID` - Your API key ID
+- `KEY_SECRET` - Your API key secret
 - `CONVERSATION_REGION` - Your Sinch region (e.g., `us`, `eu`, `br`)
 - `CONVERSATION_APP_ID` - Your Conversation app ID
 
@@ -31,40 +31,34 @@ You need to obtain and configure the following 5 variables:
 
 ## Configuration Steps
 
-### 1. Open Claude Code Settings
+### 1. Run the Setup Command
 
-On macOS, the settings file is located at:
+The quickest way is `/sinch-mcp-setup`, which can generate a setup script that writes the credentials file for you. To do it by hand, follow steps 2 and 3.
 
-```
-~/.claude/settings.json
-```
+### 2. Create the Credentials File
 
-You can open it by:
+The MCP server reads its credentials from `~/.sinch/mcp.env`. Create it and restrict it to your user:
 
-- Using a text editor: `code ~/.claude/settings.json` or `open -a TextEdit ~/.claude/settings.json`
-- Using Finder: Press `Cmd+Shift+G` and paste `~/.claude/settings.json`
-
-### 2. Add Environment Variables
-
-Add or update the `env` section in your `settings.json`:
-
-```json
-{
-  "env": {
-    "CONVERSATION_PROJECT_ID": "your-project-id-here",
-    "CONVERSATION_KEY_ID": "your-key-id-here",
-    "CONVERSATION_KEY_SECRET": "your-key-secret-here",
-    "CONVERSATION_REGION": "your-app-region (e.g., us, eu, br)",
-    "CONVERSATION_APP_ID": "your-app-id-here"
-  }
-}
+```bash
+mkdir -p ~/.sinch && chmod 700 ~/.sinch
+touch ~/.sinch/mcp.env && chmod 600 ~/.sinch/mcp.env
 ```
 
-**Important:** Replace the placeholder values with your actual Sinch credentials.
+Add your credentials, one per line, with no quotes:
 
-### 3. Restart Claude Code
+```
+PROJECT_ID=your-project-id-here
+KEY_ID=your-key-id-here
+KEY_SECRET=your-key-secret-here
+CONVERSATION_REGION=us
+CONVERSATION_APP_ID=your-app-id-here
+```
 
-After saving the settings file, restart Claude Code for the changes to take effect.
+**Important:** Replace the placeholder values with your actual Sinch credentials. `CONVERSATION_REGION` is `us`, `eu` or `br`.
+
+### 3. Restart the MCP Server
+
+Restart the `sinch` server in Cursor Settings → MCP, or reload the window.
 
 ### 4. Verify Setup
 
@@ -78,14 +72,14 @@ If the MCP server is configured correctly, the message will be sent. If you enco
 
 - All 5 environment variables are set
 - Values are correct (no typos)
-- Claude Code has been restarted
+- The `sinch` MCP server has been restarted
 - Your Sinch app has the appropriate channel configured
 
 ## Troubleshooting
 
 **"MCP tool is not available"** - Environment variables are missing or incorrect. Review steps 1-3 above.
 
-**Authentication errors** - Verify your `CONVERSATION_KEY_ID` and `CONVERSATION_KEY_SECRET` are correct.
+**Authentication errors** - Verify your `KEY_ID` and `KEY_SECRET` are correct.
 
 **Channel not configured** - Ensure your Conversation app (identified by `CONVERSATION_APP_ID`) has the channel you're trying to use enabled in the Sinch dashboard.
 
@@ -97,7 +91,7 @@ Once configured, you can use these commands:
 
 Skills let you describe what you want in plain English, and the plugin will run the right actions.
 
-Important: Skills will only call MCP tools if your `CONVERSATION_*` environment variables are configured in Claude Code and the Sinch MCP server is up and running.
+Important: Skills will only call MCP tools if your Sinch environment variables (`PROJECT_ID`, `KEY_ID`, `KEY_SECRET`, `CONVERSATION_REGION`, `CONVERSATION_APP_ID`) are set in `~/.sinch/mcp.env` and the Sinch MCP server is up and running.
 
 Available skills (each includes bundled scripts and reference docs):
 

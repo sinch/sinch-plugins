@@ -28,9 +28,9 @@ After installation, configure the required environment variables for the Sinch M
 
 You need to configure the following 5 environment variables:
 
-- `CONVERSATION_PROJECT_ID` - Your Sinch project ID
-- `CONVERSATION_KEY_ID` - Your API key ID
-- `CONVERSATION_KEY_SECRET` - Your API key secret
+- `PROJECT_ID` - Your Sinch project ID
+- `KEY_ID` - Your API key ID
+- `KEY_SECRET` - Your API key secret
 - `CONVERSATION_REGION` - Your Sinch region (`us`, `eu`, or `br`)
 - `CONVERSATION_APP_ID` - Your Conversation app ID
 
@@ -40,25 +40,27 @@ You need to configure the following 5 environment variables:
 2. **Enable Conversation API**: [Dashboard](https://dashboard.sinch.com/convapi/overview)
 3. **Generate an access key**: [Access key guide](https://community.sinch.com/t5/Conversation-API/How-to-get-your-access-key-for-Conversation-API/ta-p/8120)
 
-### Setting Environment Variables in Cursor
+### Saving Your Credentials
 
-1. Open Cursor Settings (Cmd+, on Mac or Ctrl+, on Windows/Linux)
-2. Navigate to the environment configuration section
-3. Add the following variables:
+The plugin's MCP server reads its credentials from `~/.sinch/mcp.env` (through Cursor's `envFile` option). This works however you launch Cursor, including from the Dock.
 
-```json
-{
-  "env": {
-    "CONVERSATION_PROJECT_ID": "your-project-id",
-    "CONVERSATION_KEY_ID": "your-key-id",
-    "CONVERSATION_KEY_SECRET": "your-key-secret",
-    "CONVERSATION_REGION": "us",
-    "CONVERSATION_APP_ID": "your-app-id"
-  }
-}
+**Option A: setup script.** Run `/sinch-mcp-setup` in Cursor and choose the script option. It asks for each value and writes the file for you.
+
+**Option B: by hand.** Create the file and restrict it to your user:
+
+```bash
+mkdir -p ~/.sinch && chmod 700 ~/.sinch
+cat > ~/.sinch/mcp.env <<'EOF'
+PROJECT_ID=your-project-id
+KEY_ID=your-key-id
+KEY_SECRET=your-key-secret
+CONVERSATION_REGION=us
+CONVERSATION_APP_ID=your-app-id
+EOF
+chmod 600 ~/.sinch/mcp.env
 ```
 
-4. Restart Cursor IDE for the changes to take effect
+Then restart the `sinch` server in **Cursor Settings → MCP**, or reload the window.
 
 ## Usage
 
@@ -163,11 +165,12 @@ This plugin uses the [@sinch/mcp](https://github.com/sinch/sinch-mcp-server) MCP
 ### MCP tool not available
 - Ensure all 5 environment variables are configured correctly
 - Verify variable names match exactly (case-sensitive)
-- Restart Cursor IDE after configuration changes
-- Check MCP server installation: `npx @sinch/mcp --version`
+- Check that `~/.sinch/mcp.env` exists and contains all 5 variables
+- Restart the `sinch` server in Cursor Settings → MCP after changing the file
+- Check the MCP logs in Cursor's Output panel for errors
 
 ### Authentication errors
-- Verify `CONVERSATION_KEY_ID` and `CONVERSATION_KEY_SECRET` are correct
+- Verify `KEY_ID` and `KEY_SECRET` are correct
 - Check that the access key has appropriate permissions in Sinch dashboard
 - Ensure the key is not expired or revoked
 

@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 #
-# Sinch Conversation API — Cursor user settings (env) setup
+# Sinch Conversation API — Cursor credentials (env file) setup
+#
+# The plugin's MCP server loads credentials from ~/.sinch/mcp.env via
+# Cursor's "envFile" option, so this works however Cursor is launched.
 #
 set -euo pipefail
 
-SETTINGS_DIR="$HOME/.cursor"
-SETTINGS_FILE="$SETTINGS_DIR/settings.json"
+ENV_DIR="$HOME/.sinch"
+ENV_FILE="$ENV_DIR/mcp.env"
 
 echo ""
 echo "========================================"
@@ -14,27 +17,9 @@ echo "========================================"
 echo ""
 
 # ----------------------------
-# Step 1: Check for jq
+# Step 1: Collect credentials
 # ----------------------------
-echo "[1/7] Checking for jq..."
-
-if ! command -v jq &> /dev/null; then
-  echo "  ✗ Error: jq is required but not installed."
-  echo ""
-  echo "  Install it with:"
-  echo "    macOS:  brew install jq"
-  echo "    Ubuntu: sudo apt install jq"
-  echo "    Fedora: sudo dnf install jq"
-  echo ""
-  exit 1
-fi
-echo "  ✓ jq is installed."
-
-# ----------------------------
-# Step 2: Collect credentials
-# ----------------------------
-echo ""
-echo "[2/7] Collecting credentials..."
+echo "[1/4] Collecting credentials..."
 echo ""
 echo "  Enter your Sinch Conversation API credentials."
 echo "  (Input is hidden for secrets)"
@@ -78,108 +63,53 @@ echo ""
 echo "  ✓ Credentials collected."
 
 # ----------------------------
-# Step 3: Ensure directory exists
+# Step 2: Ensure directory exists
 # ----------------------------
 echo ""
-echo "[3/7] Checking settings directory..."
+echo "[2/4] Checking $ENV_DIR..."
 
-if [[ ! -d "$SETTINGS_DIR" ]]; then
-  echo "  → Creating $SETTINGS_DIR..."
-  mkdir -p "$SETTINGS_DIR"
+if [[ ! -d "$ENV_DIR" ]]; then
+  mkdir -p "$ENV_DIR"
+  chmod 700 "$ENV_DIR"
   echo "  ✓ Directory created."
 else
   echo "  ✓ Directory exists."
 fi
 
 # ----------------------------
-# Step 4: Ensure settings.json exists
+# Step 3: Back up existing env file
 # ----------------------------
 echo ""
-echo "[4/7] Checking settings.json..."
+echo "[3/4] Checking for an existing env file..."
 
-if [[ ! -f "$SETTINGS_FILE" ]]; then
-  echo "  → Creating $SETTINGS_FILE with empty object..."
-  echo '{}' > "$SETTINGS_FILE"
-  echo "  ✓ File created."
+BACKUP_FILE=""
+if [[ -f "$ENV_FILE" ]]; then
+  BACKUP_FILE="$ENV_FILE.backup.$(date +%Y%m%d_%H%M%S)"
+  cp -p "$ENV_FILE" "$BACKUP_FILE"
+  echo "  ✓ Backup saved to: $BACKUP_FILE"
 else
-  echo "  ✓ File exists."
-  
-  # Validate it's valid JSON
-  if ! jq empty "$SETTINGS_FILE" 2>/dev/null; then
-    echo "  ✗ Error: $SETTINGS_FILE is not valid JSON."
-    echo "    Please fix the file manually or delete it to start fresh."
-    exit 1
-  fi
-  echo "  ✓ File contains valid JSON."
+  echo "  → None found. A new one will be created."
 fi
 
 # ----------------------------
-# Step 5: Backup existing settings
+# Step 4: Write env file (owner read/write only)
 # ----------------------------
 echo ""
-echo "[5/7] Creating backup..."
+echo "[4/4] Writing $ENV_FILE..."
 
-BACKUP_FILE="$SETTINGS_FILE.backup.$(date +%Y%m%d_%H%M%S)"
-cp "$SETTINGS_FILE" "$BACKUP_FILE"
-echo "  ✓ Backup saved to: $BACKUP_FILE"
-
-# ----------------------------
-# Step 6: Check existing env block
-# ----------------------------
-echo ""
-echo "[6/7] Analyzing current configuration..."
-
-HAS_ENV=$(jq 'has("env")' "$SETTINGS_FILE")
-if [[ "$HAS_ENV" == "true" ]]; then
-  echo "  → Existing 'env' block found."
-  
-  # Check each credential
-  EXISTING_KEYS=""
-  for key in CONVERSATION_PROJECT_ID CONVERSATION_KEY_ID CONVERSATION_KEY_SECRET CONVERSATION_REGION CONVERSATION_APP_ID; do
-    if [[ $(jq -r --arg k "$key" '.env | has($k)' "$SETTINGS_FILE") == "true" ]]; then
-      EXISTING_KEYS="$EXISTING_KEYS $key"
-    fi
-  done
-  
-  if [[ -n "$EXISTING_KEYS" ]]; then
-    echo "  → Will update existing values:$EXISTING_KEYS"
-  else
-    echo "  → No Sinch credentials found. Will add new values."
-  fi
-else
-  echo "  → No 'env' block found. Will create one."
-fi
-
-# ----------------------------
-# Step 7: Update settings.json
-# ----------------------------
-echo ""
-echo "[7/7] Updating settings.json..."
-
-jq --arg projectId "$PROJECT_ID" \
-   --arg keyId "$KEY_ID" \
-   --arg keySecret "$KEY_SECRET" \
-   --arg region "$REGION" \
-   --arg appId "$APP_ID" \
-   '
-   .env = (.env // {}) |
-   .env.CONVERSATION_PROJECT_ID = $projectId |
-   .env.CONVERSATION_KEY_ID = $keyId |
-   .env.CONVERSATION_KEY_SECRET = $keySecret |
-   .env.CONVERSATION_REGION = $region |
-   .env.CONVERSATION_APP_ID = $appId
-   ' "$SETTINGS_FILE" > "$SETTINGS_FILE.tmp"
-
-# Validate the new file before replacing
-if ! jq empty "$SETTINGS_FILE.tmp" 2>/dev/null; then
-  echo "  ✗ Error: Generated invalid JSON. Aborting."
-  echo "    Your original settings are unchanged."
-  rm -f "$SETTINGS_FILE.tmp"
-  exit 1
-fi
-
-mv "$SETTINGS_FILE.tmp" "$SETTINGS_FILE"
-echo "  ✓ Settings updated successfully."
+(
+  umask 077
+  cat > "$ENV_FILE.tmp" <<EOF
+PROJECT_ID=$PROJECT_ID
+KEY_ID=$KEY_ID
+KEY_SECRET=$KEY_SECRET
+CONVERSATION_REGION=$REGION
+CONVERSATION_APP_ID=$APP_ID
+EOF
+)
+mv "$ENV_FILE.tmp" "$ENV_FILE"
+chmod 600 "$ENV_FILE"
+echo "  ✓ Credentials saved."
 
 # ----------------------------
 # Summary
@@ -190,16 +120,18 @@ echo " Setup Complete"
 echo "========================================"
 echo ""
 echo " Configured values:"
-echo "   CONVERSATION_PROJECT_ID = $PROJECT_ID"
-echo "   CONVERSATION_KEY_ID     = $KEY_ID"
-echo "   CONVERSATION_KEY_SECRET = ****${KEY_SECRET: -4}"
+echo "   PROJECT_ID = $PROJECT_ID"
+echo "   KEY_ID     = $KEY_ID"
+echo "   KEY_SECRET = ****${KEY_SECRET: -4}"
 echo "   CONVERSATION_REGION     = $REGION"
 echo "   CONVERSATION_APP_ID     = $APP_ID"
 echo ""
 echo " Next steps:"
-echo "   1. Restart Cursor to load the new environment variables"
+echo "   1. In Cursor, restart the 'sinch' server in Settings → MCP (or reload the window)"
 echo "   2. Run /sinch-cursor-plugin:api:messages:send to verify the connection"
 echo ""
-echo " To undo, restore from backup:"
-echo "   cp \"$BACKUP_FILE\" \"$SETTINGS_FILE\""
-echo ""
+if [[ -n "$BACKUP_FILE" ]]; then
+  echo " To undo, restore from backup:"
+  echo "   cp \"$BACKUP_FILE\" \"$ENV_FILE\""
+  echo ""
+fi

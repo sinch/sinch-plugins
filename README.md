@@ -8,7 +8,7 @@ Claude Code, Cursor, Gemini CLI, and Antigravity each ship two MCP servers. The 
 
 | Server | Key | Transport | Purpose |
 |---|---|---|---|
-| **Sinch Build MCP** | `sinch` | stdio (`npx -y @sinch/mcp`) | Call Sinch Conversation API tools (send messages, manage webhooks, list senders). Requires credentials. |
+| **Sinch Build MCP** | `sinch` | stdio (`npx -y @sinch/mcp@0.0.1-alpha.6`) | Call Sinch Conversation API tools (send messages, manage webhooks, list senders). Requires credentials. |
 | **Sinch Docs MCP** | `sinch-docs` | remote HTTP (`https://developers.sinch.com/mcp`) | Search and read Sinch developer documentation. No credentials required. |
 
 Config field names differ by client: Cursor uses `url`, Claude Code uses `type` + `url`, Gemini CLI uses `httpUrl`, Antigravity uses `serverUrl`. Codex uses `type` + `url` in the compatibility `.mcp.json`, and `"type": "streamable-http"` plus `url` in the portable `mcp.json`.
@@ -47,9 +47,9 @@ This plugin includes the Sinch Build MCP (`sinch`) and the Sinch Docs MCP (`sinc
 
 You need to configure the following variables:
 
-- `CONVERSATION_PROJECT_ID`: Your Sinch Project ID.
-- `CONVERSATION_KEY_ID`: Your Access Key ID.
-- `CONVERSATION_KEY_SECRET`: Your Access Key Secret.
+- `PROJECT_ID`: Your Sinch Project ID.
+- `KEY_ID`: Your Access Key ID.
+- `KEY_SECRET`: Your Access Key Secret.
 - `CONVERSATION_REGION`: The region for your app (e.g., `us`, `eu`, `br`).
 - `CONVERSATION_APP_ID`: The specific Conversation App ID you want to use.
 
@@ -79,9 +79,9 @@ Run the shell script located in the plugin configuration folder:
 ```json
 {
   "env": {
-    "CONVERSATION_PROJECT_ID": "your-project-id",
-    "CONVERSATION_KEY_ID": "your-key-id",
-    "CONVERSATION_KEY_SECRET": "your-key-secret",
+    "PROJECT_ID": "your-project-id",
+    "KEY_ID": "your-key-id",
+    "KEY_SECRET": "your-key-secret",
     "CONVERSATION_REGION": "your-app-region (e.g., us, eu, br)",
     "CONVERSATION_APP_ID": "your-app-id"
   }
@@ -183,21 +183,21 @@ The `skills/` folder is populated at build time by the pipeline cloning the `sin
 
 ### Configuration
 
-This plugin includes the Sinch Build MCP (`sinch`) and the Sinch Docs MCP (`sinch-docs`). The Build MCP requires specific environment variables to authenticate with the Sinch API; add these to your Cursor settings (`~/.cursor/settings.json`). The Docs MCP needs no credentials:
+This plugin includes the Sinch Build MCP (`sinch`) and the Sinch Docs MCP (`sinch-docs`). The Docs MCP needs no credentials. The Build MCP reads its credentials from `~/.sinch/mcp.env` through Cursor's `envFile` option, so it works however Cursor is launched. Run `/sinch-mcp-setup` to generate it, or create it by hand:
 
-```json
-{
-  "env": {
-    "CONVERSATION_PROJECT_ID": "your-project-id",
-    "CONVERSATION_KEY_ID": "your-key-id",
-    "CONVERSATION_KEY_SECRET": "your-key-secret",
-    "CONVERSATION_REGION": "us",
-    "CONVERSATION_APP_ID": "your-app-id"
-  }
-}
+```bash
+mkdir -p ~/.sinch && chmod 700 ~/.sinch
+cat > ~/.sinch/mcp.env <<'EOF'
+PROJECT_ID=your-project-id
+KEY_ID=your-key-id
+KEY_SECRET=your-key-secret
+CONVERSATION_REGION=us
+CONVERSATION_APP_ID=your-app-id
+EOF
+chmod 600 ~/.sinch/mcp.env
 ```
 
-**Restart Cursor IDE** after updating settings.
+Then restart the `sinch` server in **Cursor Settings → MCP**, or reload the window.
 
 ### Usage
 
@@ -260,9 +260,9 @@ gemini extensions install .
 
 This extension includes the Sinch Build MCP (`sinch`) and the Sinch Docs MCP (`sinch-docs` via `httpUrl`). The Docs MCP needs no credentials. During installation, Gemini CLI will automatically prompt you for your Sinch Build credentials:
 
-- **CONVERSATION_PROJECT_ID**: Your Sinch project ID (required)
-- **CONVERSATION_KEY_ID**: Your API key ID (required)
-- **CONVERSATION_KEY_SECRET**: Your API key secret (required, stored securely)
+- **PROJECT_ID**: Your Sinch project ID (required)
+- **KEY_ID**: Your API key ID (required)
+- **KEY_SECRET**: Your API key secret (required, stored securely)
 - **CONVERSATION_REGION**: Your region (us, eu, or br) (required)
 - **CONVERSATION_APP_ID**: Your Sinch Conversation API App ID (required)
 
@@ -366,9 +366,9 @@ agy plugin import gemini
 Antigravity does **not** prompt for credentials at install time. The Docs MCP (`sinch-docs`) needs none; for the Build MCP (`sinch`), export environment variables before starting `agy`:
 
 ```bash
-export CONVERSATION_PROJECT_ID="your-project-id"
-export CONVERSATION_KEY_ID="your-key-id"
-export CONVERSATION_KEY_SECRET="your-key-secret"
+export PROJECT_ID="your-project-id"
+export KEY_ID="your-key-id"
+export KEY_SECRET="your-key-secret"
 export CONVERSATION_REGION="us"
 export CONVERSATION_APP_ID="your-app-id"
 ```
