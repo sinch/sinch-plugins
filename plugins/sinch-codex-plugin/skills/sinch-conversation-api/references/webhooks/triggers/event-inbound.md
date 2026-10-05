@@ -1,6 +1,9 @@
-# EVENT_INBOUND Trigger
+> **Not a schema.** This file describes when the trigger fires and lists notable fields. For
+> payload shape (field names, nesting, encodings, enums), refer to the canonical
+> `developers.sinch.com` docs linked from the parent [SKILL.md](../../../SKILL.md) before
+> writing code or prose that states payload structure.
 
-← [Back to Conversation API SKILL.md](../../../SKILL.md)
+# EVENT_INBOUND Trigger
 
 ## Overview
 

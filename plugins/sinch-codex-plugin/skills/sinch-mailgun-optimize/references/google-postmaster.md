@@ -1,3 +1,8 @@
+> **Not a schema.** This file describes the Google Postmaster Tools integration workflow and
+> notable fields. For payload shape (field names, nesting, encodings, enums), refer to the
+> canonical `documentation.mailgun.com` docs linked from the parent [SKILL.md](../SKILL.md)
+> before writing code or prose that states payload structure.
+
 # Google Postmaster Tools — Endpoint Reference
 
 Base path: `/v1/reputationanalytics/gpt/`
@@ -28,6 +33,8 @@ All data endpoints accept these required query parameters:
 - `timeRangeStart` (integer) — Unix timestamp start filter
 - `timeRangeEnd` (integer) — Unix timestamp end filter
 
+*(Summary only — confirm exact names/encoding/enums against the authoritative [OpenAPI spec](https://documentation.mailgun.com/_spec/docs/inboxready/api-reference/optimize/inboxready.yaml?download) doc before implementing.)*
+
 ## Response Model (Domain Record)
 
 Each record in the `data[]` array contains:
@@ -44,6 +51,8 @@ Each record in the `data[]` array contains:
 - `ip_counts[]` — array of `{ reputation, total }` per IP reputation band
 - `feedback_loops[]` — array of `{ id, spam_ratio }` per FBL identifier
 - `date` (datetime, nullable) — date of the record
+
+*(Summary only — confirm exact names/encoding/enums against the authoritative [OpenAPI spec](https://documentation.mailgun.com/_spec/docs/inboxready/api-reference/optimize/inboxready.yaml?download) doc before implementing.)*
 
 ## Links
 

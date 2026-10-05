@@ -1,3 +1,8 @@
+> **Not a schema.** This file describes the campaign-registration fields and how carriers
+> evaluate them. For payload shape (field names, nesting, encodings, enums), refer to the
+> canonical `developers.sinch.com` docs linked from the parent [SKILL.md](../SKILL.md) before
+> writing code or prose that states payload structure.
+
 # Campaign Registration Fields
 
 Full field reference for `POST /v1/projects/{projectId}/campaignRegistrations:submit`.
@@ -5,8 +10,9 @@ Full field reference for `POST /v1/projects/{projectId}/campaignRegistrations:su
 ## Example Request
 
 ```bash
-curl -X POST "https://us10dlc.numbers.api.sinch.com/v1/projects/$SINCH_PROJECT_ID/campaignRegistrations:submit" \
-  -u "$SINCH_KEY_ID:$SINCH_KEY_SECRET" \
+curl -X POST \
+  "https://us10dlc.numbers.api.sinch.com/v1/projects/$SINCH_PROJECT_ID/campaignRegistrations:submit" \
+  -H "Authorization: Bearer $SINCH_ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "brandId": "BEXAMPLE",
@@ -35,6 +41,8 @@ curl -X POST "https://us10dlc.numbers.api.sinch.com/v1/projects/$SINCH_PROJECT_I
     "autoRenewal": true
   }'
 ```
+
+*(Summary only — confirm exact names/encoding/enums against the authoritative [Create a Campaign (API reference)](https://developers.sinch.com/docs/10dlc-registration/api-reference/10dlc-registration/10dlc-campaign-registration/campaignregistrationexternalservice_createtcrcampaign.md) doc before implementing.)*
 
 ## Required String Fields
 
@@ -73,6 +81,8 @@ Separate string fields (not an array). Must be realistic and match the stated us
 - `optoutKeywords` — opt-out keywords, comma-separated, no spaces (e.g., `"STOP,QUIT,CANCEL"`, maxLength: 255). API defaults: `STOP, QUIT, END, CANCEL, UNSUBSCRIBE` — only specify if adding custom keywords
 - `helpKeywords` — help keywords, comma-separated, no spaces (e.g., `"HELP,INFO"`, maxLength: 255). API default: `HELP` — only specify if adding custom keywords
 
+*(Summary only — confirm exact names/encoding/enums against the authoritative [Create a Campaign (API reference)](https://developers.sinch.com/docs/10dlc-registration/api-reference/10dlc-registration/10dlc-campaign-registration/campaignregistrationexternalservice_createtcrcampaign.md) doc before implementing.)*
+
 ## Required Boolean Flags
 
 All required. Defaults shown where applicable.
@@ -90,9 +100,11 @@ All required. Defaults shown where applicable.
 | `directLending` | `false` | Set `true` only if the sender is a financial institution doing first-party lending. |
 | `affiliateMarketing` | **none** | **Must be explicitly set.** Set `true` if messages promote third-party products/services. Set `false` if the brand only promotes its own. |
 
+*(Summary only — confirm exact names/encoding/enums against the authoritative [Create a Campaign (API reference)](https://developers.sinch.com/docs/10dlc-registration/api-reference/10dlc-registration/10dlc-campaign-registration/campaignregistrationexternalservice_createtcrcampaign.md) doc before implementing.)*
+
 ## Optional Fields
 
-- `subUseCases` — required only for `MIXED` use case; select 2-5 from: `2FA`, `ACCOUNT_NOTIFICATION`, `CUSTOMER_CARE`, `DELIVERY_NOTIFICATION`, `FRAUD_ALERT`, `HIGHER_EDUCATION`, `MARKETING`, `POLLING_VOTING`, `PUBLIC_SERVICE_ANNOUNCEMENT`, `SECURITY_ALERT`
+- `subUseCases` — required only for `MIXED` use case; select 2-5 from: `2FA`, `ACCOUNT_NOTIFICATION`, `CUSTOMER_CARE`, `DELIVERY_NOTIFICATION`, `FRAUD_ALERT`, `HIGHER_EDUCATION`, `MARKETING`, `POLLING_VOTING`, `PUBLIC_SERVICE_ANNOUNCEMENT`, `SECURITY_ALERT` *(Summary only — confirm exact names/encoding/enums against the authoritative [Create a Campaign (API reference)](https://developers.sinch.com/docs/10dlc-registration/api-reference/10dlc-registration/10dlc-campaign-registration/campaignregistrationexternalservice_createtcrcampaign.md) doc before implementing.)*
 - `terms_and_conditions_link` — URL to terms and conditions page (maxLength: 255)
 - `privacy_policy_link` — URL to privacy policy page (maxLength: 255)
 - `attachments` — set to `true` to delay submission until documents are uploaded (default: `false`)

@@ -1,3 +1,10 @@
+/*
+ * EXECUTION-TOOL HELPER — not a schema reference.
+ * Shared by the sibling runnable scripts; keep it alongside them. Do NOT copy
+ * its payload literals or logic into a new codebase as if they were the API
+ * spec — for payload shape, load the canonical developers.sinch.com docs
+ * linked from ../../SKILL.md instead.
+ */
 /**
  * Shared Sinch Voice API client utilities.
  *

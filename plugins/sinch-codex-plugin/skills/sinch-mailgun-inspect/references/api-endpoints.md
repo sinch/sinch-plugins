@@ -1,3 +1,8 @@
+> **Not a schema.** This file describes the Inspect endpoints, when to use them, and their
+> pitfalls. For payload shape (field names, nesting, encodings, enums), refer to the canonical
+> `documentation.mailgun.com` docs linked from the parent [SKILL.md](../SKILL.md) before
+> writing code or prose that states payload structure.
+
 # Mailgun Inspect API — Endpoint Reference
 
 Full endpoint listing for all Inspect categories. Refer to [OpenAPI spec (YAML)](https://documentation.mailgun.com/_spec/docs/inspect/api-reference/openapi-final.yaml?download) for schemas and response bodies.
@@ -37,6 +42,8 @@ Base path: `/v1/inspect/accessibility`
 - `html` (required): Raw HTML or base64-encoded content
 - `encoded`: `true` if base64, `false` for raw HTML
 
+*(Summary only — confirm exact names/encoding/enums against the authoritative [OpenAPI spec (YAML)](https://documentation.mailgun.com/_spec/docs/inspect/api-reference/openapi-final.yaml?download) doc before implementing.)*
+
 ---
 
 ## Link Validation
@@ -61,6 +68,8 @@ Base path: `/v1/inspect/links`
   "userAgent": "Mozilla/5.0"
 }
 ```
+
+*(Summary only — confirm exact names/encoding/enums against the authoritative [OpenAPI spec (YAML)](https://documentation.mailgun.com/_spec/docs/inspect/api-reference/openapi-final.yaml?download) doc before implementing.)*
 
 ### Request body — from HTML (POST `/v1/inspect/links/html-validate`)
 
@@ -99,6 +108,8 @@ Base path: `/v1/inspect/images`
   "links": ["https://example.com/logo.png", "https://example.com/banner.jpg"]
 }
 ```
+
+*(Summary only — confirm exact names/encoding/enums against the authoritative [OpenAPI spec (YAML)](https://documentation.mailgun.com/_spec/docs/inspect/api-reference/openapi-final.yaml?download) doc before implementing.)*
 
 ### Request body — from HTML (POST `/v1/inspect/images/html-validate`)
 
@@ -142,7 +153,7 @@ Base path: `/v1/inspect/analyze`
 }
 ```
 
-No `encoded` field — use supported request fields (`html`/`url`/`mime`/`transfer_encoding`/`charset`).
+No `encoded` field — use supported request fields (`html`/`url`/`mime`/`transfer_encoding`/`charset`). *(Summary only — confirm exact names/encoding/enums against the authoritative [OpenAPI spec (YAML)](https://documentation.mailgun.com/_spec/docs/inspect/api-reference/openapi-final.yaml?download) doc before implementing.)*
 
 ### GET result query params
 
@@ -152,6 +163,8 @@ No `encoded` field — use supported request fields (`html`/`url`/`mime`/`transf
 | `support_type` | `y`, `a`, `n`, `u` | yes / anomaly / no / unknown |
 | `application_type` | `web`, `mobile`, `desktop` | Filter by client type |
 | `group_by` | `notes` | Group results by notes |
+
+*(Summary only — confirm exact names/encoding/enums against the authoritative [OpenAPI spec (YAML)](https://documentation.mailgun.com/_spec/docs/inspect/api-reference/openapi-final.yaml?download) doc before implementing.)*
 
 ---
 
@@ -211,7 +224,7 @@ Base paths: `/v1/preview/` and `/v2/preview/` (V2 recommended for test CRUD)
 }
 ```
 
-All four booleans are optional — include only the checks you need. Results appear in the `GET /v2/preview/tests/{test_id}` response.
+All four booleans are optional — include only the checks you need. Results appear in the `GET /v2/preview/tests/{test_id}` response. *(Summary only — confirm exact names/encoding/enums against the authoritative [OpenAPI spec (YAML)](https://documentation.mailgun.com/_spec/docs/inspect/api-reference/openapi-final.yaml?download) doc before implementing.)*
 
 ### Preview workflow
 

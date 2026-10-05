@@ -1,8 +1,9 @@
+> **Not a schema.** This file describes when the trigger fires and lists notable fields. For
+> payload shape (field names, nesting, encodings, enums), refer to the canonical
+> `developers.sinch.com` docs linked from the parent [SKILL.md](../../../SKILL.md) before
+> writing code or prose that states payload structure.
+
 # CAPABILITY Trigger
-
-← [Back to Conversation API SKILL.md](../../../SKILL.md)
-
-**Sections:** [Overview](#overview) | [When It Fires](#when-it-fires) | [Callback Structure](#callback-structure) | [Common Use Cases](#common-use-cases) | [Example Callback Payload](#example-callback-payload) | [Key Points](#key-points)
 
 ## Overview
 

@@ -1,3 +1,8 @@
+> **Not a schema.** This file describes the DMARC reporting workflow and notable fields. For
+> payload shape (field names, nesting, encodings, enums), refer to the canonical
+> `documentation.mailgun.com` docs linked from the parent [SKILL.md](../SKILL.md) before
+> writing code or prose that states payload structure.
+
 # DMARC Reports — Endpoint Reference
 
 Base path: `/v1/dmarc/`
@@ -16,6 +21,8 @@ Requires a DMARC DNS record configured on the domain before report data becomes 
 | `/v1/dmarc/domains/{domain}/s/{source}` | GET | Drill down by sending source |
 | `/v1/dmarc/domains/{domain}/s/{source}/h/{host}` | GET | Drill down by host within a source |
 | `/v1/dmarc/domains/{domain}/s/{source}/h/{host}/ip/{ip}` | GET | Drill down to a specific sending IP |
+
+*(Summary only — confirm exact names/encoding/enums against the authoritative [API docs](https://documentation.mailgun.com/docs/inboxready/api-reference/optimize/inboxready/dmarc-reports) doc before implementing.)*
 
 ## Drill-Down Hierarchy
 

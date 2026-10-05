@@ -110,13 +110,21 @@ The plugin includes comprehensive skills for all major Sinch products:
 
 ### Messaging & Communication
 - **conversation-api** - SMS, RCS, and multi-channel messaging
+- **sms** - SMS channel: sender IDs, encoding, and opt-out handling
+- **mms** - MMS channel: media types, size limits, and transcoding
+- **rcs** - RCS channel: rich cards, carousels, and suggested replies
+- **whatsapp** - WhatsApp channel: templates and the 24-hour service window
 - **voice-api** - Voice calling and conference management
+- **voice-api-v2** - Voice API v2 (public preview) calls, webhooks, and SVAML v2
 - **verification-api** - Phone number verification
 - **in-app-calling** - In-app voice and video calling
 - **fax** - Fax sending and receiving
 
 ### Phone Numbers & Provisioning
 - **numbers** - Phone number provisioning and management
+- **number-order** - Number ordering with KYC compliance
+- **porting** - Port numbers from other carriers into Sinch
+- **imported-numbers-hosting-orders** - Import and text-enable non-Sinch numbers
 - **number-lookup** - Phone number information lookup
 - **10dlc** - 10DLC campaign registration and management
 - **elastic-sip-trunking** - SIP trunking configuration
@@ -128,8 +136,15 @@ The plugin includes comprehensive skills for all major Sinch products:
 - **mailgun-optimize** - Email deliverability optimization
 - **mailgun-validate** - Email address validation
 
-### Authentication
+### Serverless & CLI
+- **functions** - Sinch Functions serverless platform (beta)
+- **functions-node** - Write Sinch Functions in Node.js/TypeScript
+- **functions-dotnet** - Write Sinch Functions in C#/.NET
+- **cli** - Sinch CLI commands
+
+### Authentication & SDKs
 - **authentication** - Sinch authentication and credentials
+- **sdks** - SDK installation and client initialization
 
 ## Available Commands
 

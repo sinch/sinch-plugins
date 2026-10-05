@@ -1,3 +1,8 @@
+> **Not a schema.** This file describes when each Voice callback (ICE, ACE, DiCE, PIE, notify)
+> fires and lists notable fields. For payload shape (field names, nesting, encodings, enums),
+> refer to the canonical `developers.sinch.com` docs linked from the parent
+> [SKILL.md](../SKILL.md) before writing code or prose that states payload structure.
+
 # Voice API Callback Events
 
 ## Contents
@@ -24,12 +29,16 @@ All callback events include these base fields:
 | `custom` | string | Custom data passed with the call |
 | `applicationKey` | string | Your application key |
 
+*(Summary only — confirm exact names/encoding/enums against the authoritative [ICE Callback](https://developers.sinch.com/docs/voice/api-reference/voice/callbacks/ice) doc before implementing.)*
+
 Call-related events (ICE, ACE, DiCE) also include:
 
 | Field | Type | Description |
 |-------|------|-------------|
 | `callResourceUrl` | string | URL to manage this call via REST |
 | `timestamp` | string | ISO 8601 timestamp |
+
+*(Summary only — confirm exact names/encoding/enums against the authoritative [ICE Callback](https://developers.sinch.com/docs/voice/api-reference/voice/callbacks/ice) doc before implementing.)*
 
 ---
 
@@ -50,19 +59,21 @@ Fired when a call reaches the Sinch platform. **Requires SVAML response.**
 | `callHeaders` | array | Headers from SDK client: `[{ "key": "k", "value": "v" }]` |
 | `userRate` | object | `{ "currencyId": "USD", "amount": 0.01 }` |
 
+*(Summary only — confirm exact names/encoding/enums against the authoritative [ICE Callback](https://developers.sinch.com/docs/voice/api-reference/voice/callbacks/ice) doc before implementing.)*
+
 ### Example Request
 
 ```json
 {
   "event": "ice",
-  "callId": "4398599d1ba84ef3bde0a82dfb61abed",
-  "callResourceUrl": "https://calling-euc1.api.sinch.com/calling/v1/calls/id/4398599d1ba84ef3bde0a82dfb61abed",
+  "callId": "aaa11111222233334444555566667777",
+  "callResourceUrl": "https://calling-euc1.api.sinch.com/calling/v1/calls/id/aaa11111222233334444555566667777",
   "timestamp": "2024-01-15T10:30:00Z",
   "version": 1,
   "custom": "",
-  "applicationKey": "94983f76-1161-6655-9515-4785c7b67dd8",
-  "cli": "+14045001000",
-  "to": { "type": "number", "endpoint": "+14045005000" },
+  "applicationKey": "00000000-0000-0000-0000-000000000000",
+  "cli": "+15551000001",
+  "to": { "type": "number", "endpoint": "+15551000002" },
   "domain": "pstn",
   "originationType": "pstn",
   "userRate": { "currencyId": "USD", "amount": 0.0 }
@@ -78,8 +89,8 @@ Fired when a call reaches the Sinch platform. **Requires SVAML response.**
   ],
   "action": {
     "name": "connectPstn",
-    "number": "+14045009000",
-    "cli": "+14045001000"
+    "number": "+15551000003",
+    "cli": "+15551000001"
   }
 }
 ```
@@ -101,12 +112,12 @@ Fired when the callee answers. **Requires SVAML response.** Not sent for in-app 
 ```json
 {
   "event": "ace",
-  "callId": "4398599d1ba84ef3bde0a82dfb61abed",
-  "callResourceUrl": "https://calling-euc1.api.sinch.com/calling/v1/calls/id/4398599d1ba84ef3bde0a82dfb61abed",
+  "callId": "aaa11111222233334444555566667777",
+  "callResourceUrl": "https://calling-euc1.api.sinch.com/calling/v1/calls/id/aaa11111222233334444555566667777",
   "timestamp": "2024-01-15T10:30:05Z",
   "version": 1,
   "custom": "",
-  "applicationKey": "94983f76-1161-6655-9515-4785c7b67dd8"
+  "applicationKey": "00000000-0000-0000-0000-000000000000"
 }
 ```
 
@@ -159,6 +170,8 @@ Fired when the call ends. **Fire-and-forget — no SVAML response.** Return `200
 | `from` | string | Caller info |
 | `callHeaders` | array | Headers from SDK client |
 
+*(Summary only — confirm exact names/encoding/enums against the authoritative [DiCE Callback](https://developers.sinch.com/docs/voice/api-reference/voice/callbacks/dice) doc before implementing.)*
+
 ### Disconnect Reasons
 
 | Reason | Description |
@@ -178,16 +191,18 @@ Fired when the call ends. **Fire-and-forget — no SVAML response.** Return `200
 | `USERNOTFOUND` | User not found |
 | `OTHERPEERANSWERED` | Another instance answered |
 
+*(Summary only — confirm exact names/encoding/enums against the authoritative [DiCE Callback](https://developers.sinch.com/docs/voice/api-reference/voice/callbacks/dice) doc before implementing.)*
+
 ### Example Request
 
 ```json
 {
   "event": "dice",
-  "callId": "4398599d1ba84ef3bde0a82dfb61abed",
+  "callId": "aaa11111222233334444555566667777",
   "timestamp": "2024-01-15T10:35:00Z",
   "version": 1,
   "custom": "",
-  "applicationKey": "94983f76-1161-6655-9515-4785c7b67dd8",
+  "applicationKey": "00000000-0000-0000-0000-000000000000",
   "reason": "CALLEEHANGUP",
   "result": "ANSWERED",
   "duration": 295,
@@ -217,15 +232,17 @@ Fired when a `runMenu` action collects input. **Requires SVAML response.**
 | `value` | string | The collected value (e.g., `"support"` for `return(support)`, or DTMF digits for `sequence`) |
 | `inputMethod` | string | `"dtmf"` or `"voice"` |
 
+*(Summary only — confirm exact names/encoding/enums against the authoritative [PIE Callback](https://developers.sinch.com/docs/voice/api-reference/voice/callbacks/pie) doc before implementing.)*
+
 ### Example Request
 
 ```json
 {
   "event": "pie",
-  "callId": "4398599d1ba84ef3bde0a82dfb61abed",
+  "callId": "aaa11111222233334444555566667777",
   "timestamp": "2024-01-15T10:30:10Z",
   "version": 1,
-  "applicationKey": "94983f76-1161-6655-9515-4785c7b67dd8",
+  "applicationKey": "00000000-0000-0000-0000-000000000000",
   "menuResult": {
     "menuId": "main",
     "type": "return",
@@ -244,8 +261,8 @@ Fired when a `runMenu` action collects input. **Requires SVAML response.**
   ],
   "action": {
     "name": "connectPstn",
-    "number": "+14045009000",
-    "cli": "+14045001000"
+    "number": "+15551000003",
+    "cli": "+15551000001"
   }
 }
 ```
@@ -269,11 +286,11 @@ Fired for notifications (e.g., recording finished, AMD result for async mode). *
 ```json
 {
   "event": "notify",
-  "callId": "4398599d1ba84ef3bde0a82dfb61abed",
+  "callId": "aaa11111222233334444555566667777",
   "version": 1,
-  "applicationKey": "94983f76-1161-6655-9515-4785c7b67dd8",
+  "applicationKey": "00000000-0000-0000-0000-000000000000",
   "type": "recording_finished",
-  "destination": "https://storage.example.com/recordings/4398599d.wav"
+  "destination": "https://storage.example.com/recordings/aaa11111.wav"
 }
 ```
 
@@ -288,6 +305,8 @@ When `amd: { enabled: true }` is set on `connectPstn`, the ACE event includes an
 | `amd.status` | string | `"human"`, `"machine"`, `"notsure"`, `"hangup"` |
 | `amd.reason` | string | `"longgreeting"`, `"initialsilence"`, etc. |
 | `amd.duration` | integer | Time taken for detection (ms) |
+
+*(Summary only — confirm exact names/encoding/enums against the authoritative [ACE Callback](https://developers.sinch.com/docs/voice/api-reference/voice/callbacks/ace) doc before implementing.)*
 
 For **async AMD** (`amd: { enabled: true, async: true }`), the initial ACE has `amd.status: "inprogress"`. The final result comes in a Notify event.
 

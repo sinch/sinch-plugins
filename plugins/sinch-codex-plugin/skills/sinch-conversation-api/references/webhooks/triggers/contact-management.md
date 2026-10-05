@@ -1,8 +1,9 @@
+> **Not a schema.** This file describes when the trigger fires and lists notable fields. For
+> payload shape (field names, nesting, encodings, enums), refer to the canonical
+> `developers.sinch.com` docs linked from the parent [SKILL.md](../../../SKILL.md) before
+> writing code or prose that states payload structure.
+
 # Contact Management Triggers
-
-← [Back to Conversation API SKILL.md](../../../SKILL.md)
-
-**Sections:** [Overview](#overview) | [CONTACT_CREATE](#contact_create) | [CONTACT_UPDATE](#contact_update) | [CONTACT_DELETE](#contact_delete) | [CONTACT_MERGE](#contact_merge) | [CONTACT_IDENTITIES_DUPLICATION](#contact_identities_duplication) | [Key Points](#key-points)
 
 ## Overview
 
@@ -202,6 +203,8 @@ Note: Only the contact ID is provided; the contact is already deleted.
 | -------------------- | ---------------------------------------------------- |
 | `deleted_contact_id` | ID of the contact that was deleted during merge      |
 | `preserved_contact`  | Full details of the contact that remains after merge |
+
+*(Summary only — confirm exact names/encoding/enums against the authoritative [Callbacks & Webhooks](https://developers.sinch.com/docs/conversation/callbacks.md) doc before implementing.)*
 
 ### Common Use Cases
 

@@ -1,17 +1,11 @@
-← [Back to Conversation API SKILL.md](../SKILL.md)
+> **Not a schema.** This file describes when to use the Batch API, its base URLs, endpoints,
+> and pitfalls. For payload shape (field names, nesting, encodings, enums), refer to the
+> canonical `developers.sinch.com` docs linked from the parent [SKILL.md](../SKILL.md) before
+> writing code or prose that states payload structure.
 
 # Batch API Reference
 
 The Batch API sends a **single message definition** to **up to 1000 recipients** in one API call, with per-recipient `${parameter}` substitution. Also supports bulk contact creation/deletion and consent records.
-
-**Sections:** [SDK Reference](#sdk-reference) | [When to Use](#when-to-use) | [Base URLs](#base-urls-separate-from-conversation-api) | [API Endpoints](#api-endpoints) | [Request Structure](#correct-request-structure) | [Top-Level Fields](#top-level-request-fields) | [Per-Recipient Fields](#per-recipient-fields) | [Managing Batches](#managing-batches) | [Bulk Contacts](#bulk-contacts) | [Callbacks](#callbacks) | [Common Pitfalls](#common-pitfalls) | [Links](#links)
-
-## SDK Reference
-
-- [Node.js](https://developers.sinch.com/docs/conversation/sdk/node/syntax-reference.md)
-- [Python](https://developers.sinch.com/docs/conversation/sdk/python/syntax-reference.md)
-- [Java](https://developers.sinch.com/docs/conversation/sdk/java/syntax-reference.md)
-- [.NET](https://developers.sinch.com/docs/conversation/sdk/dotnet/syntax-reference.md)
 
 ## When to Use
 
@@ -48,40 +42,7 @@ All endpoints prefixed with `/v1/projects/{project_id}`.
 
 ## CORRECT Request Structure
 
-ONE `message` at top level + `recipient_and_params` array:
-
-```json
-{
-  "app_id": "YOUR_APP_ID",
-  "message": {
-    "text_message": {
-      "text": "Hello ${user}! Your code is ${code}"
-    }
-  },
-  "recipient_and_params": [
-    {
-      "recipient": {
-        "identified_by": {
-          "channel_identities": [
-            { "channel": "SMS", "identity": "+1234567890" }
-          ]
-        }
-      },
-      "parameters": { "user": "Jane", "code": "123" }
-    },
-    {
-      "recipient": {
-        "identified_by": {
-          "channel_identities": [
-            { "channel": "SMS", "identity": "+0987654321" }
-          ]
-        }
-      },
-      "parameters": { "user": "John", "code": "456" }
-    }
-  ]
-}
-```
+ONE `message` at top level + `recipient_and_params` array. Field names, nesting, and enums must come from the authoritative [Batch Messages API](https://developers.sinch.com/docs/conversation/api-reference/batch-api/batch/messages.md) doc — do not lift them from this file.
 
 **WRONG** — do NOT use a `messages` array. The Batch API uses ONE message + many recipients.
 

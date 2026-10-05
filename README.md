@@ -143,13 +143,14 @@ npx skills add sinch/skills
 
 Available product skills:
 
-- **Messaging**: conversation-api, in-app-calling
-- **Phone numbers**: numbers, number-lookup, 10dlc, elastic-sip-trunking
-- **Voice & Verification**: voice-api, verification-api
+- **Messaging**: conversation-api, sms, mms, rcs, whatsapp, in-app-calling
+- **Phone numbers**: numbers, number-order, porting, imported-numbers-hosting-orders, number-lookup, 10dlc, elastic-sip-trunking
+- **Voice & Verification**: voice-api, voice-api-v2, verification-api
 - **Fax**: fax
 - **Email**: mailgun, mailgun-inspect, mailgun-optimize, mailgun-validate
 - **Provisioning**: provisioning-api
-- **Auth**: authentication
+- **Serverless & CLI**: functions, functions-node, functions-dotnet, cli
+- **Auth & SDKs**: authentication, sdks
 
 Product-oriented skills (from sinch-skills): conversation-api, voice-api, verification-api, numbers, 10dlc, fax, mailgun, mailjet, and more.
 

@@ -1,3 +1,8 @@
+> **Not a schema.** This file shows Java usage patterns for the Numbers SDK. For SDK method
+> signatures and payload shape (field names, nesting, encodings, enums), refer to the
+> canonical `developers.sinch.com` docs linked from the parent [SKILL.md](../SKILL.md) before
+> writing code or prose that states payload structure.
+
 # Java — Numbers SDK Reference
 
 Maven: `com.sinch.sdk:sinch-sdk-java` (v2.0.0+)
