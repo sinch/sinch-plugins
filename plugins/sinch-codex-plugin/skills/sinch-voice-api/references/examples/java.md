@@ -1,3 +1,8 @@
+> **Not a schema.** This file inventories runnable Java examples and explains when to use
+> them. For SDK method signatures and payload shape (field names, nesting, encodings, enums),
+> refer to the canonical `developers.sinch.com` docs linked from the parent
+> [SKILL.md](../../SKILL.md) before writing code or prose that states payload structure.
+
 # Voice API — Java Examples
 
 ## Contents

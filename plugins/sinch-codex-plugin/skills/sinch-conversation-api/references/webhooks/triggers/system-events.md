@@ -1,8 +1,9 @@
+> **Not a schema.** This file describes when the trigger fires and lists notable fields. For
+> payload shape (field names, nesting, encodings, enums), refer to the canonical
+> `developers.sinch.com` docs linked from the parent [SKILL.md](../../../SKILL.md) before
+> writing code or prose that states payload structure.
+
 # System Events Triggers
-
-← [Back to Conversation API SKILL.md](../../../SKILL.md)
-
-**Sections:** [Overview](#overview) | [CHANNEL_EVENT](#channel_event) | [BATCH_STATUS_UPDATE](#batch_status_update) | [RECORD_NOTIFICATION](#record_notification) | [UNSUPPORTED](#unsupported) | [Key Points](#key-points)
 
 ## Overview
 

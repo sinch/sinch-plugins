@@ -1,3 +1,8 @@
+> **Not a schema.** This file describes the available SVAML actions and instructions and when
+> to use them. For payload shape (field names, nesting, encodings, enums), refer to the
+> canonical `developers.sinch.com` docs linked from the parent [SKILL.md](../SKILL.md) before
+> writing code or prose that states payload structure.
+
 # SVAML Reference
 
 ## Contents
@@ -36,6 +41,8 @@ Not all actions are available in every callback response:
 | `runMenu` | ✅ | ✅ | ✅ |
 | `park` | ✅ | — | — |
 
+*(Summary only — confirm exact names/encoding/enums against the authoritative [SVAML Actions Reference](https://developers.sinch.com/docs/voice/api-reference/svaml#actions) doc before implementing.)*
+
 ## Instructions by Callback
 
 | Instruction | ICE | ACE | PIE |
@@ -47,6 +54,8 @@ Not all actions are available in every callback response:
 | `answer` | ✅ | — | — |
 | `startRecording` | ✅ | ✅ | ✅ |
 | `stopRecording` | ✅ | ✅ | ✅ |
+
+*(Summary only — confirm exact names/encoding/enums against the authoritative [SVAML Instructions Reference](https://developers.sinch.com/docs/voice/api-reference/svaml#instructions) doc before implementing.)*
 
 ---
 
@@ -85,6 +94,8 @@ Connects to a PSTN number.
 | `indications` | string | No | Country code for ringback tone (e.g., `"us"`, `"se"`, `"uk"`) |
 | `amd` | object | No | Answering Machine Detection. `{ "enabled": true }` |
 
+*(Summary only — confirm exact names/encoding/enums against the authoritative [SVAML Actions Reference](https://developers.sinch.com/docs/voice/api-reference/svaml#actions) doc before implementing.)*
+
 ```json
 {
   "action": {
@@ -109,6 +120,8 @@ Connects to a Sinch SDK (in-app) endpoint.
 | `destination` | object | Yes | `{ "type": "username", "endpoint": "userId" }` |
 | `callHeaders` | array | No | Custom headers: `[{ "key": "k", "value": "v" }]` |
 
+*(Summary only — confirm exact names/encoding/enums against the authoritative [SVAML Actions Reference](https://developers.sinch.com/docs/voice/api-reference/svaml#actions) doc before implementing.)*
+
 ```json
 {
   "action": {
@@ -129,6 +142,8 @@ Connects to a conference room.
 | `conferenceId` | string | Yes | Conference identifier (max 64 chars) |
 | `conferenceDtmfOptions` | object | No | DTMF handling: `{ "mode": "ignore"|"forward"|"detect" }` |
 | `moh` | string | No | Music on hold for first participant: `"ring"` |
+
+*(Summary only — confirm exact names/encoding/enums against the authoritative [SVAML Actions Reference](https://developers.sinch.com/docs/voice/api-reference/svaml#actions) doc before implementing.)*
 
 ```json
 {
@@ -155,6 +170,8 @@ Connects to a SIP endpoint.
 | `callHeaders` | array | No | Private SIP headers |
 | `moh` | string | No | Music on hold if SIP call is placed on hold |
 
+*(Summary only — confirm exact names/encoding/enums against the authoritative [SVAML Actions Reference](https://developers.sinch.com/docs/voice/api-reference/svaml#actions) doc before implementing.)*
+
 ```json
 {
   "action": {
@@ -177,6 +194,8 @@ Connects to a WebSocket server for real-time audio streaming.
 | `streamingOptions` | object | No | `{ "version": 1, "sampleRate": 44100 }` |
 | `maxDuration` | integer | No | Max duration in seconds (max 14400) |
 | `callHeaders` | array | No | Custom headers sent in initial WebSocket message |
+
+*(Summary only — confirm exact names/encoding/enums against the authoritative [SVAML Actions Reference](https://developers.sinch.com/docs/voice/api-reference/svaml#actions) doc before implementing.)*
 
 ```json
 {
@@ -202,6 +221,8 @@ IVR menu with DTMF/voice input collection. Triggers PIE callback on input.
 | `enableVoice` | boolean | No | Enable speech input in addition to DTMF |
 | `menus` | array | No | Menu definitions (see below) |
 
+*(Summary only — confirm exact names/encoding/enums against the authoritative [SVAML Actions Reference](https://developers.sinch.com/docs/voice/api-reference/svaml#actions) doc before implementing.)*
+
 **Menu object:**
 
 | Property | Type | Description |
@@ -214,6 +235,8 @@ IVR menu with DTMF/voice input collection. Triggers PIE callback on input.
 | `timeoutMills` | integer | Timeout in ms (default: 5000) |
 | `maxTimeoutMills` | integer | Max timeout for multi-digit input |
 | `options` | array | `[{ "dtmf": 1, "action": "return(value)" | "menu(menuId)" }]` |
+
+*(Summary only — confirm exact names/encoding/enums against the authoritative [SVAML Actions Reference](https://developers.sinch.com/docs/voice/api-reference/svaml#actions) doc before implementing.)*
 
 ```json
 {
@@ -256,6 +279,8 @@ Parks the call with looping hold prompt.
 | `holdPrompt` | string | No | Loops until unparked or `maxDuration` reached |
 | `maxDuration` | integer | No | Max hold time in seconds |
 
+*(Summary only — confirm exact names/encoding/enums against the authoritative [SVAML Actions Reference](https://developers.sinch.com/docs/voice/api-reference/svaml#actions) doc before implementing.)*
+
 ```json
 {
   "action": {
@@ -281,6 +306,8 @@ Plays IVR files, TTS, or SSML.
 | `ids` | array | Yes | File URLs, `#tts[text]`, or `#ssml[commands]` |
 | `locale` | string | No | Required for TTS/SSML |
 
+*(Summary only — confirm exact names/encoding/enums against the authoritative [SVAML Instructions Reference](https://developers.sinch.com/docs/voice/api-reference/svaml#instructions) doc before implementing.)*
+
 ```json
 { "name": "playFiles", "ids": ["#tts[Welcome]"], "locale": "en-US" }
 ```
@@ -295,13 +322,15 @@ Synthesizes and plays text-to-speech. Max 600 characters (contact support to inc
 | `text` | string | No | The message to speak |
 | `locale` | string | No | TTS locale |
 
+*(Summary only — confirm exact names/encoding/enums against the authoritative [SVAML Instructions Reference](https://developers.sinch.com/docs/voice/api-reference/svaml#instructions) doc before implementing.)*
+
 ```json
 { "name": "say", "text": "Hello from Sinch!", "locale": "en-US" }
 ```
 
 ### sendDtmf
 
-Sends DTMF tones. Valid characters: `0-9`, `#`, `w` (500ms pause).
+Sends DTMF tones. Valid characters: `0-9`, `#`, `w` (500ms pause). *(Summary only — confirm exact names/encoding/enums against the authoritative [SVAML Instructions Reference](https://developers.sinch.com/docs/voice/api-reference/svaml#instructions) doc before implementing.)*
 
 ```json
 { "name": "sendDtmf", "value": "ww1234#w#" }
@@ -337,6 +366,8 @@ Begins recording the call.
 | `options.transcriptionOptions.enabled` | boolean | No | Enable auto-transcription |
 | `options.transcriptionOptions.locale` | string | No | Transcription locale (e.g., `"en-US"`) |
 
+*(Summary only — confirm exact names/encoding/enums against the authoritative [SVAML Instructions Reference](https://developers.sinch.com/docs/voice/api-reference/svaml#instructions) doc before implementing.)*
+
 ```json
 {
   "name": "startRecording",
@@ -368,6 +399,8 @@ Use these within `playFiles.ids`, `runMenu` prompts, and `park` prompts:
 | Text-to-speech | `#tts[text]` | `#tts[Welcome to support.]` |
 | SSML | `#ssml[commands]` | `#ssml[<speak><break time="1s"/>Hello</speak>]` |
 | Audio file URL | `#href[url]` | `#href[https://example.com/greeting.wav]` |
+
+*(Summary only — confirm exact names/encoding/enums against the authoritative [SVAML Instructions Reference](https://developers.sinch.com/docs/voice/api-reference/svaml#instructions) doc before implementing.)*
 
 ## Links
 

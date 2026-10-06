@@ -1,19 +1,13 @@
-← [Back to Conversation API SKILL.md](../SKILL.md)
+> **Not a schema.** This file describes when to use Template Management, its base URLs,
+> endpoints, and pitfalls. For payload shape (field names, nesting, encodings, enums), refer
+> to the canonical `developers.sinch.com` docs linked from the parent [SKILL.md](../SKILL.md)
+> before writing code or prose that states payload structure.
 
 # Template Management API Reference
 
 Manages **omni-channel templates** — pre-defined message formats with dynamic parameters, multiple languages, and channel-specific overrides (e.g., WhatsApp-approved templates).
 
 **Use V2 exclusively** — V1 reached end-of-life on January 31, 2026.
-
-**Sections:** [SDK Reference](#sdk-reference) | [When to Use](#when-to-use) | [Base URLs](#base-urls-separate-from-conversation-api) | [API Endpoints](#api-endpoints-v2) | [Key Concepts](#key-concepts) | [Template Structure](#template-structure) | [Creating Templates](#creating-templates) | [Updating Templates](#updating-templates) | [Translation Types](#translation-message-types) | [Channel-Specific](#channel-specific-templates-not-managed-here) | [Common Pitfalls](#common-pitfalls) | [Links](#links)
-
-## SDK Reference
-
-- [Node.js](https://developers.sinch.com/docs/conversation/sdk/node/syntax-reference.md)
-- [Python](https://developers.sinch.com/docs/conversation/sdk/python/syntax-reference.md)
-- [Java](https://developers.sinch.com/docs/conversation/sdk/java/syntax-reference.md)
-- [.NET](https://developers.sinch.com/docs/conversation/sdk/dotnet/syntax-reference.md)
 
 ## When to Use
 
@@ -56,27 +50,7 @@ All endpoints prefixed with `/v2/projects/{project_id}`.
 
 ## Template Structure
 
-```json
-{
-  "id": "01F8MECHZX3TBDSZ7XRADM79XE",
-  "description": "Order confirmation template",
-  "version": 1,
-  "default_translation": "en-US",
-  "translations": [
-    {
-      "language_code": "en-US",
-      "version": "1",
-      "variables": [
-        { "key": "customer_name", "preview_value": "Jane Doe" },
-        { "key": "order_number", "preview_value": "ORD-12345" }
-      ],
-      "text_message": {
-        "text": "Hi ${customer_name}, your order ${order_number} has been confirmed!"
-      }
-    }
-  ]
-}
-```
+A template combines an `id`, `version`, `default_translation`, and one or more `translations` (each keyed by BCP-47 `language_code`, carrying `variables` and one message-type body). Field names, nesting, and enums must come from the authoritative [Templates V2 API](https://developers.sinch.com/docs/conversation/api-reference/template/templates-v2.md) doc — do not lift them from this file.
 
 ## Creating Templates
 

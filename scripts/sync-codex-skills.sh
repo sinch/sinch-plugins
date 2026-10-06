@@ -16,20 +16,32 @@ fi
 SKILLS="
 sinch-10dlc
 sinch-authentication
+sinch-cli
 sinch-conversation-api
 sinch-elastic-sip-trunking
 sinch-fax-api
+sinch-functions
+sinch-functions-dotnet
+sinch-functions-node
+sinch-imported-numbers-hosting-orders
 sinch-in-app-calling
 sinch-mailgun
 sinch-mailgun-inspect
 sinch-mailgun-optimize
 sinch-mailgun-validate
+sinch-mms
 sinch-number-lookup-api
+sinch-number-order-api
 sinch-numbers-api
+sinch-porting-api
 sinch-provisioning-api
+sinch-rcs
 sinch-sdks
+sinch-sms
 sinch-verification-api
 sinch-voice-api
+sinch-voice-api-v2
+sinch-whatsapp
 "
 
 # Authored in this repository rather than copied from vendor.

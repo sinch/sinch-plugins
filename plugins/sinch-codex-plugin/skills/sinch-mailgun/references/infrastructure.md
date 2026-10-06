@@ -1,3 +1,8 @@
+> **Not a schema.** This file describes when to use the infrastructure endpoints (IPs, IP
+> pools, DKIM keys, subaccounts) and their pitfalls. For payload shape (field names, nesting,
+> encodings, enums), refer to the canonical `documentation.mailgun.com` docs linked from the
+> parent [SKILL.md](../SKILL.md) before writing code or prose that states payload structure.
+
 # Infrastructure Management
 
 ## IPs

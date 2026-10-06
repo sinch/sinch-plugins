@@ -57,18 +57,31 @@ Display a concise overview of all Sinch commands available in this plugin. Do NO
 9. **Product guides**
    - /10dlc — 10DLC brands and campaigns
    - /authentication — Sinch authentication overview
+   - /cli — Sinch CLI
    - /conversation-api — Conversation API guide
    - /elastic-sip-trunking — Elastic SIP Trunking
    - /fax — Fax API
+   - /functions — Sinch Functions platform
+   - /functions-dotnet — Sinch Functions in C#/.NET
+   - /functions-node — Sinch Functions in Node.js/TypeScript
+   - /imported-numbers-hosting-orders — Imported numbers and hosting orders
    - /in-app-calling — In-app calling
    - /mailgun — Mailgun overview
    - /mailgun-inspect — Mailgun HTML inspection
    - /mailgun-optimize — Mailgun deliverability optimization
    - /mailgun-validate — Mailgun email validation
+   - /mms — MMS channel
    - /number-lookup — Number Lookup API
+   - /number-order — Number ordering with KYC
    - /numbers — Numbers API
+   - /porting — Porting API
    - /provisioning-api — Provisioning (WhatsApp/RCS senders)
+   - /rcs — RCS channel
+   - /sdks — Sinch SDKs
+   - /sms — SMS channel
    - /verification-api — Verification API
    - /voice-api — Voice API
+   - /voice-api-v2 — Voice API v2 (public preview)
+   - /whatsapp — WhatsApp channel
 
 **Tip**: Run any command with no arguments for interactive mode. Export credentials in your shell (see `/sinch-config-auth`) before starting `agy`.
