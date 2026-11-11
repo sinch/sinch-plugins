@@ -260,6 +260,7 @@ version-bump:
         CURSOR_FILE="plugins/sinch-cursor-plugin/.cursor-plugin/plugin.json"
         CODEX_FILE="plugins/sinch-codex-plugin/plugin.json"
         CODEX_COMPAT_FILE="plugins/sinch-codex-plugin/.codex-plugin/plugin.json"
+        AGY_FILE="plugins/sinch-antigravity-plugin/plugin.json"
 
         # Ensure we can read from default branch even if this is a web pipeline.
         git fetch --prune --tags origin "$CI_DEFAULT_BRANCH" || true
@@ -270,12 +271,14 @@ version-bump:
         DEFAULT_CURSOR_JSON="$(git show "origin/$CI_DEFAULT_BRANCH:$CURSOR_FILE" 2>/dev/null || cat "$CURSOR_FILE")"
         DEFAULT_CODEX_JSON="$(git show "origin/$CI_DEFAULT_BRANCH:$CODEX_FILE" 2>/dev/null || cat "$CODEX_FILE")"
         DEFAULT_CODEX_COMPAT_JSON="$(git show "origin/$CI_DEFAULT_BRANCH:$CODEX_COMPAT_FILE" 2>/dev/null || cat "$CODEX_COMPAT_FILE")"
+        DEFAULT_AGY_JSON="$(git show "origin/$CI_DEFAULT_BRANCH:$AGY_FILE" 2>/dev/null || cat "$AGY_FILE")"
 
         DEFAULT_PLUGIN_VERSION="$(echo "$DEFAULT_PLUGIN_JSON" | jq -r .version)"
         DEFAULT_GEMINI_VERSION="$(echo "$DEFAULT_GEMINI_JSON" | jq -r .version)"
         DEFAULT_CURSOR_VERSION="$(echo "$DEFAULT_CURSOR_JSON" | jq -r .version)"
         DEFAULT_CODEX_VERSION="$(echo "$DEFAULT_CODEX_JSON" | jq -r .version)"
         DEFAULT_CODEX_COMPAT_VERSION="$(echo "$DEFAULT_CODEX_COMPAT_JSON" | jq -r .version)"
+        DEFAULT_AGY_VERSION="$(echo "$DEFAULT_AGY_JSON" | jq -r .version)"
 
         MATCH_COUNT="$(echo "$DEFAULT_MARKETPLACE_JSON" | jq -r --arg name "$PLUGIN_NAME" '[.plugins[] | select(.name == $name)] | length')"
         if [ "$MATCH_COUNT" != "1" ]; then
@@ -308,6 +311,11 @@ version-bump:
 
         if [ "$DEFAULT_PLUGIN_VERSION" != "$DEFAULT_CODEX_COMPAT_VERSION" ]; then
           echo "ERROR: version drift on default branch: plugin.json ($DEFAULT_PLUGIN_VERSION) != .codex-plugin/plugin.json ($DEFAULT_CODEX_COMPAT_VERSION)."
+          exit 1
+        fi
+
+        if [ "$DEFAULT_PLUGIN_VERSION" != "$DEFAULT_AGY_VERSION" ]; then
+          echo "ERROR: version drift on default branch: plugin.json ($DEFAULT_PLUGIN_VERSION) != antigravity plugin.json ($DEFAULT_AGY_VERSION)."
           exit 1
         fi
 
@@ -351,6 +359,7 @@ version-bump:
     - CURSOR_FILE="plugins/sinch-cursor-plugin/.cursor-plugin/plugin.json"
     - CODEX_FILE="plugins/sinch-codex-plugin/plugin.json"
     - CODEX_COMPAT_FILE="plugins/sinch-codex-plugin/.codex-plugin/plugin.json"
+    - AGY_FILE="plugins/sinch-antigravity-plugin/plugin.json"
     - CURRENT_VERSION=$(jq -r .version $PLUGIN_FILE)
     - echo "Current version $CURRENT_VERSION"
 
@@ -401,6 +410,14 @@ version-bump:
       echo "Codex compatibility plugin version: $CODEX_COMPAT_VERSION (synchronized)"
 
     - |
+      AGY_VERSION=$(jq -r .version "$AGY_FILE")
+      if [ "$AGY_VERSION" != "$CURRENT_VERSION" ]; then
+        echo "ERROR: version drift: plugin.json ($CURRENT_VERSION) != antigravity plugin.json ($AGY_VERSION)."
+        exit 1
+      fi
+      echo "Antigravity plugin version: $AGY_VERSION (synchronized)"
+
+    - |
       major=$(echo "$CURRENT_VERSION" | cut -d. -f1)
       minor=$(echo "$CURRENT_VERSION" | cut -d. -f2)
       patch=$(echo "$CURRENT_VERSION" | cut -d. -f3)
@@ -432,6 +449,7 @@ version-bump:
     - jq --indent 2 --arg v "$NEW_VERSION" '.version = $v' $CURSOR_FILE > tmp.cursor.json && mv tmp.cursor.json $CURSOR_FILE
     - jq --indent 2 --arg v "$NEW_VERSION" '.version = $v' $CODEX_FILE > tmp.codex.json && mv tmp.codex.json $CODEX_FILE
     - jq --indent 2 --arg v "$NEW_VERSION" '.version = $v' $CODEX_COMPAT_FILE > tmp.codex-compat.json && mv tmp.codex-compat.json $CODEX_COMPAT_FILE
+    - jq --indent 2 --arg v "$NEW_VERSION" '.version = $v' $AGY_FILE > tmp.agy.json && mv tmp.agy.json $AGY_FILE
 
     # PD-384: record which skills/ content this release ships, so the
     # skills-release-gate can tell future triggered pipelines apart.
@@ -444,7 +462,7 @@ version-bump:
       else
         echo "WARNING: CURRENT_SKILLS_TREE unavailable; leaving $SKILLS_STATE_FILE untouched."
       fi
-    - git add $PLUGIN_FILE $MARKETPLACE_FILE $GEMINI_FILE $CURSOR_FILE $CODEX_FILE $CODEX_COMPAT_FILE
+    - git add $PLUGIN_FILE $MARKETPLACE_FILE $GEMINI_FILE $CURSOR_FILE $CODEX_FILE $CODEX_COMPAT_FILE $AGY_FILE
     - |
       git commit -m "ci(release): ${NEW_VERSION} [skip ci]"
 
@@ -695,13 +713,23 @@ build_artifacts:
       done
 
     # Build Antigravity plugin archives (platform-specific tar.gz files)
-    # plugin.json has no version field (Antigravity schema); skip version sync
     - AGY_DIR="plugins/sinch-antigravity-plugin"
     - |
       echo "Building Antigravity plugin archives: $AGY_DIR"
       if [ ! -d "$AGY_DIR" ]; then
         echo "ERROR: Antigravity plugin directory not found: $AGY_DIR";
         exit 1;
+      fi
+      AGY_PLUGIN_FILE="$AGY_DIR/plugin.json"
+      AGY_VERSION=$(jq -r .version "$AGY_PLUGIN_FILE")
+      if [ -n "${NEW_VERSION:-}" ] && [ "$AGY_VERSION" != "$NEW_VERSION" ]; then
+        if [ "${VERSION_BUMP_TYPE:-}" != "none" ]; then
+          echo "WARNING: antigravity plugin.json version ($AGY_VERSION) != NEW_VERSION ($NEW_VERSION); updating for packaging."
+          jq --indent 2 --arg v "$NEW_VERSION" '.version = $v' "$AGY_PLUGIN_FILE" > tmp.agy.json && mv tmp.agy.json "$AGY_PLUGIN_FILE"
+        else
+          echo "ERROR: antigravity plugin.json version ($AGY_VERSION) != NEW_VERSION ($NEW_VERSION)."
+          exit 1
+        fi
       fi
       for platform in darwin linux win32; do
         ARCHIVE_NAME="dist/${platform}.sinch-antigravity-plugin.tar.gz"
