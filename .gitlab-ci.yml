@@ -24,7 +24,7 @@
 spec:
   inputs:
     version_bump_type:
-      description: "Select which version bump to apply. Version bump type: patch (0.0.X), minor (0.X.0), major (X.0.0), or none (skip bump)"
+      description: "Select which version bump to apply. Version bump type: patch (0.0.X), minor (0.X.0), major (X.0.0), or none (skip bump). WARNING: none re-applies the latest version tag to the latest commit - the existing tag is force-moved on GitLab and GitHub and that version is republished from this commit."
       type: string
       default: "patch"
       options:
@@ -53,7 +53,8 @@ stages:
 
 # Common rules for release jobs:
 # - web + bump: Normal release flow with version bump ("Run Pipeline")
-# - web + bump_type=none: Support republish flow - re-syncs existing version
+# - web + bump_type=none: Support republish flow - force-moves the existing
+#   version tag (GitLab + GitHub) to the pipeline commit and re-syncs it
 # - trigger/pipeline: automated release kicked off by sinch-skills CI when
 #   skills/ content changes (PD-384) - "trigger" is the trigger-token API used
 #   today, "pipeline" is the trigger: keyword form should that ever be used.
@@ -328,19 +329,20 @@ version-bump:
         fi
 
         # Require tag to exist for republish
-        RELEASE_COMMIT_SHA=""
         if ! git ls-remote --exit-code --tags origin "refs/tags/$TAG_NAME" > /dev/null 2>&1; then
           echo "ERROR: Republish mode requires existing tag. Tag not found: $TAG_NAME"
           exit 1
         fi
-        git fetch --tags origin || true
-        RELEASE_COMMIT_SHA="$(git rev-list -n 1 "$TAG_NAME" 2>/dev/null || true)"
+        # Republish re-applies the existing tag to the pipeline commit;
+        # gitlab_tag and github_release_prepare force-move it.
+        RELEASE_COMMIT_SHA="$CI_COMMIT_SHA"
+        echo "WARNING: republish will move $TAG_NAME to $RELEASE_COMMIT_SHA on GitLab and GitHub."
 
         {
           echo "NEW_VERSION=${NEW_VERSION}";
           echo "TAG_NAME=${TAG_NAME}";
           echo "SKIP_RELEASE=false";
-          if [ -n "$RELEASE_COMMIT_SHA" ]; then echo "RELEASE_COMMIT_SHA=${RELEASE_COMMIT_SHA}"; fi
+          echo "RELEASE_COMMIT_SHA=${RELEASE_COMMIT_SHA}";
         } > release.env
         exit 0
       fi
@@ -809,12 +811,15 @@ gitlab_tag:
       git remote set-url origin "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git"
       git fetch --prune --tags origin "$CI_DEFAULT_BRANCH"
 
+      FORCE_TAG=""
       if git ls-remote --exit-code --tags origin "refs/tags/$TAG_NAME" > /dev/null 2>&1; then
-        echo "GitLab tag already exists: $TAG_NAME (will not move it)"
-        exit 0
-      fi
-
-      if [ "$VERSION_BUMP_TYPE" = "none" ]; then
+        if [ "$VERSION_BUMP_TYPE" != "none" ]; then
+          echo "GitLab tag already exists: $TAG_NAME (will not move it)"
+          exit 0
+        fi
+        echo "Republish: re-applying GitLab tag $TAG_NAME to ${RELEASE_COMMIT_SHA:-origin/$CI_DEFAULT_BRANCH}"
+        FORCE_TAG="--force"
+      elif [ "$VERSION_BUMP_TYPE" = "none" ]; then
         echo "ERROR: Republish mode requires existing tag. Tag not found: $TAG_NAME"
         exit 1
       fi
@@ -831,8 +836,8 @@ gitlab_tag:
         git checkout -B "$CI_DEFAULT_BRANCH" "origin/$CI_DEFAULT_BRANCH"
       fi
       echo "Creating GitLab tag: $TAG_NAME"
-      git tag -a "$TAG_NAME" -m "$TAG_NAME"
-      git push origin "$TAG_NAME"
+      git tag $FORCE_TAG -a "$TAG_NAME" -m "$TAG_NAME"
+      git push $FORCE_TAG origin "refs/tags/$TAG_NAME"
 
 gitlab_release:
   stage: release
@@ -851,7 +856,12 @@ gitlab_release:
       optional: true
   extends:
     - .retry_config
-    - .release_rules
+  # The release: keyword cannot update an existing release, which always
+  # exists in republish mode.
+  rules:
+    - if: $VERSION_BUMP_TYPE == "none"
+      when: never
+    - !reference [.release_rules, rules]
   script:
     - *skip_release_guard_for_release_keyword
     - echo "Creating GitLab release for $TAG_NAME"
@@ -923,20 +933,30 @@ github_release_prepare:
       GITHUB_REPO_PATH="${GITHUB_REPO_PATH%.git}"
       echo "GitHub repo path: $GITHUB_REPO_PATH"
       GITHUB_CLONE_URL="https://x-access-token:${GITHUB_PAT_2}@${GITHUB_REPO_URL_CLEAN}"
-      # Ensure tag exists on GitHub if this is a bump pipeline; republish requires the tag to already exist.
+      # Ensure tag exists on GitHub if this is a bump pipeline; republish requires the tag to already exist
+      # and force-moves it to the GitHub $TARGET_BRANCH HEAD that sync_to_github just pushed.
+      GITHUB_TAG_EXISTS=false
       if git ls-remote --exit-code --tags "$GITHUB_CLONE_URL" "refs/tags/$TAG_NAME" > /dev/null 2>&1; then
+        GITHUB_TAG_EXISTS=true
+      fi
+      if [ "$GITHUB_TAG_EXISTS" = "true" ] && [ "$VERSION_BUMP_TYPE" != "none" ]; then
         echo "GitHub tag already exists: $TAG_NAME"
       else
-        if [ "$VERSION_BUMP_TYPE" = "none" ]; then
+        FORCE_TAG=""
+        if [ "$GITHUB_TAG_EXISTS" = "true" ]; then
+          echo "Republish: re-applying GitHub tag $TAG_NAME to GitHub $TARGET_BRANCH HEAD"
+          FORCE_TAG="--force"
+        elif [ "$VERSION_BUMP_TYPE" = "none" ]; then
           echo "ERROR: Republish mode requires existing GitHub tag. Tag not found: $TAG_NAME"
           exit 1
+        else
+          echo "Creating GitHub tag: $TAG_NAME on GitHub $TARGET_BRANCH HEAD"
         fi
-        echo "Creating GitHub tag: $TAG_NAME on GitHub $TARGET_BRANCH HEAD"
         rm -rf repo_github
         git clone --depth 1 --branch "$TARGET_BRANCH" "$GITHUB_CLONE_URL" repo_github
         cd repo_github
-        git tag -a "$TAG_NAME" -m "$TAG_NAME"
-        git push origin "$TAG_NAME"
+        git tag $FORCE_TAG -a "$TAG_NAME" -m "$TAG_NAME"
+        git push $FORCE_TAG origin "refs/tags/$TAG_NAME"
         cd ..
       fi
 
@@ -1015,20 +1035,26 @@ github_upload_versioned_asset:
         existing_asset_id=$(echo "$assets" | jq -r --arg n "$name" '.[] | select(.name==$n) | .id' | head -n 1)
 
         if [ -n "$existing_asset_id" ] && [ "$existing_asset_id" != "null" ]; then
-          echo "Asset already exists; skipping upload: $name"
-        else
-          # Determine content type based on file extension
-          case "$ASSET_FILE" in
-            *.tar.gz) CONTENT_TYPE="application/gzip" ;;
-            *.zip) CONTENT_TYPE="application/zip" ;;
-            *) CONTENT_TYPE="application/octet-stream" ;;
-          esac
-          echo "Uploading GitHub asset: $name (content-type: $CONTENT_TYPE)"
-          curl -sS -X POST \
-            -H "$AUTH_HEADER" \
-            -H "$ACCEPT_HEADER" \
-            -H "Content-Type: $CONTENT_TYPE" \
-            --data-binary "@$ASSET_FILE" \
-            "https://uploads.github.com/repos/${GITHUB_REPO_PATH}/releases/${GITHUB_RELEASE_ID}/assets?name=${name}" > /dev/null
+          if [ "$VERSION_BUMP_TYPE" != "none" ]; then
+            echo "Asset already exists; skipping upload: $name"
+            continue
+          fi
+          # Republish rebuilt the artifacts from the re-tagged commit, so replace the old asset.
+          echo "Republish: replacing existing GitHub asset: $name"
+          curl -sS -X DELETE -H "$AUTH_HEADER" -H "$ACCEPT_HEADER" "$API/releases/assets/$existing_asset_id"
         fi
+
+        # Determine content type based on file extension
+        case "$ASSET_FILE" in
+          *.tar.gz) CONTENT_TYPE="application/gzip" ;;
+          *.zip) CONTENT_TYPE="application/zip" ;;
+          *) CONTENT_TYPE="application/octet-stream" ;;
+        esac
+        echo "Uploading GitHub asset: $name (content-type: $CONTENT_TYPE)"
+        curl -sS -X POST \
+          -H "$AUTH_HEADER" \
+          -H "$ACCEPT_HEADER" \
+          -H "Content-Type: $CONTENT_TYPE" \
+          --data-binary "@$ASSET_FILE" \
+          "https://uploads.github.com/repos/${GITHUB_REPO_PATH}/releases/${GITHUB_RELEASE_ID}/assets?name=${name}" > /dev/null
       done
