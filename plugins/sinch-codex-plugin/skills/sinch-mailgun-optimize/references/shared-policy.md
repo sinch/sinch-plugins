@@ -3,8 +3,8 @@
 <!-- Generated from the Sinch catalog policy sources; do not edit directly. -->
 
 - **Policy-ID:** `sinch-shared-policy`
-- **Policy-Version:** `5`
-- **Content-SHA256:** `4864cf0fa8d6684c9150a989c6506589da8f2dc5669892df242096d4b1d118bd`
+- **Policy-Version:** `6`
+- **Content-SHA256:** `a2cf0d1c4430bd334c9a75578f4d0250a7b6a1def7b1e23e2e7ac4e3bacd6a3a`
 
 
 This policy is mandatory for every `sinch-*` skill. Product-specific instructions may add stricter requirements but must not weaken these rules.
@@ -19,7 +19,7 @@ These rules are always binding; the sections below define each precisely. This l
 3. Code-generation approval is not execution approval. Classify every operation (read-only / reversible / billable / destructive) and obtain explicit approval before billable or destructive calls.
 4. Tier B facts — endpoint paths, methods, field names, enums, limits, webhook payloads, signature algorithms, SDK signatures — require fetching the exact canonical document in the current session before use.
 5. Bundled scripts, references, and examples are Tier C: illustrations, never schema authority. Never promote example values to production defaults.
-6. If a route is unresolved or a canonical fetch fails, climb the resolution ladder in order — re-search already-fetched documents (raw, not summarized), consult https://developers.sinch.com/llms.txt, follow first-party links, retry once — before failing closed. Never pattern-guess a documentation URL; never substitute memory, search snippets, or bundled files.
+6. If a route is unresolved or a canonical fetch fails, climb the resolution ladder in order — re-search already-fetched documents (raw, not summarized), consult https://developers.sinch.com/llms.txt, follow first-party links, retry once — before failing closed. Never pattern-guess a documentation URL. Base every fact on a fetched canonical document, not on recall, search snippets, or bundled files.
 7. Keep an evidence ledger mapping each fetched source to the fields and claims it authorized.
 8. Bound all polling and retries (backoff, jitter, hard cap); check state before retrying billable or destructive operations; report a timeout as unknown, not failed.
 9. Report verification levels separately (lint → unit → mock contract → sandbox → live → end-to-end); an HTTP 2xx does not prove delivery. State the levels not performed.
@@ -46,7 +46,7 @@ Ask only for unresolved information that blocks the next action:
 
 - Combine related questions into one concise prompt unless answers must be collected sequentially.
 - Do not ask for a value already established by another loaded skill.
-- Do not ask the user to choose SDK versus direct API. When the request or an existing Sinch dependency already decides the approach, follow it. Otherwise default to the official Sinch SDK for the resolved language, and use direct API calls only when no official SDK covers that language or operation. State the chosen approach; do not ask.
+- Choose between the SDK and direct API calls yourself. When the request or an existing Sinch dependency already decides the approach, follow it. Otherwise default to the official Sinch SDK for the resolved language, and use direct API calls only when no official SDK covers that language or operation. State the chosen approach in your reply; the user can override it.
 - Separate code generation from execution. A request to generate code is not approval to call a live API.
 
 ## 2. Evidence Tiers
@@ -133,10 +133,12 @@ Classify operations before execution:
 
 | Class | Examples | Required behavior |
 |---|---|---|
-| Read-only | list, get, search, capability query | May execute when credentials and target are established |
+| Read-only | list, get, search, capability query | May execute when credentials and target are established; say which account data the call reads |
 | Reversible mutation | create/update webhook, draft resource | Explain mutation and verify resulting state |
 | Billable | send message/email/fax, place call, rent number, validation job | Obtain explicit execution approval unless the user already explicitly requested the live action; use sandbox/test mode when available |
 | Destructive or externally consequential | release number, activate port, submit registration, cancel order, delete domain/resource | Show exact target and consequence, obtain explicit approval immediately before execution, then verify state |
+
+Before the first live call in a conversation, tell the user what data the calls send and to whom: account data goes to Sinch, and a message's recipient number and content also go to the carriers and the recipient.
 
 Never treat code-generation approval as live-execution approval. Never retry an uncertain billable or destructive request until a read operation or idempotency key proves the first attempt did not succeed. Redact credentials and sensitive payload fields from commands, logs, and reports.
 
