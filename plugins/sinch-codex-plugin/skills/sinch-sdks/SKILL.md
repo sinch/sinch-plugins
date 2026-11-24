@@ -3,7 +3,7 @@ name: sinch-sdks
 description: "Sinch SDK installation and client initialization for Node.js, Python, Java, and .NET. Use when installing a Sinch SDK, initializing SinchClient, setting up SDK credentials, configuring conversation region in SDK, or building a multi-product SDK client. For In-App Calling SDKs, see sinch-in-app-calling."
 metadata:
   author: Sinch
-  version: 1.2.0
+  version: 1.3.0
   category: Core
   tags: sdk, node, python, java, dotnet, sinch-client, installation
   uses:
@@ -20,7 +20,7 @@ For authentication setup (credentials, OAuth2, Basic auth, signed requests), see
 
 ## Agent Instructions
 
-> **Policy gate `sinch-shared-policy@5` (`sha256:4864cf0fa8d6`):** The policy digest below is binding as written. Before implementation or live execution, read [the full shared Sinch policy](references/shared-policy.md) once per conversation — skip it if this exact ID/version/fingerprint is already loaded; read it if the version is newer or the fingerprint differs. This skill's canonical operation routes live in its Agent Instructions and Links sections.
+> **Policy gate `sinch-shared-policy@7` (`sha256:587240ed6627`):** The policy digest below is binding as written. Before implementation or live execution, read [the full shared Sinch policy](references/shared-policy.md) once per conversation — skip it if this exact ID/version/fingerprint is already loaded; read it if the version is newer or the fingerprint differs. This skill's canonical operation routes live in its Agent Instructions and Links sections.
 
 <!-- sinch-policy-digest: start (generated; edit docs/SINCH_SHARED_POLICY.md and run scripts/sync_sinch_skill_references.py) -->
 **Sinch policy digest (binding):**
@@ -30,11 +30,12 @@ For authentication setup (credentials, OAuth2, Basic auth, signed requests), see
 3. Code-generation approval is not execution approval. Classify every operation (read-only / reversible / billable / destructive) and obtain explicit approval before billable or destructive calls.
 4. Tier B facts — endpoint paths, methods, field names, enums, limits, webhook payloads, signature algorithms, SDK signatures — require fetching the exact canonical document in the current session before use.
 5. Bundled scripts, references, and examples are Tier C: illustrations, never schema authority. Never promote example values to production defaults.
-6. If a route is unresolved or a canonical fetch fails, climb the resolution ladder in order — re-search already-fetched documents (raw, not summarized), consult https://developers.sinch.com/llms.txt, follow first-party links, retry once — before failing closed. Never pattern-guess a documentation URL; never substitute memory, search snippets, or bundled files.
+6. If a route is unresolved or a canonical fetch fails, climb the resolution ladder in order — re-search already-fetched documents (raw, not summarized), consult https://developers.sinch.com/llms.txt, follow first-party links, retry once — before failing closed. Never pattern-guess a documentation URL. Base every fact on a fetched canonical document, not on recall, search snippets, or bundled files.
 7. Keep an evidence ledger mapping each fetched source to the fields and claims it authorized.
 8. Bound all polling and retries (backoff, jitter, hard cap); check state before retrying billable or destructive operations; report a timeout as unknown, not failed.
 9. Report verification levels separately (lint → unit → mock contract → sandbox → live → end-to-end); an HTTP 2xx does not prove delivery. State the levels not performed.
 10. Load only the smallest skill set that owns the behavior; if a required skill is unavailable, name it and stop rather than improvising its instructions.
+11. Do the work yourself when a Sinch API, SDK, or CLI command can do it. Before telling the user to do a step in the dashboard, check the canonical docs and the CLI for a way to automate it; for one-off setup that the code under construction does not depend on, the CLI is enough when it is installed and logged in; hand a step to the user only when no API or CLI covers it, it needs their identity, a secret only they can see, or their legal acceptance, or they asked to do it themselves.
 <!-- sinch-policy-digest: end -->
 
 If the user hasn't specified which language or platform, ask first — the SDK and init pattern differ by language. Use the table below to route to the correct reference.
@@ -77,7 +78,8 @@ Not all products are available in all SDKs. Check the table before recommending 
 | Product | Node.js | Java | .NET | Python |
 |---------|---------|------|------|--------|
 | Conversation API | ✅ | ✅ | ⚠ | ⚠ |
-| Voice API | ✅ | ✅ | ✅ | ✅ |
+| Voice API v1 | ✅ | ✅ | ✅ | ✅ (1.x only) |
+| Voice API v2 (preview) | ✅ (1.6.0+) | ✅ (2.3.0+) | ❌ | ✅ (2.2.0+) |
 | Verification API | ✅ | ✅ | ✅ | ✅ |
 | Numbers API | ✅ | ✅ | ✅ | ✅ |
 | Number Lookup API | ✅ | ❌ | ❌ | ✅ |
@@ -87,6 +89,8 @@ Not all products are available in all SDKs. Check the table before recommending 
 | 10DLC Registration | ❌ | ❌ | ❌ | ❌ |
 
 ✅ = supported, ⚠ = partial/preview, ❌ = not available (use direct HTTP)
+
+Voice API v1 and v2 are separate APIs, and new voice projects default to v2 (see the `sinch-voice-api-v2` skill). Python SDK 2.0 and later do not include Voice API v1. *(Summary only — confirm versions in the [Voice API support by SDK version](https://developers.sinch.com/docs/sdks.md) table before installing or upgrading.)*
 
 When a product is not supported in the user's chosen SDK, guide them to use direct HTTP calls instead.
 
@@ -109,9 +113,9 @@ If language is unknown, ask first. The SDKs handle token refresh automatically.
 
 **`sinch-sdk-java`** — Java SDK (v2.0.0+) via Maven Central.
 
-**Project-scoped init** — Uses `projectId`, `keyId`, `keySecret`. For Conversation, Numbers, Fax, EST, 10DLC, Number Lookup, Provisioning.
+**Project-scoped init** — Uses `projectId`, `keyId`, `keySecret`. For Conversation, Voice API v2, Numbers, Fax, EST, 10DLC, Number Lookup, Provisioning.
 
-**Application-scoped init** — Uses `applicationKey`, `applicationSecret`. For Voice, Verification, In-App Calling.
+**Application-scoped init** — Uses `applicationKey`, `applicationSecret`. For Voice API v1, Verification, In-App Calling.
 
 **Multi-product client** — Provide both project and application credentials in a single `SinchClient` to access all APIs.
 
@@ -128,7 +132,7 @@ If language is unknown, ask first. The SDKs handle token refresh automatically.
 
 - **Not all products are available in all SDKs** — Check the Product Coverage table before recommending an SDK. For unsupported products, use direct HTTP calls.
 - **Conversation region is required** — Python and Java SDKs fail at runtime without `conversation_region`. Node.js and .NET don't enforce it yet but should set it explicitly.
-- **Voice/Verification use application credentials** — These are a separate credential set from project Access Keys.
+- **Voice v1 and Verification use application credentials** — These are a separate credential set from project Access Keys. Voice API v2 uses project Access Keys instead.
 - **SDKs auto-refresh OAuth2 tokens** — No need to manually handle token expiry when using SDKs.
 
 ## Links
